@@ -17,7 +17,7 @@ sateye.satellites = {
                 console.log("Requesting predictions for satellite " + this.name);
                 $.ajax({url: "/predictions/", cache: false})
                  .done(sateye.satellites.onPredictionsReceived)
-                 .error(sateye.satellites.onPredictionsError);
+                 .fail(sateye.satellites.onPredictionsError);
             },
 
             onPredictionsReceived: function(data) {
