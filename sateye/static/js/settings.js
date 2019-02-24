@@ -1,0 +1,3 @@
+sateye.settings = {
+    initialize: function() {},
+}
