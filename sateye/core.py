@@ -12,7 +12,7 @@ class Alert(Enum):
     WARNING = "warning"
 
 
-def api_response(ok=True, data=None, alerts=None):
+def api_response(ok=True, payload=None, alerts=None):
     """
     Build a json api result in the format expected by the client side.
     """
@@ -24,7 +24,7 @@ def api_response(ok=True, data=None, alerts=None):
 
     return jsonify({
         "ok": ok,
-        "data": data or {},
+        "payload": payload,
         "alerts": [{"type": alert_type.value, "message": alert_message}
                    for alert_type, alert_message in alerts]
     })

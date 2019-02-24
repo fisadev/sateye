@@ -54,6 +54,6 @@ def api_user_data():
 
     return api_response(
         ok=True,
-        data=user_data,
+        payload=user_data,
         alerts=alerts,
     )
