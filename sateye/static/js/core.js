@@ -38,7 +38,7 @@ var sateye = {
         for (alert in data.alerts) {
             sateye.showAlert(alert.type, alert.message);
         }
-    }
+    },
 
     loadUserData: function() {
         // load the user data from the server
