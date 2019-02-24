@@ -1,0 +1,3 @@
+sateye.locations = {
+    initialize: function() {},
+}

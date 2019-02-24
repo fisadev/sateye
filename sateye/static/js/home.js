@@ -1,0 +1,1 @@
+$(sateye.initialize);
