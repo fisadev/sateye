@@ -8,6 +8,8 @@ setup(
         'flask',
         'requests',
         'orbit-predictor',
-        'munch',
+        'attrs',
+        'pytz',
+        'python-dateutil',
     ],
 )
