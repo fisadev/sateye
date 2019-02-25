@@ -1,6 +1,5 @@
 sateye.map = {
     mainMap: null,
-    bingMapsKey: "An81HXJxaDgqEuOBSIVNCRkH4OPEx_55QMOd9dPSemaugIg565elMLC_etRL3cEV",
     cesiumConfig: {
         homeButton: false,
         navigationInstructionsInitiallyVisible: false,
@@ -23,7 +22,6 @@ sateye.map = {
 
     configureCesiumMap: function() {
         // configure the cesium map
-        Cesium.BingMapsApi.defaultKey = sateye.map.bingMapsKey;
         sateye.map.mainMap = new Cesium.Viewer("main-map", sateye.map.cesiumConfig);
 
         // center on 0,0 with enough distance to see the whole planet
