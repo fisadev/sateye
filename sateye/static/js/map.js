@@ -5,6 +5,7 @@ sateye.map = {
         homeButton: false,
         navigationInstructionsInitiallyVisible: false,
         sceneMode: Cesium.SceneMode.SCENE2D,
+        fullscreenButton: false,
     },
 
     // chunking configs. More info at docs/prediction_chunks.rst
