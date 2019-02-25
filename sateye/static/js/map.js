@@ -39,6 +39,10 @@ sateye.map = {
         //sateye.map.mainMap.clock.onTick.addEventListener(sateye.map.onMapTick);
         setInterval(sateye.map.ensurePathsInfo, 
                     sateye.map._predictionRefreshSeconds * 1000);
+
+        // remove fog and ground atmosphere on 3d globe
+        sateye.map.mainMap.scene.fog.enabled = false;
+        sateye.map.mainMap.scene.globe.showGroundAtmosphere = false;
     },
 
     onMapTick: function(clock) {
