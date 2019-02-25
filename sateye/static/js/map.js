@@ -27,7 +27,7 @@ sateye.map = {
 
         // center on 0,0 with enough distance to see the whole planet
         var center = Cesium.Cartesian3.fromDegrees(0, 0);
-        sateye.map.mainMap.camera.lookAt(center, new Cesium.Cartesian3(0.0, 0.0, 50000000.0));
+        sateye.map.mainMap.camera.setView({destination: center});
 
         // day and night
         sateye.map.mainMap.scene.globe.enableLighting = true;
