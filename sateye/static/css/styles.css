@@ -9,3 +9,7 @@
     resize: vertical;
     padding: 0 0 20px 0;
 }
+
+#main-map-controls {
+    padding: 10px 0 10px 0;
+}

@@ -6,6 +6,7 @@ sateye.map = {
         sceneMode: Cesium.SceneMode.SCENE2D,
         fullscreenButton: false,
     },
+    dom: {},
 
     // chunking configs. More info at docs/prediction_chunks.rst
     // how often do we check if we need to refresh predictions?
@@ -18,6 +19,12 @@ sateye.map = {
     initialize: function() {
         // initialize the map module
         sateye.map.configureCesiumMap();
+
+        // control display of night shadow with the checkbox
+        nightShadowInput = $("#night-shadow-input");
+        sateye.map.dom.nightShadowInput = nightShadowInput;
+        nightShadowInput.on("change", sateye.map.onNightShadowChange);
+        sateye.map.onNightShadowChange();
     },
 
     configureCesiumMap: function() {
@@ -28,12 +35,8 @@ sateye.map = {
         var center = Cesium.Cartesian3.fromDegrees(0, 0);
         sateye.map.mainMap.camera.setView({destination: center});
 
-        // day and night
-        sateye.map.mainMap.scene.globe.enableLighting = true;
-
         // every some time, ensure we have paths for each satellite
         //sateye.map.mainMap.clock.onTick.addEventListener(sateye.map.onMapTick);
- 
         setInterval(sateye.map.ensurePathsInfo, 
                     sateye.map._predictionRefreshSeconds * 1000);
     },
@@ -63,5 +66,10 @@ sateye.map = {
                 satellite.getMorePredictions(fromTime, secondsAhead);
             }
         }
+    },
+
+    onNightShadowChange: function(e) {
+        // on input change, decide wether to show or not the night shadow
+        sateye.map.mainMap.scene.globe.enableLighting = sateye.map.dom.nightShadowInput.is(":checked");
     },
 }
