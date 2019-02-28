@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,10 +10,10 @@
     <link rel="stylesheet" href="https://cesiumjs.org/releases/1.54/Build/Cesium/Widgets/widgets.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{% static 'website/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'website/css/styles.css' %}">
 
-    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    <link rel="icon" href="{% static 'website/img/favicon.ico' %}">
     <title>SatEye</title>
 </head>
 
@@ -20,7 +21,7 @@
 <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
         <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">
-            <img src="{{ url_for('static', filename='img/logo_big.png') }}" width="30" height="30" />
+            <img src="{% static 'website/img/logo_big.png' %}" width="30" height="30" />
             SatEye
         </a>
         <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
@@ -29,7 +30,7 @@
 
     <div class="container-fluid">
         <div class="row">
-            {% include 'side_menu.html' %}
+            {% include 'website/side_menu.html' %}
 
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
                 <div id="alerts-bar">
@@ -37,23 +38,21 @@
 
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="tab-map" role="tabpanel">
-                        {% include 'map.html' %}
+                        {% include 'website/map.html' %}
                     </div>
                     <div class="tab-pane fade" id="tab-satellites" role="tabpanel">
-                        {% include 'satellites.html' %}
+                        {% include 'website/satellites.html' %}
                     </div>
                     <div class="tab-pane fade" id="tab-locations" role="tabpanel">
-                        {% include 'locations.html' %}
+                        {% include 'website/locations.html' %}
                     </div>
                     <div class="tab-pane fade" id="tab-settings" role="tabpanel">
-                        {% include 'settings.html' %}
+                        {% include 'website/settings.html' %}
                     </div>
                 </div>
             </main>
         </div>
     </div>
-
-    {{ include_raw('client_side/alert.html') }}
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -62,12 +61,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.0/handlebars.min.js" crossorigin="anonymous"></script>
     <script src="http://cesiumjs.org/releases/1.54/Build/Cesium/Cesium.js" crossorigin="anonymous"></script>
 
-    <script src="{{ url_for('static', filename='js/core.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/satellites.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/locations.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+    <script id="alert-template" type="text/x-handlebars-template" src="{% static 'website/client_templates/alert.html' %}">
 
-    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+    <script src="{% static 'website/js/core.js' %}"></script>
+    <script src="{% static 'website/js/map.js' %}"></script>
+    <script src="{% static 'website/js/satellites.js' %}"></script>
+    <script src="{% static 'website/js/locations.js' %}"></script>
+    <script src="{% static 'website/js/settings.js' %}"></script>
+
+    <script src="{% static 'website/js/home.js' %}"></script>
 </body>
 </html>
