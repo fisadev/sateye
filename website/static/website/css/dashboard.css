@@ -56,6 +56,9 @@ body {
   text-transform: uppercase;
 }
 
+#side-menu{
+  position: sticky;
+}
 /*
  * Navbar
  */
