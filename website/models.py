@@ -43,7 +43,6 @@ class TLE(models.Model):
 
 
 class Location(models.Model):
-
     """
     Location information from a specific satellite at a specific place
     """
