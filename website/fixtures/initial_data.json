@@ -1,0 +1,20 @@
+[
+{
+  "model": "website.satellite",
+  "pk": 1,
+  "fields": {
+    "name": "ISS",
+    "description": "International Space Station",
+    "owner": 1
+  }
+},
+{
+  "model": "website.tle",
+  "pk": 1,
+  "fields": {
+    "satellite": 1,
+    "at": "2019-03-04T20:14:03Z",
+    "lines": "1 43204U 18015K   18339.11168986  .00000941  00000-0  42148-4 0  9999\r\n2 43204  97.3719 104.7825 0016180 271.1347 174.4597 15.23621941 46156"
+  }
+}
+]
