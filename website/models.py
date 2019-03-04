@@ -13,14 +13,47 @@ class Satellite(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True,
                               blank=True, related_name='satellites')
 
+    def get_closest_tle(self, to_date):
+        """
+        Get the TLE that is closest to the specified date. If no TLE is found, then returns None.
+        """
+        closest_tle = None
+
+        try:
+            before = self.tles.filter(at__lte=to_date).order_by('at').last()
+        except TLE.DoesNotExist as err:
+            before = None
+
+        try:
+            after = self.tles.filter(at__gt=to_date).order_by('at').first()
+        except TLE.DoesNotExist as err:
+            after = None
+
+        if before and not after:
+            # only past tles found, return the newest one
+            closest_tle = before
+        elif after and not before:
+            # only future tles found, return the oldest one
+            closest_tle = after
+        else:
+            # past and future tles found, return the one that is closest
+            diff_before = to_date - before
+            diff_after = after - to_date
+
+            if diff_before < diff_after:
+                closest_tle = before
+            else:
+                closest_tle = after
+
+        return closest_tle
+
     def get_predictor(self, for_date=None):
         """
         Build an orbit predictor for the satellite, using its known TLEs.
         """
         assert self.tles.exists()
         if for_date:
-            # TODO find the best TLE
-            raise NotImplementedError()
+            best_tle = self.closest_tle(for_date)
         else:
             best_tle = self.tles.order_by('at').last()
 
