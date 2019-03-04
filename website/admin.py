@@ -19,14 +19,13 @@ class TLEAdmin(admin.ModelAdmin):
     list_filter = 'satellite', 'at'
     date_hierarchy = 'at'
 
-class LocationAdmin(admin.ModelAdmin):
 
+class LocationAdmin(admin.ModelAdmin):
     """
         Customizations for the Locations model in the admin site.
     """
-    list_display = ['user','lat','lon','alt']
+    list_display = 'lat','lon','alt', 'owner'
 
-    
 
 admin.site.register(Satellite, SatelliteAdmin)
 admin.site.register(TLE, TLEAdmin)
