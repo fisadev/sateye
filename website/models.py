@@ -46,7 +46,8 @@ class Location(models.Model):
     """
     A specific point location on Earth.
     """
-    user = models.CharField(max_length=50, blank=True, null=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True,
+                              blank=True, related_name='locations')
     lat = models.FloatField(null=True, blank=True)
     lon = models.FloatField(null=True, blank=True)
     alt = models.FloatField(null=True, blank=True)
