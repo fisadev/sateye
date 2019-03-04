@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from website.models import Satellite, TLE
+from website.models import Satellite, TLE, Location
+
 
 
 class SatelliteAdmin(admin.ModelAdmin):
@@ -18,6 +19,15 @@ class TLEAdmin(admin.ModelAdmin):
     list_filter = 'satellite', 'at'
     date_hierarchy = 'at'
 
+class LocationAdmin(admin.ModelAdmin):
+
+    """
+        Customizations for the Locations model in the admin site.
+    """
+    list_display = ['user','lat','lon','alt']
+
+    
 
 admin.site.register(Satellite, SatelliteAdmin)
 admin.site.register(TLE, TLEAdmin)
+admin.site.register(Location, LocationAdmin)

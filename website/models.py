@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.db import models
 
-
 class Satellite(models.Model):
     """
     A specific satellite in orbit, that Sateye can display and track.
@@ -25,3 +24,17 @@ class TLE(models.Model):
 
     def __str__(self):
         return 'TLE at {}'.format(self.at)
+
+
+class Location(models.Model):
+
+    """
+    Location information from a specific satellite at a specific place
+    """
+    user = models.CharField(max_length=50, blank=True, null=True)    
+    lat = models.FloatField(null=True, blank=True)
+    lon = models.FloatField(null=True, blank=True)
+    alt = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return 'Location: {}'.format(self.user)
