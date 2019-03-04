@@ -44,7 +44,7 @@ class TLE(models.Model):
 
 class Location(models.Model):
     """
-    Location information from a specific satellite at a specific place
+    A specific point location on Earth.
     """
     user = models.CharField(max_length=50, blank=True, null=True)
     lat = models.FloatField(null=True, blank=True)
