@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 
+from website.utils import get_predictor_from_tle_lines
+
 
 class Satellite(models.Model):
     """
@@ -10,6 +12,19 @@ class Satellite(models.Model):
     description = models.TextField(null=True, blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True,
                               blank=True, related_name='satellites')
+
+    def get_predictor(self, for_date=None):
+        """
+        Build an orbit predictor for the satellite, using its known TLEs.
+        """
+        assert self.tles.exists()
+        if for_date:
+            # TODO find the best TLE
+            raise NotImplementedError()
+        else:
+            best_tle = self.tles.order_by('at').last()
+
+        return get_predictor_from_tle_lines(best_tle.lines.split('\n'))
 
     def __str__(self):
         return 'Satellite: {}'.format(self.name)
