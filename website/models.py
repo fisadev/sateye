@@ -101,9 +101,10 @@ class Location(models.Model):
     """
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True,
                               blank=True, related_name='locations')
+    name = models.CharField(max_length=100, null=True, blank=True)
     lat = models.FloatField(null=True, blank=True)
     lon = models.FloatField(null=True, blank=True)
     alt = models.FloatField(null=True, blank=True)
 
     def __str__(self):
-        return 'Location: {}'.format(self.user)
+        return 'Location: {}'.format(self.name)
