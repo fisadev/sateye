@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.db import models
 
@@ -53,11 +55,29 @@ class Satellite(models.Model):
         """
         assert self.tles.exists()
         if for_date:
-            best_tle = self.closest_tle(for_date)
+            best_tle = self.get_closest_tle(for_date)
         else:
             best_tle = self.tles.order_by('at').last()
 
         return get_predictor_from_tle_lines(best_tle.lines.split('\n'))
+
+    def predict_path(self, start_date, end_date, step_seconds=60):
+        """
+        Predict the positions of a satellite during a period of time, with certain step precision.
+        """
+        # get a predictor that is, on average, closest to the dates we will be using in this
+        # period of time
+        period_length = end_date - start_date
+        period_center = start_date + period_length / 2
+        predictor = self.get_predictor(for_date=period_center)
+
+        step = timedelta(seconds=step_seconds)
+
+        # iterate over time, returning the position at each moment
+        current_date = start_date
+        while current_date <= end_date:
+            yield predictor.get_position(current_date).position_llh
+            current_date += step
 
     def __str__(self):
         return 'Satellite: {}'.format(self.name)
