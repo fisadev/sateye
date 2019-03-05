@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
+from orbit_predictor import locations
 
 from website.utils import get_predictor_from_tle_lines
 
@@ -79,8 +80,23 @@ class Satellite(models.Model):
             yield predictor.get_position(current_date).position_llh
             current_date += step
 
+    def predict_passes(self, location, start_date, end_date):
+        """
+        Predict the passes of a satellite over a location on TCA between two dates.
+        """
+        location = location.get_location_obj()
+        predictor = self.get_predictor()
+        loc_predictor = iter(predictor.passes_over(location, start_date))
+
+        for prediction in loc_predictor:
+            if prediction.los > end_date:
+                break
+
+            yield prediction
+
+
     def __str__(self):
-        return 'Satellite: {}'.format(self.name)
+        return self.name
 
 
 class TLE(models.Model):
@@ -92,7 +108,7 @@ class TLE(models.Model):
     lines = models.TextField()  # the actual two line element
 
     def __str__(self):
-        return 'TLE at {}'.format(self.at)
+        return 'Recorded at {}'.format(self.at)
 
 
 class Location(models.Model):
@@ -106,5 +122,11 @@ class Location(models.Model):
     lon = models.FloatField(null=True, blank=True)
     alt = models.FloatField(null=True, blank=True)
 
+    def get_location_obj(self):
+        """
+        Build a orbit_predictor.locations.Location object from this model instance.
+        """
+        return locations.Location(self.name, self.lat, self.lon, self.alt)
+
     def __str__(self):
-        return 'Location: {}'.format(self.name)
+        return '{} at ({}, {}) {} mts'.format(self.name, self.lat, self.lon, self.alt)
