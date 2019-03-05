@@ -3,3 +3,4 @@ orbit-predictor==1.8.6
 attrs==18.2.0
 pytz
 python-dateutil
+djangorestframework
