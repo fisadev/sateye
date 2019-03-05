@@ -118,15 +118,15 @@ class Location(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True,
                               blank=True, related_name='locations')
     name = models.CharField(max_length=100, null=True, blank=True)
-    lat = models.FloatField(null=True, blank=True)
-    lon = models.FloatField(null=True, blank=True)
-    alt = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    elevation = models.FloatField(null=True, blank=True)
 
     def get_location_obj(self):
         """
         Build a orbit_predictor.locations.Location object from this model instance.
         """
-        return locations.Location(self.name, self.lat, self.lon, self.alt)
+        return locations.Location(self.name, self.latitude, self.longitude, self.elevation)
 
     def __str__(self):
-        return '{} at ({}, {}) {} mts'.format(self.name, self.lat, self.lon, self.alt)
+        return '{} at ({}, {}) {} mts'.format(self.name, self.latitude, self.longitude, self.elevation)
