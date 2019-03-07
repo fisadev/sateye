@@ -16,9 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from website.views import home
+from website.views import home, api_predict_path
 
 urlpatterns = [
     path('', home),
+    path('api/satellite/<satellite_id>/predict_path/', api_predict_path),
     path('admin/', admin.site.urls),
 ]
