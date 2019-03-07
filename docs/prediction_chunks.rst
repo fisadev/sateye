@@ -15,11 +15,11 @@ For example, if you set the map's clock to 5x, for each real second that passes,
 in the map, so the ISS would move 5 seconds into the future.
 
 We don't want to request prediction chunks too often, so each time we ask for predictions we get 
-a big chunk with a certain timespan of predictions. How much? Well, we **try** to ensure we have 
-enough predictions to show data for the next X real seconds. If we just downloaded a chunk we want 
-to be able to use it to show the map with the satellite for the next X real seconds.
+a big chunk with a certain timespan of predictions. How much? Well, ask for enough predictions to 
+to show data for the next X real seconds. If we just downloaded a chunk we want to be able to use 
+it to show the map with the satellite for the next X real seconds.
 
-That X is defined by ``sateye.map._predictionRealSeconds``.
+That X is defined by ``sateye.map._predictionsChunkRealSeconds``.
 
 The map's clock might be moving faster or slower, so to get X real seconds of data, we have to 
 calculate how much map seconds that would be. Example: we want to be able to show the satellite 
@@ -28,9 +28,9 @@ seconds, we need 20 seconds of predictions.
 
 Also, after we got that chunk we still have to check from time to time if we have reached the end 
 of its predictions, so we need a new one. We do this fairly often, defined by 
-``sateye.map._predictionRefreshSeconds``.
+``sateye.map._predictionsRefreshRealSeconds``.
 
-And finally, we don't want to reach the end of the current chunk and then ask for a new one. If 
-we do that the user will have a little time without data, until we receive the new chunk. So 
-instead we ask for a new chunk when we are "about to finish" the current chunk. How many seconds 
-before? That's ``sateye.map._predictionMarginRealSeconds``.
+And finally, if we waited for the predictions to run out before we asked the server for new 
+predictions, the user would stop seeing satellites every time they run out. To avoid that, we 
+have a threshold that fires the request for new predictions a little time before the current 
+predictions run out. That threshold is ``sateye.map._predictionsTooLowThresholdRealSeconds``.

@@ -10,11 +10,11 @@ sateye.map = {
 
     // chunking configs. More info at docs/prediction_chunks.rst
     // how often do we check if we need to refresh predictions?
-    _predictionRefreshSeconds: 10,
+    _predictionsRefreshRealSeconds: 10,
     // how many real seconds do we want to get on each prediction?
-    _predictionRealSeconds: 240,
-    // how many seconds left in the current prediction are "too litle" so we need to get a new one?
-    _predictionMarginRealSeconds: 30,
+    _predictionsChunkRealSeconds: 240,
+    // how many real seconds before we run out of predictions should fire a new request for predictions?
+    _predictionsTooLowThresholdRealSeconds: 20,
 
     initialize: function() {
         // initialize the map module
@@ -38,7 +38,7 @@ sateye.map = {
         // every some time, ensure we have paths for each satellite
         //sateye.map.mainMap.clock.onTick.addEventListener(sateye.map.onMapTick);
         setInterval(sateye.map.ensurePathsInfo, 
-                    sateye.map._predictionRefreshSeconds * 1000);
+                    sateye.map._predictionsRefreshRealSeconds * 1000);
 
         // remove fog and ground atmosphere on 3d globe
         sateye.map.mainMap.scene.fog.enabled = false;
@@ -64,10 +64,11 @@ sateye.map = {
         // more info at docs/prediction_chunks.rst
         for (let satellite of sateye.satellites.active) {
             // TODO shorten with names, add comments
-            if (!satellite.hasPredictionsToFillSeconds(sateye.map.realToMapSeconds(sateye.map._predictionMarginRealSeconds))) {
-                var fromTime = sateye.map.mainMap.clock.currentTime;
-                var secondsAhead = sateye.map.realToMapSeconds(sateye.map._predictionRealSeconds);
-                satellite.getMorePredictions(fromTime, secondsAhead);
+            var fromTime = sateye.map.mainMap.clock.currentTime;
+            if (!satellite.hasPredictionsToFillSeconds(fromTime, sateye.map.realToMapSeconds(sateye.map._predictionsTooLowThresholdRealSeconds))) {
+                var secondsAhead = sateye.map.realToMapSeconds(sateye.map._predictionsChunkRealSeconds);
+                var steps = self._predictionsChunkRealSeconds;  // predict once every real second, avoid too many predictions if map seconds are too fast
+                satellite.getMorePredictions(fromTime, secondsAhead, steps);
             }
         }
     },
