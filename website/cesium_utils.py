@@ -22,16 +22,6 @@ def generate_path_data(satellite, start_date, end_date, positions):
             "name": "Sateye CZML",
             "version": "1.0",
         },
-
-
-        # TODO do we need this?
-        {
-            "id": "Sateye.Satellite:{}".format(satellite.pk),
-            "delete": True,
-        },
-        # END
-
-
         {
             "id": "Sateye.Satellite:{}".format(satellite.pk),
             "name": satellite.name,
