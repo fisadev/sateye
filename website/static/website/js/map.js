@@ -1,5 +1,6 @@
 sateye.map = {
     mainMap: null,
+    czmlSourceStream: null,
     cesiumConfig: {
         homeButton: false,
         navigationInstructionsInitiallyVisible: false,
@@ -32,6 +33,7 @@ sateye.map = {
     configureCesiumMap: function() {
         // configure the cesium map
         sateye.map.mainMap = new Cesium.Viewer("main-map", sateye.map.cesiumConfig);
+        sateye.map.czmlSourceStream = new Cesium.CzmlDataSource();
 
         // center on 0,0 with enough distance to see the whole planet
         var center = Cesium.Cartesian3.fromDegrees(0, 0);
@@ -39,7 +41,7 @@ sateye.map = {
 
         // every some time, ensure we have paths for each satellite
         //sateye.map.mainMap.clock.onTick.addEventListener(sateye.map.onMapTick);
-        setInterval(sateye.map.ensurePathsInfo, 
+        setInterval(sateye.map.ensurePathPredictions, 
                     sateye.map._predictionsRefreshRealSeconds * 1000);
 
         // remove fog and ground atmosphere on 3d globe
@@ -58,7 +60,7 @@ sateye.map = {
         return clock.clockStep * clock.multiplier * realSeconds;
     },
 
-    ensurePathsInfo: function() {
+    ensurePathPredictions: function() {
         // ensure the map has enough info to display paths for shown satellites
 
         // if we have less than X real seconds of predictions left, then ask for Y predicted 
@@ -73,6 +75,11 @@ sateye.map = {
                 satellite.getMorePredictions(fromTime, seconds, steps);
             }
         }
+    },
+
+    onNewPathPrediction: function(satellite) {
+        // process new path prediction from a satellite
+        sateye.map.mainMap.dataSources.add(sateye.map.czmlSourceStream.process(satellite.pathPrediction.czml));
     },
 
     onNightShadowChange: function(e) {

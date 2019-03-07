@@ -10,7 +10,7 @@ sateye.satellites = {
         return {
             id: id,
             name: name,
-            pathInfo: null,
+            pathPrediction: null,
 
             hasPredictionsToFillSeconds: function(fromTime, seconds) {
                 // check that the satellite has enough predictions to fill X seconds from a given time onwrads
@@ -21,7 +21,7 @@ sateye.satellites = {
                 return false;
             },
 
-            getMorePredictions: function(fromTime, seconds, steps) {
+            getMorePredictions: function(fromTime, seconds, steps, callback) {
                 // get more predictions, to fill X seconds starting at a given time
                 // (usually asking from the current map time, plus X map seconds)
                 console.log("Requesting predictions for satellite " + this.name);
@@ -42,7 +42,13 @@ sateye.satellites = {
                 // when we receive the response with the requested predictions
                 console.log("Predictions received for satellite " + this.name);
                 console.log(data);
-                // TODO do something with the predictions, call a callback so map.js can receive the data
+
+                // store the new received path predictions
+                this.pathPrediction = {
+                    czml: data.czml
+                }
+
+                sateye.map.onNewPathPrediction(this);
             },
 
             onPredictionsError: function(data) {
