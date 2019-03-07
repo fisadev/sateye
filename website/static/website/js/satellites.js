@@ -26,7 +26,7 @@ sateye.satellites = {
                 // (usually asking from the current map time, plus X map seconds)
                 console.log("Requesting predictions for satellite " + this.name);
                 $.ajax({
-                    url: "/api/satellite/" + this.id + "/path_prediction/", 
+                    url: "/api/satellite/" + this.id + "/predict_path/",
                     cache: false,
                     data: {
                         start: fromTime.toString(),
@@ -42,6 +42,7 @@ sateye.satellites = {
                 // when we receive the response with the requested predictions
                 console.log("Predictions received for satellite " + this.name);
                 console.log(data);
+                // TODO do something with the predictions, call a callback so map.js can receive the data
             },
 
             onPredictionsError: function(data) {
