@@ -52,8 +52,8 @@ def generate_path_data(satellite, start_date, end_date, positions):
                     }
                 },
                 "resolution": 120,
-                "leadTime": 16200,  # show only for the next 3 orbits. (90' * 60") * 3
-                "trailTime": 600,
+                "leadTime": 20 * 60,  # half an orbit between both lead and trail
+                "trailTime": 20 * 60,
             },
             "position": {
                 "interpolationAlgorithm": "LAGRANGE",
