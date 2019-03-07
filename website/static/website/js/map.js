@@ -79,7 +79,11 @@ sateye.map = {
 
     onNewPathPrediction: function(satellite) {
         // process new path prediction from a satellite
-        sateye.map.mainMap.dataSources.add(sateye.map.czmlSourceStream.process(satellite.pathPrediction.czml));
+        if (sateye.map.mainMap.dataSources.contains(sateye.map.czmlSourceStream)) {
+            sateye.map.czmlSourceStream.process(satellite.pathPrediction.czml);
+        } else {
+            sateye.map.mainMap.dataSources.add(sateye.map.czmlSourceStream.load(satellite.pathPrediction.czml));
+        }
     },
 
     onNightShadowChange: function(e) {
