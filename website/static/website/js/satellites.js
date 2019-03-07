@@ -34,8 +34,8 @@ sateye.satellites = {
                         steps: steps,
                     }
                 })
-                .done(sateye.satellites.onPredictionsReceived)
-                .fail(sateye.satellites.onPredictionsError);
+                .done(this.onPredictionsReceived)
+                .fail(this.onPredictionsError);
             },
 
             onPredictionsReceived: function(data) {
