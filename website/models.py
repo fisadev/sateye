@@ -81,7 +81,7 @@ class Satellite(models.Model):
         while current_date <= end_date:
             # the predictor works with naive dates only
             naive_current_date = make_naive(current_date, pytz.utc)
-            yield predictor.get_position(naive_current_date).position_llh
+            yield current_date, predictor.get_position(naive_current_date).position_llh
             current_date += step
 
     def __str__(self):
