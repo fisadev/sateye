@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.timezone import make_naive
 
 import pytz
+from orbit_predictor import locations
 
 from website.utils import get_predictor_from_tle_lines
 
@@ -84,8 +85,23 @@ class Satellite(models.Model):
             yield current_date, predictor.get_position(naive_current_date).position_llh
             current_date += step
 
+    def predict_passes(self, location, start_date, end_date):
+        """
+        Predict the passes of a satellite over a location on TCA between two dates.
+        """
+        location = location.get_location_obj()
+        predictor = self.get_predictor()
+        loc_predictor = iter(predictor.passes_over(location, start_date))
+
+        for prediction in loc_predictor:
+            if prediction.los > end_date:
+                break
+
+            yield prediction
+
+
     def __str__(self):
-        return 'Satellite: {}'.format(self.name)
+        return self.name
 
 
 class TLE(models.Model):
@@ -97,7 +113,7 @@ class TLE(models.Model):
     lines = models.TextField()  # the actual two line element
 
     def __str__(self):
-        return 'TLE at {}'.format(self.at)
+        return 'Recorded at {}'.format(self.at)
 
 
 class Location(models.Model):
@@ -107,9 +123,15 @@ class Location(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True,
                               blank=True, related_name='locations')
     name = models.CharField(max_length=100, null=True, blank=True)
-    lat = models.FloatField(null=True, blank=True)
-    lon = models.FloatField(null=True, blank=True)
-    alt = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    elevation = models.FloatField(null=True, blank=True)
+
+    def get_location_obj(self):
+        """
+        Build a orbit_predictor.locations.Location object from this model instance.
+        """
+        return locations.Location(self.name, self.latitude, self.longitude, self.elevation)
 
     def __str__(self):
-        return 'Location: {}'.format(self.name)
+        return '{} at ({}, {}) {} mts'.format(self.name, self.latitude, self.longitude, self.elevation)
