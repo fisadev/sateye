@@ -67,7 +67,7 @@ sateye.map = {
             var fromTime = sateye.map.mainMap.clock.currentTime;
             if (!satellite.hasPredictionsToFillSeconds(fromTime, sateye.map.realToMapSeconds(sateye.map._predictionsTooLowThresholdRealSeconds))) {
                 var seconds = sateye.map.realToMapSeconds(sateye.map._predictionsChunkRealSeconds);
-                var steps = self._predictionsChunkRealSeconds;  // predict once every real second, avoid too many predictions if map seconds are too fast
+                var steps = sateye.map._predictionsChunkRealSeconds;  // predict once every real second, avoid too many predictions if map seconds are too fast
                 satellite.getMorePredictions(fromTime, seconds, steps);
             }
         }
