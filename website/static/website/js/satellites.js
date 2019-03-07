@@ -30,7 +30,7 @@ sateye.satellites = {
                     url: "/api/satellite/" + this.id + "/predict_path/",
                     cache: false,
                     data: {
-                        start: fromTime.toString(),
+                        center: fromTime.toString(),
                         duration: seconds,
                         steps: steps,
                     }
