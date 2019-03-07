@@ -10,7 +10,7 @@ def generate_path_data(satellite, start_date, end_date, positions):
     joined_positions = []
     for current_date, position in positions:
         joined_positions.extend((
-            (current_date - start_date).total_seconds(),
+            current_date.strftime(DATE_FORMAT),
             position[1],  # lon
             position[0],  # lat
             position[2] * 1000,  # alt
