@@ -52,7 +52,7 @@ class Satellite(models.Model):
 
         return closest_tle
 
-    def get_predictor(self, for_date=None):
+    def get_predictor(self, for_date=None, precise=False):
         """
         Build an orbit predictor for the satellite, using its known TLEs.
         """
@@ -62,7 +62,7 @@ class Satellite(models.Model):
         else:
             best_tle = self.tles.order_by('at').last()
 
-        return get_predictor_from_tle_lines(best_tle.lines.split('\n'))
+        return get_predictor_from_tle_lines(best_tle.lines.split('\n'), precise=precise)
 
     def predict_path(self, start_date, end_date, step_seconds=60):
         """
@@ -72,7 +72,7 @@ class Satellite(models.Model):
         # period of time
         period_length = end_date - start_date
         period_center = start_date + period_length / 2
-        predictor = self.get_predictor(for_date=period_center)
+        predictor = self.get_predictor(for_date=period_center, precise=True)
 
         step = timedelta(seconds=step_seconds)
 
