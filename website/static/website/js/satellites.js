@@ -2,10 +2,14 @@ sateye.satellites = {
     active: [],
 
     initialize: function() {
-        sateye.satellites.active.push({
-            id: "42",
-            name: "milanesat",
-            tle: "newsat3 42760U\n1 42760U 17034C   18035.48142696  .00000261  00000-0  29808-4 0  9991\n2 42760  43.0171  92.1179 0007969 353.6733 135.8363 15.09016581 35404",
+        // TODO creating sample satellite, will replace with api later on
+        sateye.satellites.active.push(sateye.satellites.createSatellite(1, "iss"));
+    },
+
+    createSatellite: function(id, name) {
+        return {
+            id: id,
+            name: name,
             pathInfo: null,
 
             hasPredictionsToFillSeconds: function(fromTime, seconds) {
