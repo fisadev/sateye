@@ -2,6 +2,9 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
+from django.utils.timezone import make_naive
+
+import pytz
 
 from website.utils import get_predictor_from_tle_lines
 
@@ -76,7 +79,9 @@ class Satellite(models.Model):
         # iterate over time, returning the position at each moment
         current_date = start_date
         while current_date <= end_date:
-            yield predictor.get_position(current_date).position_llh
+            # the predictor works with naive dates only
+            naive_current_date = make_naive(current_date, pytz.utc)
+            yield predictor.get_position(naive_current_date).position_llh
             current_date += step
 
     def __str__(self):
