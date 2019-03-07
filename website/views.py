@@ -29,7 +29,7 @@ def api_predict_path(request, satellite_id):
     start_date = center - timedelta(seconds=duration)
     end_date = center + timedelta(seconds=duration)
 
-    step_seconds = duration * 2 / steps
+    step_seconds = duration * 20 / steps
     positions = satellite.predict_path(start_date, end_date, step_seconds)
     cesium_data = cesium_utils.generate_path_data(satellite, start_date, end_date, positions)
 
