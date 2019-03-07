@@ -66,9 +66,9 @@ sateye.map = {
             // TODO shorten with names, add comments
             var fromTime = sateye.map.mainMap.clock.currentTime;
             if (!satellite.hasPredictionsToFillSeconds(fromTime, sateye.map.realToMapSeconds(sateye.map._predictionsTooLowThresholdRealSeconds))) {
-                var secondsAhead = sateye.map.realToMapSeconds(sateye.map._predictionsChunkRealSeconds);
+                var seconds = sateye.map.realToMapSeconds(sateye.map._predictionsChunkRealSeconds);
                 var steps = self._predictionsChunkRealSeconds;  // predict once every real second, avoid too many predictions if map seconds are too fast
-                satellite.getMorePredictions(fromTime, secondsAhead, steps);
+                satellite.getMorePredictions(fromTime, seconds, steps);
             }
         }
     },
