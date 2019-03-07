@@ -10,7 +10,7 @@ sateye.map = {
 
     // chunking configs. More info at docs/prediction_chunks.rst
     // how often do we check if we need to refresh predictions?
-    _predictionRefreshSeconds: 5,
+    _predictionRefreshSeconds: 10,
     // how many real seconds do we want to get on each prediction?
     _predictionRealSeconds: 240,
     // how many seconds left in the current prediction are "too litle" so we need to get a new one?
