@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 DATE_FORMAT = "%Y-%m-%dT%H:%MZ"
 
 
@@ -29,8 +32,8 @@ def generate_path_data(satellite, start_date, end_date, positions):
                 satellite.name,
                 satellite.description,
             ),
-            "availability": "{}/{}".format(start_date.strftime(DATE_FORMAT),
-                                           end_date.strftime(DATE_FORMAT)),
+            "availability": "{}/{}".format(datetime.min.strftime(DATE_FORMAT),
+                                           datetime.max.strftime(DATE_FORMAT)),
             "point": {
                 "show": True,
                 "pixelSize": 15,
