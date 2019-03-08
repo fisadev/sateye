@@ -44,7 +44,9 @@ sateye.satellites = {
 
                 // store the new received path predictions
                 this.pathPrediction = {
-                    czml: data.czml
+                    startDate: sateye.parseDate(data.start_date),
+                    endDate: sateye.parseDate(data.end_date),
+                    czml: data.czml,
                 }
 
                 sateye.map.onNewPathPrediction(this);

@@ -33,4 +33,6 @@ def api_predict_path(request, satellite_id):
 
     return JsonResponse({
         'czml': cesium_data,
+        'start_date': start_date.isoformat(),
+        'end_date': end_date.isoformat(),
     })

@@ -75,4 +75,9 @@ var sateye = {
         Cesium.JulianDate.addSeconds(date, seconds, newDate);
         return newDate
     },
+
+    parseDate: function(iso8601string) {
+        // parse an iso formatted date into a cesium julian date
+        return Cesium.JulianDate.fromIso8601(iso8601string);
+    },
 }
