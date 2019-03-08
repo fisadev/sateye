@@ -4,10 +4,7 @@ run:
 shell:
 	./manage.py shell
 
-syncdb:
-	./manage.py makemigrations website
-	./manage.py migrate
-	./manage.py dumpdata website --indent 2 > website/fixtures/initial_data.json
+new_devel_db:
 	rm -f ./db.sqlite3
 	rm -rf ./website/migrations/*
 	./manage.py makemigrations website
