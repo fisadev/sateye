@@ -19,7 +19,7 @@ sateye.satellites = {
                 return false;
             },
 
-            getMorePredictions: function(fromTime, seconds, steps, callback) {
+            getMorePredictions: function(startDate, endDate, steps) {
                 // get more predictions, to fill X seconds starting at a given time
                 // (usually asking from the current map time, plus X map seconds)
                 console.log("Requesting predictions for satellite " + this.name);
@@ -28,8 +28,8 @@ sateye.satellites = {
                     url: "/api/satellite/" + this.id + "/predict_path/",
                     cache: false,
                     data: {
-                        center: fromTime.toString(),
-                        duration: seconds,
+                        start_date: startDate.toString(),
+                        end_date: endDate.toString(),
                         steps: steps,
                     }
                 })
