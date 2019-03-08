@@ -67,12 +67,23 @@ sateye.map = {
         // seconds
         // more info at docs/prediction_chunks.rst
         for (let satellite of sateye.satellites.active) {
-            // TODO shorten with names, add comments
-            var fromTime = sateye.map.mainMap.clock.currentTime;
-            if (!satellite.hasPredictionsToFillSeconds(fromTime, sateye.map.realToMapSeconds(sateye.map._predictionsTooLowThresholdRealSeconds))) {
-                var seconds = sateye.map.realToMapSeconds(sateye.map._predictionsChunkRealSeconds);
-                var steps = sateye.map._predictionsChunkRealSeconds;  // predict once every real second, avoid too many predictions if map seconds are too fast
-                satellite.getMorePredictions(fromTime, seconds, steps);
+            var currentDate = sateye.map.mainMap.clock.currentTime;
+
+            // we should ensure we have predictions enough to cover the time between the current date and 
+            // currentDate + _predictionsTooLowThresholdRealSeconds
+            var ensurePredictionsUntil = sateye.addSeconds(
+                currentDate,
+                sateye.map.realToMapSeconds(sateye.map._predictionsTooLowThresholdRealSeconds), 
+            );
+
+            if (!satellite.predictionsCover(currentDate, ensurePredictionsUntil)) {
+                var mapSecondsArround = sateye.map.realToMapSeconds(sateye.map._predictionsChunkRealSeconds);
+                var steps = sateye.map._predictionsChunkRealSeconds * 2;  // predict once every real second, avoid too many predictions if map seconds are too fast
+
+                var startDate = sateye.addSeconds(currentDate, -mapSecondsArround);
+                var endDate = sateye.addSeconds(currentDate, mapSecondsArround);
+
+                satellite.getMorePredictions(startDate, endDate, steps);
             }
         }
     },

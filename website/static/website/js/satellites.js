@@ -12,10 +12,9 @@ sateye.satellites = {
             name: name,
             pathPrediction: null,
 
-            hasPredictionsToFillSeconds: function(fromDate, seconds) {
-                // check that the satellite has enough predictions to fill X seconds from a given date onwrads
+            predictionsCover: function(startDate, endDate) {
+                // check that the satellite has predictions covering a specific range of time
                 // (usually asking from the current map date, plus X map seconds)
-                var endDate = sateye.addSeconds(fromDate, seconds);
                 return false;
             },
 
