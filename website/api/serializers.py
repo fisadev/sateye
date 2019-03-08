@@ -4,13 +4,18 @@ from website import models
 
 
 class TLESerializer(serializers.ModelSerializer):
-
+    """
+    Serializer for TLE instances in the api.
+    """
     class Meta:
         model = models.TLE
         fields = ['at', 'lines']
 
 
 class SatelliteSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the satellite api.
+    """
     tles = TLESerializer(many=True)
 
     class Meta:
@@ -20,8 +25,11 @@ class SatelliteSerializer(serializers.ModelSerializer):
             'owner': {'write_only': True},
         }
 
-class LocationSerializer(serializers.ModelSerializer):
 
+class LocationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the location api.
+    """
     class Meta:
         model = models.Location
         fields = ['owner', 'name', 'latitude', 'longitude', 'elevation']

@@ -11,11 +11,17 @@ from website.models import Satellite
 
 
 class SatelliteViewSet(viewsets.ModelViewSet):
+    """
+    Basic satellite api views.
+    """
     queryset = models.Satellite.objects.all()
     serializer_class = serializers.SatelliteSerializer
 
 
 class LocationViewSet(viewsets.ModelViewSet):
+    """
+    Basic location api views.
+    """
     queryset = models.Location.objects.all()
     serializer_class = serializers.LocationSerializer
 
