@@ -22,7 +22,7 @@ def api_predict_path(request, satellite_id):
     """
     satellite = Satellite.objects.get(pk=satellite_id)
     start_date = parse_date(request.GET['start_date'])
-    end_date = int(request.GET['end_date'])
+    end_date = parse_date(request.GET['end_date'])
     steps = int(request.GET['steps'])
 
     duration = (end_date - start_date).total_seconds()
