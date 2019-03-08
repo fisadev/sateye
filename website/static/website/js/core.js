@@ -68,4 +68,11 @@ var sateye = {
         console.log("User data saved to the server");
         sateye.showAlertsFromApiResponse(data);
     },
+
+    addSeconds: function(date, seconds) {
+        // add seconds to a julian date from cesium 
+        var newDate = new Cesium.JulianDate;
+        Cesium.JulianDate.addSeconds(date, seconds, newDate);
+        return newDate
+    },
 }

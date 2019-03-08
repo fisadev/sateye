@@ -15,9 +15,7 @@ sateye.satellites = {
             hasPredictionsToFillSeconds: function(fromTime, seconds) {
                 // check that the satellite has enough predictions to fill X seconds from a given time onwrads
                 // (usually asking from the current map time, plus X map seconds)
-                var endTime = new Cesium.JulianDate;
-                Cesium.JulianDate.addSeconds(fromTime, seconds, endTime);
-
+                var endTime = sateye.addSeconds(fromTime, seconds);
                 return false;
             },
 
