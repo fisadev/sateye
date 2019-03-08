@@ -12,16 +12,16 @@ sateye.satellites = {
             name: name,
             pathPrediction: null,
 
-            hasPredictionsToFillSeconds: function(fromTime, seconds) {
-                // check that the satellite has enough predictions to fill X seconds from a given time onwrads
-                // (usually asking from the current map time, plus X map seconds)
-                var endTime = sateye.addSeconds(fromTime, seconds);
+            hasPredictionsToFillSeconds: function(fromDate, seconds) {
+                // check that the satellite has enough predictions to fill X seconds from a given date onwrads
+                // (usually asking from the current map date, plus X map seconds)
+                var endDate = sateye.addSeconds(fromDate, seconds);
                 return false;
             },
 
             getMorePredictions: function(startDate, endDate, steps) {
-                // get more predictions, to fill X seconds starting at a given time
-                // (usually asking from the current map time, plus X map seconds)
+                // get more predictions, to fill X seconds starting at a given date
+                // (usually asking from the current map date, plus X map seconds)
                 console.log("Requesting predictions for satellite " + this.name);
                 var self = this;
                 $.ajax({
