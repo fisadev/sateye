@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.timezone import make_naive
 
 import pytz
-from orbit_predictor import locations
+from orbit_predictor import locations as op_locations
 
 from website.utils import get_predictor_from_tle_lines
 
@@ -89,16 +89,14 @@ class Satellite(models.Model):
         """
         Predict the passes of a satellite over a location on TCA between two dates.
         """
-        location = location.get_location_obj()
+        location = location.get_op_location()
         predictor = self.get_predictor()
-        loc_predictor = iter(predictor.passes_over(location, start_date))
 
-        for prediction in loc_predictor:
-            if prediction.los > end_date:
+        for pass_ in predictor.passes_over(location, start_date):
+            if pass_.los > end_date:
                 break
 
-            yield prediction
-
+            yield pass_
 
     def __str__(self):
         return self.name
@@ -127,11 +125,12 @@ class Location(models.Model):
     longitude = models.FloatField(null=True, blank=True)
     elevation = models.FloatField(null=True, blank=True)
 
-    def get_location_obj(self):
+    def get_op_location(self):
         """
         Build a orbit_predictor.locations.Location object from this model instance.
         """
-        return locations.Location(self.name, self.latitude, self.longitude, self.elevation)
+        return op_locations.Location(self.name, self.latitude, self.longitude, self.elevation)
 
     def __str__(self):
-        return '{} at ({}, {}) {} mts'.format(self.name, self.latitude, self.longitude, self.elevation)
+        return '{} at ({}, {}) {} mts'.format(self.name, self.latitude, self.longitude,
+                                              self.elevation)
