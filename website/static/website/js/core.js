@@ -13,8 +13,10 @@ var sateye = {
     initialize: function() {
         // initialize the whole client side app
         sateye.templates.alert = Handlebars.compile(document.getElementById("alert-template").innerHTML);
+        sateye.templates.satellite = Handlebars.compile(document.getElementById("satellite-template").innerHTML);
 
         sateye.dom.alertsBar = $("#alerts-bar");
+        sateye.dom.satelliteList = $("#satellite-list");
 
         sateye.map.initialize();
         sateye.satellites.initialize();
@@ -27,7 +29,7 @@ var sateye = {
     showAlert: function(alertType, message) {
         // show an alert for the user to see
         var newAlertContent = sateye.templates.alert({
-            alertType: alertType, 
+            alertType: alertType,
             message: message,
         });
         sateye.dom.alertsBar.append(newAlertContent);
@@ -70,10 +72,10 @@ var sateye = {
     },
 
     addSeconds: function(date, seconds) {
-        // add seconds to a julian date from cesium 
+        // add seconds to a julian date from cesium
         var newDate = new Cesium.JulianDate;
         Cesium.JulianDate.addSeconds(date, seconds, newDate);
-        return newDate
+        return newDate;
     },
 
     parseDate: function(iso8601string) {

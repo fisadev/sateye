@@ -1,0 +1,22 @@
+{% verbatim %}
+<script id="satellite-template" type="text/x-handlebars-template">
+  <h3>{{ name }}</h3>
+  <p>{{ description }}</p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Recorded at</th>
+        <td scope="col">TLE</td>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each tles}}
+      <tr>
+        <th scope="row">{{ this.at }}</th>
+        <td scope="row">{{ this.lines }}</th>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</script>
+{% endverbatim %}

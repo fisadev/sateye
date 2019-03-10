@@ -41,7 +41,7 @@ sateye.map = {
 
         // every some time, ensure we have paths for each satellite
         //sateye.map.mainMap.clock.onTick.addEventListener(sateye.map.onMapTick);
-        setInterval(sateye.map.ensurePathPredictions, 
+        setInterval(sateye.map.ensurePathPredictions,
                     sateye.map._predictionsRefreshRealSeconds * 1000);
 
         // remove fog and ground atmosphere on 3d globe
@@ -54,7 +54,7 @@ sateye.map = {
     },
 
     realToMapSeconds: function(realSeconds) {
-        // convert real seconds to map seconds, because the map can be moving at a different 
+        // convert real seconds to map seconds, because the map can be moving at a different
         // speed
         var clock = sateye.map.mainMap.clock;
         return clock.clockStep * clock.multiplier * realSeconds;
@@ -63,17 +63,17 @@ sateye.map = {
     ensurePathPredictions: function() {
         // ensure the map has enough info to display paths for shown satellites
 
-        // if we have less than X real seconds of predictions left, then ask for Y predicted 
+        // if we have less than X real seconds of predictions left, then ask for Y predicted
         // seconds
         // more info at docs/prediction_chunks.rst
         for (let satellite of sateye.satellites.active) {
             var currentDate = sateye.map.mainMap.clock.currentTime;
 
-            // we should ensure we have predictions enough to cover the time between the current date and 
+            // we should ensure we have predictions enough to cover the time between the current date and
             // currentDate + _predictionsTooLowThresholdRealSeconds
             var ensurePredictionsUntil = sateye.addSeconds(
                 currentDate,
-                sateye.map.realToMapSeconds(sateye.map._predictionsTooLowThresholdRealSeconds), 
+                sateye.map.realToMapSeconds(sateye.map._predictionsTooLowThresholdRealSeconds),
             );
 
             if (!satellite.predictionsCover(currentDate, ensurePredictionsUntil)) {
