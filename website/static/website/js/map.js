@@ -6,6 +6,7 @@ sateye.map = {
         navigationInstructionsInitiallyVisible: false,
         sceneMode: Cesium.SceneMode.SCENE2D,
         fullscreenButton: false,
+        shouldAnimate: true,
         // don't use clock configs from data sources
         automaticallyTrackDataSourceClocks: false,
     },
