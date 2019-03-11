@@ -16,11 +16,9 @@ class SatelliteSerializer(serializers.ModelSerializer):
     """
     Serializer for the satellite api.
     """
-    tles = TLESerializer(many=True)
-
     class Meta:
         model = models.Satellite
-        fields = ['id', 'name', 'description', 'tles']
+        fields = ['id', 'name', 'norad_id', 'description']
 
 
 class LocationSerializer(serializers.ModelSerializer):
