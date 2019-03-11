@@ -4,6 +4,7 @@ sateye.satellites = {
     initialize: function() {
         // TODO creating sample satellite, will replace with api later on
         sateye.satellites.active.push(sateye.satellites.createSatellite(1, "iss"));
+        sateye.satellites.active.push(sateye.satellites.createSatellite(2, "milanesat"));
     },
 
     createSatellite: function(id, name) {
