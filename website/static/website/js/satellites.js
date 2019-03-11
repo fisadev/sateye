@@ -14,7 +14,6 @@ sateye.satellites = {
             for (var i = 0; i < data.length; i++) {
                 // Render satellites in list
                 var element = sateye.templates.satellite(data[i]);
-                console.log(element);
                 sateye.dom.satelliteList.append(element);
 
                 // Create paths in cesium map
