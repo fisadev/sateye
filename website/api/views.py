@@ -5,25 +5,39 @@ from rest_framework import viewsets
 
 from dateutil.parser import parse as parse_date
 
-from website import models, cesium_utils
-from website.api import serializers
-from website.models import Satellite
+from website import cesium_utils
+from website.api.serializers import LocationSerializer, SatelliteSerializer, TLESerializer
+from website.models import Location, Satellite, TLE
 
 
 class SatelliteViewSet(viewsets.ModelViewSet):
     """
     Basic satellite api views.
     """
-    queryset = models.Satellite.objects.all()
-    serializer_class = serializers.SatelliteSerializer
+    queryset = Satellite.objects.all()
+    serializer_class = SatelliteSerializer
+
+
+class TLEViewSet(viewsets.ModelViewSet):
+    """
+    Basic tle api views.
+    """
+    serializer_class = TLESerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the tles for the specified satellite.
+        """
+        satellite_id = self.kwargs['satellite_id']
+        return TLE.objects.filter(satellite_id=satellite_id)
 
 
 class LocationViewSet(viewsets.ModelViewSet):
     """
     Basic location api views.
     """
-    queryset = models.Location.objects.all()
-    serializer_class = serializers.LocationSerializer
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
 
 
 def predict_path(request, satellite_id):
