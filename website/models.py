@@ -15,6 +15,7 @@ class Satellite(models.Model):
     A specific satellite in orbit, that Sateye can display and track.
     """
     name = models.CharField(max_length=100)
+    norad_id = models.IntegerField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True,
                               blank=True, related_name='satellites')

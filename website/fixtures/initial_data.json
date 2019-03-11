@@ -4,6 +4,7 @@
   "pk": 1,
   "fields": {
     "name": "ISS",
+    "norad_id": 25544,
     "description": "International Space Station",
     "owner": 1
   }
@@ -13,6 +14,7 @@
   "pk": 2,
   "fields": {
     "name": "Milanesat",
+    "norad_id": 42760,
     "description": "Milanesat",
     "owner": 1
   }
