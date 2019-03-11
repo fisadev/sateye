@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-DATE_FORMAT = "%Y-%m-%dT%H:%MZ"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def generate_path_data(satellite, start_date, end_date, positions):
