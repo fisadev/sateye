@@ -15,7 +15,14 @@ sateye.satellites = {
             predictionsCover: function(startDate, endDate) {
                 // check that the satellite has predictions covering a specific range of time
                 // (usually asking from the current map date, plus X map seconds)
-                return false;
+                if (this.pathPrediction === null) {
+                    return false; 
+                } else {
+                    var predictionsStartBefore = Cesium.JulianDate.lessThanOrEquals(this.pathPrediction.startDate, startDate);
+                    var predictionsEndAfter = Cesium.JulianDate.greaterThanOrEquals(this.pathPrediction.endDate, endDate);
+
+                    return (predictionsStartBefore && predictionsEndAfter);
+                }
             },
 
             getMorePredictions: function(startDate, endDate, steps) {
