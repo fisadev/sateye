@@ -99,6 +99,14 @@ class Satellite(models.Model):
 
             yield pass_
 
+    @property
+    def newest_tle(self):
+        """
+        Get the newest tle.
+        """
+        if self.tles.exists():
+            return self.tles.order_by('at').last()
+
     def __str__(self):
         return self.name
 
