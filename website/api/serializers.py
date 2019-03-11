@@ -20,10 +20,7 @@ class SatelliteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Satellite
-        fields = ['owner', 'name', 'description', 'tles']
-        extra_kwargs = {
-            'owner': {'write_only': True},
-        }
+        fields = ['id', 'name', 'description', 'tles']
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -32,7 +29,4 @@ class LocationSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = models.Location
-        fields = ['owner', 'name', 'latitude', 'longitude', 'elevation']
-        extra_kwargs = {
-            'owner': {'write_only': True},
-        }
+        fields = ['name', 'latitude', 'longitude', 'elevation']

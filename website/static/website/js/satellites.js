@@ -2,9 +2,26 @@ sateye.satellites = {
     active: [],
 
     initialize: function() {
-        // TODO creating sample satellite, will replace with api later on
-        sateye.satellites.active.push(sateye.satellites.createSatellite(1, "iss"));
-        sateye.satellites.active.push(sateye.satellites.createSatellite(2, "milanesat"));
+        this.listSatellites();
+    },
+
+    listSatellites: function() {
+        var self = this;
+        return $.ajax({
+            url: "/api/satellites/",
+            cache: false,
+        }).done(function(data) {
+            for (var i = 0; i < data.length; i++) {
+                // Render satellites in list
+                var element = sateye.templates.satellite(data[i]);
+                console.log(element);
+                sateye.dom.satelliteList.append(element);
+
+                // Create paths in cesium map
+                var satellite = self.createSatellite(data[i].id, data[i].name);
+                self.active.push(satellite);
+            }
+        });
     },
 
     createSatellite: function(id, name) {
@@ -32,7 +49,7 @@ sateye.satellites = {
                 console.log("Requesting predictions for satellite " + this.name);
                 var self = this;
                 $.ajax({
-                    url: "/api/satellite/" + this.id + "/predict_path/",
+                    url: "/api/satellites/" + this.id + "/predict_path/",
                     cache: false,
                     data: {
                         start_date: startDate.toString(),

@@ -4,10 +4,10 @@ from rest_framework import routers
 from website.api import views
 
 router = routers.SimpleRouter()
-router.register(r'satellite', views.SatelliteViewSet)
-router.register(r'location', views.LocationViewSet)
+router.register(r'satellites', views.SatelliteViewSet)
+router.register(r'locations', views.LocationViewSet)
 
 urlpatterns = router.urls
 urlpatterns += [
-    path('satellite/<satellite_id>/predict_path/', views.predict_path),
+    path('satellites/<satellite_id>/predict_path/', views.predict_path),
 ]
