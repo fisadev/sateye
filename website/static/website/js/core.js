@@ -7,8 +7,7 @@ var Alert = {
 var sateye = {
     templates: {},
     dom: {},
-    userData: null,
-    userDataVersion: 0.1,
+    dashboard: null,
 
     initialize: function() {
         // initialize the whole client side app
@@ -23,7 +22,7 @@ var sateye = {
         sateye.locations.initialize();
         sateye.settings.initialize();
 
-        sateye.loadUserData();
+        sateye.loadDashboard();
     },
 
     showAlert: function(alertType, message) {
@@ -42,34 +41,21 @@ var sateye = {
         }
     },
 
-    loadUserData: function() {
-        // load the user data from the server
-        console.log("Requesting user data...");
-        $.ajax({url: "/api/user_data/", cache: false})
-         .done(sateye.onUserDataReceived);
+    loadDashboard: function() {
+        // load the user dashboard config from the server
+        console.log("Requesting dashboards...");
+        $.ajax({url: "/api/dashboards/", cache: false})
+         .done(sateye.onDashboardsReceived);
     },
 
-    onUserDataReceived: function(data) {
-        // when we receive response from the user data requeset
-        console.log("User data received from the server");
-        sateye.showAlertsFromApiResponse(data);
-        sateye.userData = data.payload;
-        console.log("User data loaded:");
-        console.log(sateye.userData);
+    onDashboardsReceived: function(data) {
+        // when we receive response from the dashboards requeset
+        console.log("Dashboards received from the server");
+        // for now, we just get the first dashboard
+        sateye.dashboard = data[0];
     },
 
-    saveUserData: function() {
-        // save the user data to the server
-        console.log("Posting user data...");
-        $.ajax({type: "POST", url: "/api/user_data/", cache: false})
-         .done(sateye.onUserDataSaved);
-    },
-
-    onUserDataSaved: function(data) {
-        // when we receive response from the user data save post
-        console.log("User data saved to the server");
-        sateye.showAlertsFromApiResponse(data);
-    },
+    // date utilities
 
     addSeconds: function(date, seconds) {
         // add seconds to a julian date from cesium
