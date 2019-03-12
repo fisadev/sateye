@@ -53,6 +53,17 @@ var sateye = {
         console.log("Dashboards received from the server");
         // for now, we just get the first dashboard
         sateye.dashboard = data[0];
+        sateye.dashboard.satellites = [];
+        // create satellite instances for each satellite in the dashboard
+        for (let satelliteConfig of sateye.dashboard.satellite_configs) {
+            var satellite = sateye.satellites.createSatellite(
+                satelliteConfig.satellite.id,
+                satelliteConfig.satellite.name,
+                satelliteConfig.satellite.description,
+                satelliteConfig.satellite.norad_id,
+            );
+            sateye.dashboard.satellites.push(satellite);
+        }
     },
 
     // date utilities

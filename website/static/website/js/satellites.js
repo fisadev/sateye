@@ -1,6 +1,4 @@
 sateye.satellites = {
-    active: [],
-
     initialize: function() {
         this.listSatellites();
     },
@@ -15,18 +13,16 @@ sateye.satellites = {
                 // Render satellites in list
                 var element = sateye.templates.satellite(data[i]);
                 sateye.dom.satelliteList.append(element);
-
-                // Create paths in cesium map
-                var satellite = self.createSatellite(data[i].id, data[i].name);
-                self.active.push(satellite);
             }
         });
     },
 
-    createSatellite: function(id, name) {
+    createSatellite: function(id, name, description, noradId) {
         return {
             id: id,
             name: name,
+            description: description,
+            noradId: noradId,
             pathPrediction: null,
 
             predictionsCover: function(startDate, endDate) {

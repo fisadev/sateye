@@ -67,7 +67,7 @@ sateye.map = {
         // if we have less than X real seconds of predictions left, then ask for Y predicted
         // seconds
         // more info at docs/prediction_chunks.rst
-        for (let satellite of sateye.satellites.active) {
+        for (let satellite of sateye.dashboard.satellites) {
             var currentDate = sateye.map.mainMap.clock.currentTime;
 
             // we should ensure we have predictions enough to cover the time between the current date and
