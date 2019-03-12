@@ -8,7 +8,7 @@ class SatelliteAdmin(admin.ModelAdmin):
     """
     Customization for the Satellite model in the admin site.
     """
-    list_display = ('name', 'owner')
+    list_display = ('name', 'norad_id', 'owner')
 
 
 @admin.register(TLE)
