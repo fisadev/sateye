@@ -123,6 +123,16 @@ class TLE(models.Model):
         return 'Recorded at {}'.format(self.at)
 
 
+class UserActiveSatellite(models.Model):
+    """
+    A user is tracking this satellite in their map.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             related_name='active_satellites')
+    satellite = models.ForeignKey(Satellite, on_delete=models.CASCADE,
+                                  related_name='active_for_users')
+
+
 class Location(models.Model):
     """
     A specific point location on Earth.
