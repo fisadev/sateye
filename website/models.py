@@ -123,14 +123,30 @@ class TLE(models.Model):
         return 'Recorded at {}'.format(self.at)
 
 
-class UserActiveSatellite(models.Model):
+class Dashboard(models.Model):
     """
-    A user is tracking this satellite in their map.
+    A customization of satellites to display, and how to display them.
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                             related_name='active_satellites')
+    name = models.CharField(max_length=100, null=True, blank=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                              related_name='dashboards')
+
+    def __str__(self):
+        return self.name
+
+
+class DashboardSatelliteConfig(models.Model):
+    """
+    A config of a satellite being displayed at a dashboard.
+    """
+    dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE,
+                                  related_name='satellite_configs')
     satellite = models.ForeignKey(Satellite, on_delete=models.CASCADE,
-                                  related_name='active_for_users')
+                                  related_name='dashboard_configs')
+    color = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return "{} in {}".format(self.satellite.name, self.dashboard.name)
 
 
 class Location(models.Model):
