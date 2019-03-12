@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.db.models import Q
 from django.http import JsonResponse
 from rest_framework import viewsets
@@ -8,7 +9,7 @@ from dateutil.parser import parse as parse_date
 
 from website import cesium_utils
 from website.api import serializers
-from website.models import Location, Satellite, TLE
+from website.models import Dashboard, Location, Satellite, TLE
 
 
 class SatelliteViewSet(viewsets.ModelViewSet):
@@ -42,6 +43,24 @@ class TLEViewSet(viewsets.ModelViewSet):
         """
         satellite_id = self.kwargs['satellite_id']
         return TLE.objects.filter(satellite_id=satellite_id)
+
+
+class DashboardViewSet(viewsets.ModelViewSet):
+    """
+    Basic dashboard api.
+    """
+    serializer_class = serializers.DashboardSerializer
+
+    def get_queryset(self):
+        """
+        This view should return the dashboards available for a user.
+        """
+        if self.request.user.is_authenticated:
+            can_see = Q(owner=self.request.user)
+        else:
+            can_see = Q(pk=settings.DEFAULT_DASHBOARD)
+
+        return Dashboard.objects.filter(can_see).order_by('pk')
 
 
 class LocationViewSet(viewsets.ModelViewSet):

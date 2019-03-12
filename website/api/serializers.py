@@ -23,6 +23,28 @@ class SatelliteSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'norad_id', 'description', 'newest_tle']
 
 
+class DashboardSatelliteConfigSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the satellite configs in the dashboard api.
+    """
+    satellite = SatelliteSerializer()
+
+    class Meta:
+        model = models.DashboardSatelliteConfig
+        fields = ['satellite', ]
+
+
+class DashboardSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the dashboard api.
+    """
+    satellite_configs = DashboardSatelliteConfigSerializer(many=True)
+
+    class Meta:
+        model = models.Satellite
+        fields = ['name', 'satellite_configs', ]
+
+
 class LocationSerializer(serializers.ModelSerializer):
     """
     Serializer for the location api.
