@@ -61,6 +61,11 @@ sateye.map = {
         return clock.clockStep * clock.multiplier * realSeconds;
     },
 
+    clearMapData: function() {
+        // remove all data sources from the map
+        sateye.map.mainMap.dataSources.removeAll();
+    },
+
     ensurePathPredictions: function() {
         // ensure the map has enough info to display paths for shown satellites
 
