@@ -20,7 +20,6 @@ var sateye = {
         sateye.map.initialize();
         sateye.satellites.initialize();
         sateye.locations.initialize();
-        sateye.settings.initialize();
 
         sateye.loadDashboard();
     },

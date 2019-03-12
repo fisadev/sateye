@@ -1,3 +1,0 @@
-sateye.settings = {
-    initialize: function() {},
-}
