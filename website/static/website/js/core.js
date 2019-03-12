@@ -7,7 +7,6 @@ var Alert = {
 var sateye = {
     templates: {},
     dom: {},
-    dashboard: null,
 
     initialize: function() {
         // initialize the whole client side app
@@ -20,8 +19,7 @@ var sateye = {
         sateye.map.initialize();
         sateye.satellites.initialize();
         sateye.locations.initialize();
-
-        sateye.loadDashboard();
+        sateye.dashboards.initialize();
     },
 
     showAlert: function(alertType, message) {
@@ -37,31 +35,6 @@ var sateye = {
         // extract alerts that came in an api response
         for (alert in data.alerts) {
             sateye.showAlert(alert.type, alert.message);
-        }
-    },
-
-    loadDashboard: function() {
-        // load the user dashboard config from the server
-        console.log("Requesting dashboards...");
-        $.ajax({url: "/api/dashboards/", cache: false})
-         .done(sateye.onDashboardsReceived);
-    },
-
-    onDashboardsReceived: function(data) {
-        // when we receive response from the dashboards requeset
-        console.log("Dashboards received from the server");
-        // for now, we just get the first dashboard
-        sateye.dashboard = data[0];
-        sateye.dashboard.satellites = [];
-        // create satellite instances for each satellite in the dashboard
-        for (let satelliteConfig of sateye.dashboard.satellite_configs) {
-            var satellite = sateye.satellites.createSatellite(
-                satelliteConfig.satellite.id,
-                satelliteConfig.satellite.name,
-                satelliteConfig.satellite.description,
-                satelliteConfig.satellite.norad_id,
-            );
-            sateye.dashboard.satellites.push(satellite);
         }
     },
 

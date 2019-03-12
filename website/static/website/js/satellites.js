@@ -17,12 +17,12 @@ sateye.satellites = {
         });
     },
 
-    createSatellite: function(id, name, description, noradId) {
+    createSatellite: function(satelliteData, config) {
         return {
-            id: id,
-            name: name,
-            description: description,
-            noradId: noradId,
+            id: satelliteData.id,
+            name: satelliteData.name,
+            description: satelliteData.description,
+            noradId: satelliteData.norad_id,
             pathPrediction: null,
 
             predictionsCover: function(startDate, endDate) {
