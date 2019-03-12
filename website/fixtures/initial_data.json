@@ -47,5 +47,29 @@
     "longitude": -68.642255,
     "elevation": 1036.0
   }
+},
+{
+  "model": "website.dashboard",
+  "pk": 1,
+  "fields": {
+    "name": "Default dashboard",
+    "owner": 1
+  }
+},
+{
+  "model": "website.dashboardsatelliteconfig",
+  "pk": 1,
+  "fields": {
+    "dashboard": 1,
+    "satellite": 1
+  }
+},
+{
+  "model": "website.dashboardsatelliteconfig",
+  "pk": 1,
+  "fields": {
+    "dashboard": 1,
+    "satellite": 2
+  }
 }
 ]
