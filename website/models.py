@@ -127,7 +127,7 @@ class Dashboard(models.Model):
     """
     A customization of satellites to display, and how to display them.
     """
-    name = models.CharField(max_length=100, null=True, blank=True)
+    name = models.CharField(max_length=100)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                               related_name='dashboards')
 
