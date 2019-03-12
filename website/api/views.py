@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.db.models import Q
 from django.http import JsonResponse
 from rest_framework import viewsets
 
@@ -14,8 +15,19 @@ class SatelliteViewSet(viewsets.ModelViewSet):
     """
     Basic satellite api views.
     """
-    queryset = Satellite.objects.all()
     serializer_class = SatelliteSerializer
+
+    def get_queryset(self):
+        """
+        This view should return the satellites visible by the user using the app. That means
+        satellites owned by that user, or public satellites (owner=None).
+        """
+        if self.request.user.is_authenticated:
+            can_see = Q(owner=self.request.user) | Q(owner=None)
+        else:
+            can_see = Q(owner=None)
+
+        return Satellite.objects.filter(can_see).order_by('pk')
 
 
 class TLEViewSet(viewsets.ModelViewSet):
