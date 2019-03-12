@@ -7,7 +7,7 @@ from rest_framework import viewsets
 from dateutil.parser import parse as parse_date
 
 from website import cesium_utils
-from website.api.serializers import LocationSerializer, SatelliteSerializer, TLESerializer
+from website.api import serializers
 from website.models import Location, Satellite, TLE
 
 
@@ -15,7 +15,7 @@ class SatelliteViewSet(viewsets.ModelViewSet):
     """
     Basic satellite api views.
     """
-    serializer_class = SatelliteSerializer
+    serializer_class = serializers.SatelliteSerializer
 
     def get_queryset(self):
         """
@@ -34,7 +34,7 @@ class TLEViewSet(viewsets.ModelViewSet):
     """
     Basic tle api views.
     """
-    serializer_class = TLESerializer
+    serializer_class = serializers.TLESerializer
 
     def get_queryset(self):
         """
@@ -49,7 +49,7 @@ class LocationViewSet(viewsets.ModelViewSet):
     Basic location api views.
     """
     queryset = Location.objects.all()
-    serializer_class = LocationSerializer
+    serializer_class = serializers.LocationSerializer
 
 
 def predict_path(request, satellite_id):
