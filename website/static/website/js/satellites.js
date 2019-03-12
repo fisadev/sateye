@@ -23,6 +23,7 @@ sateye.satellites = {
             name: satelliteData.name,
             description: satelliteData.description,
             noradId: satelliteData.norad_id,
+            config: config,
             pathPrediction: null,
 
             predictionsCover: function(startDate, endDate) {
