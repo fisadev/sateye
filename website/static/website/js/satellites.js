@@ -60,7 +60,6 @@ sateye.satellites = {
             onPredictionsReceived: function(data) {
                 // when we receive the response with the requested predictions
                 console.log("Predictions received for satellite " + this.name);
-                console.log(data);
 
                 // store the new received path predictions
                 this.pathPrediction = {
