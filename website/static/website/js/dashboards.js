@@ -36,6 +36,7 @@ sateye.dashboards = {
     },
 
     createDashboard: function(dashboardData) {
+        // create a new dashboard instance, parsing the json received from an api
         var satellites = [];
         // create satellite instances for each satellite in the dashboard
         for (let satelliteConfig of dashboardData.satellite_configs) {

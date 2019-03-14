@@ -18,6 +18,7 @@ sateye.satellites = {
     },
 
     createSatellite: function(satelliteData, config) {
+        // create a new satellite instance, parsing the json received from an api
         return {
             id: satelliteData.id,
             name: satelliteData.name,
