@@ -175,7 +175,7 @@ sateye.map = {
                     show: true,
                     pixelSize: satellite.pointSize,
                     color: {
-                        rgba: sateye.hexToCesiumColor(satellite.pointColor)
+                        rgba: sateye.hexToCzmlColor(satellite.pointColor)
                     }
                 },
                 path: {
@@ -184,7 +184,7 @@ sateye.map = {
                     material: {
                         solidColor: {
                             color: {
-                                rgba: sateye.hexToCesiumColor(satellite.pathColor)
+                                rgba: sateye.hexToCzmlColor(satellite.pathColor)
                             }
                         }
                     },

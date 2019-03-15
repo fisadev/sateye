@@ -38,7 +38,7 @@ var sateye = {
         }
     },
 
-    hexToCesiumColor: function(hexColor) {
+    hexToCzmlColor: function(hexColor) {
         // convert a hex html color, to a array based cesium color
         var redHex = hexColor.substring(1, 3);
         var greenHex = hexColor.substring(3, 5);
@@ -50,6 +50,12 @@ var sateye = {
             parseInt(blueHex, 16),
             255,  // opacity
         ];
+    },
+
+    hexToCesiumColor: function(hexColor) {
+        // convert a hex html color, to a cesium Color instance
+        var colorAsArray = sateye.hexToCzmlColor(hexColor);
+        return new Cesium.Color(colorAsArray);
     },
 
     // date utilities
