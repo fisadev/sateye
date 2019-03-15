@@ -17,15 +17,25 @@ sateye.satellites = {
         });
     },
 
-    createSatellite: function(satelliteData, config) {
+    createSatellite: function(satelliteData, dashboardSatelliteConfig) {
         // create a new satellite instance, parsing the json received from an api
         return {
+            // general satellite data
             id: satelliteData.id,
             name: satelliteData.name,
             description: satelliteData.description,
             noradId: satelliteData.norad_id,
-            config: config,
             pathPrediction: null,
+
+            // config of the point
+            pointSize: dashboardSatelliteConfig.point_size,
+            pointColor: dashboardSatelliteConfig.point_color,
+
+            // config of the path
+            pathWidth: dashboardSatelliteConfig.path_width,
+            pathColor: dashboardSatelliteConfig.path_color,
+            pathSecondsAhead: dashboardSatelliteConfig.path_seconds_ahead,
+            pathSecondsBehind: dashboardSatelliteConfig.path_seconds_behind,
 
             predictionsCover: function(startDate, endDate) {
                 // check that the satellite has predictions covering a specific range of time
