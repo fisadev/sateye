@@ -61,7 +61,11 @@
   "pk": 1,
   "fields": {
     "dashboard": 1,
-    "satellite": 1
+    "satellite": 1,
+    "point_size": 25,
+    "point_color": "#00F0FF",
+    "path_color": "#FFFF00",
+    "path_width": 3
   }
 },
 {

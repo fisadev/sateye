@@ -31,7 +31,15 @@ class DashboardSatelliteConfigSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.DashboardSatelliteConfig
-        fields = ['satellite', 'color']
+        fields = [
+            'satellite',
+            'point_size',
+            'point_color',
+            'path_width',
+            'path_color',
+            'path_seconds_ahead',
+            'path_seconds_behind',
+        ]
 
 
 class DashboardSerializer(serializers.ModelSerializer):

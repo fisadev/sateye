@@ -142,7 +142,13 @@ class DashboardSatelliteConfig(models.Model):
                                   related_name='satellite_configs')
     satellite = models.ForeignKey(Satellite, on_delete=models.CASCADE,
                                   related_name='dashboard_configs')
-    color = models.CharField(max_length=100, null=True, blank=True)
+    point_size = models.IntegerField(default=15)
+    point_color = models.CharField(max_length=100, default="#FF0000")
+
+    path_width = models.IntegerField(default=1)
+    path_color = models.CharField(max_length=100, default="#00FF00")
+    path_seconds_ahead = models.IntegerField(default=30 * 60)
+    path_seconds_behind = models.IntegerField(default=30 * 60)
 
     def __str__(self):
         return "{} in {}".format(self.satellite.name, self.dashboard.name)
