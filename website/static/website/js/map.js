@@ -16,9 +16,9 @@ sateye.map = {
     // how often do we check if we need to refresh predictions?
     _predictionsRefreshRealSeconds: 5,
     // how many real seconds do we want to get on each prediction?
-    _predictionsChunkRealSeconds: 600,
+    _predictionsChunkRealSeconds: 30 * 60,
     // how many real seconds before we run out of predictions should fire a new request for predictions?
-    _predictionsTooLowThresholdRealSeconds: 60,
+    _predictionsTooLowThresholdRealSeconds: 15 * 60,
 
     initialize: function() {
         // initialize the map module
