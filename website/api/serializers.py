@@ -29,7 +29,7 @@ class LocationSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = models.Location
-        fields = ['id', 'name', 'latitude', 'longitude', 'elevation']
+        fields = ['id', 'name', 'description', 'latitude', 'longitude', 'elevation']
 
 
 class DashboardSatelliteConfigSerializer(serializers.ModelSerializer):
