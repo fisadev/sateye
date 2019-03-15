@@ -42,4 +42,4 @@ class LocationAdmin(admin.ModelAdmin):
     """
     Customizations for the Locations model in the admin site.
     """
-    list_display = ('latitude', 'longitude', 'elevation', 'owner')
+    list_display = ('name', 'owner', 'latitude', 'longitude', 'elevation')
