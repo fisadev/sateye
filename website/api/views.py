@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from rest_framework import viewsets
 
-from dateutil.parser import parse as parse_date
+from iso8601 import parse_date
 
 from website import cesium_utils
 from website.api import serializers
