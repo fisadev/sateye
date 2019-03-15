@@ -66,8 +66,19 @@ class LocationViewSet(viewsets.ModelViewSet):
     """
     Basic location api views.
     """
-    queryset = Location.objects.all()
     serializer_class = serializers.LocationSerializer
+
+    def get_queryset(self):
+        """
+        This view should return the locations visible by the user using the app. That means
+        locations owned by that user, or public locations (owner=None).
+        """
+        if self.request.user.is_authenticated:
+            can_see = Q(owner=self.request.user) | Q(owner=None)
+        else:
+            can_see = Q(owner=None)
+
+        return Location.objects.filter(can_see).order_by('name')
 
 
 def predict_path(request, satellite_id):
