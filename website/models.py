@@ -122,6 +122,28 @@ class TLE(models.Model):
         return 'Recorded at {}'.format(self.at)
 
 
+class Location(models.Model):
+    """
+    A specific point location on Earth.
+    """
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True,
+                              blank=True, related_name='locations')
+    name = models.CharField(max_length=100, null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    elevation = models.FloatField(null=True, blank=True)
+
+    def get_op_location(self):
+        """
+        Build a orbit_predictor.locations.Location object from this model instance.
+        """
+        return op_locations.Location(self.name, self.latitude, self.longitude, self.elevation)
+
+    def __str__(self):
+        return '{} at ({}, {}) {} mts'.format(self.name, self.latitude, self.longitude,
+                                              self.elevation)
+
+
 class Dashboard(models.Model):
     """
     A customization of satellites to display, and how to display them.
@@ -154,23 +176,16 @@ class DashboardSatelliteConfig(models.Model):
         return "{} in {}".format(self.satellite.name, self.dashboard.name)
 
 
-class Location(models.Model):
+class DashboardLocationConfig(models.Model):
     """
-    A specific point location on Earth.
+    A config of a location being displayed at a dashboard.
     """
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True,
-                              blank=True, related_name='locations')
-    name = models.CharField(max_length=100, null=True, blank=True)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
-    elevation = models.FloatField(null=True, blank=True)
-
-    def get_op_location(self):
-        """
-        Build a orbit_predictor.locations.Location object from this model instance.
-        """
-        return op_locations.Location(self.name, self.latitude, self.longitude, self.elevation)
+    dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE,
+                                  related_name='location_configs')
+    location = models.ForeignKey(Location, on_delete=models.CASCADE,
+                                 related_name='dashboard_configs')
+    point_size = models.IntegerField(default=15)
+    point_color = models.CharField(max_length=100, default="#FFFF00")
 
     def __str__(self):
-        return '{} at ({}, {}) {} mts'.format(self.name, self.latitude, self.longitude,
-                                              self.elevation)
+        return "{} in {}".format(self.location.name, self.dashboard.name)

@@ -21,6 +21,14 @@ class TLEAdmin(admin.ModelAdmin):
     date_hierarchy = 'at'
 
 
+@admin.register(models.Location)
+class LocationAdmin(admin.ModelAdmin):
+    """
+    Customizations for the Locations model in the admin site.
+    """
+    list_display = ('name', 'owner', 'latitude', 'longitude', 'elevation')
+
+
 @admin.register(models.Dashboard)
 class DashboardAdmin(admin.ModelAdmin):
     """
@@ -37,9 +45,9 @@ class DashboardSatelliteConfigAdmin(admin.ModelAdmin):
     list_display = ('dashboard', 'satellite')
 
 
-@admin.register(models.Location)
-class LocationAdmin(admin.ModelAdmin):
+@admin.register(models.DashboardLocationConfig)
+class DashboardLocationConfigAdmin(admin.ModelAdmin):
     """
-    Customizations for the Locations model in the admin site.
+    Customizations for the DashboardLocationConfigAdmin model in the admin site.
     """
-    list_display = ('name', 'owner', 'latitude', 'longitude', 'elevation')
+    list_display = ('dashboard', 'location')

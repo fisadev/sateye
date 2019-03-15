@@ -75,5 +75,13 @@
     "dashboard": 1,
     "satellite": 2
   }
+},
+{
+  "model": "website.dashboardlocationconfig",
+  "pk": 1,
+  "fields": {
+    "dashboard": 1,
+    "location": 1
+  }
 }
 ]
