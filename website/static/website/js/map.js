@@ -77,21 +77,16 @@ sateye.map = {
         // add new locations to the map 
         for (let location of locations) {
             var locationEntity = {
+                id: "Sateye.Location:" + location.id,
+                name: location.name,
                 point: {
                     show: true,
                     pixelSize: location.pointSize,
-                    color: {
-                        rgba: sateye.hexToCesiumColor(location.pointColor)
-                    }
+                    color: sateye.hexToCesiumColor(location.pointColor)
                 },
-                position: {
-                    cartographicDegrees: [
-                        location.longitude,
-                        location.latitude,
-                        location.elevation
-                    ]
-                },
+                position: Cesium.Cartesian3.fromDegrees(location.longitude, location.latitude)
             };
+            console.log(locationEntity);
 
             sateye.map.mainMap.entities.add(locationEntity);
         }
