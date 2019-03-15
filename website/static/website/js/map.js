@@ -84,27 +84,98 @@ sateye.map = {
 
             if (!satellite.predictionsCover(currentDate, ensurePredictionsUntil)) {
                 var mapSecondsArround = sateye.map.realToMapSeconds(sateye.map._predictionsChunkRealSeconds);
-                var steps = sateye.map._predictionsChunkRealSeconds * 2;  // predict once every real second, avoid too many predictions if map seconds are too fast
-
                 var startDate = sateye.addSeconds(currentDate, -mapSecondsArround);
                 var endDate = sateye.addSeconds(currentDate, mapSecondsArround);
 
-                satellite.getMorePredictions(startDate, endDate, steps);
+                satellite.getMorePredictions(
+                    startDate,
+                    endDate,
+                    satellite.pathSecondsAhead,
+                    satellite.pathSecondsBehind
+                );
             }
         }
     },
 
     onNewPathPrediction: function(satellite) {
         // process new path prediction from a satellite
+        var satelliteCzml = sateye.map.buildSatelliteCzml(satellite);
+
         if (sateye.map.mainMap.dataSources.contains(sateye.map.czmlSourceStream)) {
-            sateye.map.czmlSourceStream.process(satellite.pathPrediction.czml);
+            sateye.map.czmlSourceStream.process(satelliteCzml);
         } else {
-            sateye.map.mainMap.dataSources.add(sateye.map.czmlSourceStream.load(satellite.pathPrediction.czml));
+            sateye.map.mainMap.dataSources.add(sateye.map.czmlSourceStream.load(satelliteCzml));
         }
     },
 
     onNightShadowChange: function(e) {
         // on input change, decide wether to show or not the night shadow
         sateye.map.mainMap.scene.globe.enableLighting = sateye.map.dom.nightShadowInput.is(":checked");
+    },
+
+    buildSatelliteCzml: function(satellite) {
+        // build a czml to display the satellite and its path in the map
+
+        // cesium expects all the positions in a single list with this format:
+        // [date_as_str1, lon1, lat1, alt1, date_as_str2, lon2, lat2, alt2, ...]
+        var joinedPositions = [];
+        for (let dateAndPosition of satellite.pathPrediction.positions) {
+            joinedPositions.push(
+                sateye.parseDate(dateAndPosition[0]).toString(),  // date
+                dateAndPosition[1][1],  // lon
+                dateAndPosition[1][0],  // lat
+                dateAndPosition[1][2] * 1000,  // alt
+            );
+        }
+
+        var czml = [
+            {
+                id: "document",
+                name: "Sateye CZML",
+                version: "1.0",
+            },
+            {
+                id: "Sateye.Satellite:" + satellite.id.toString(),
+                name: satellite.name,
+                description: "<!--HTML-->\r\n<h2>" + satellite.name + "</h2>",
+                availability: "1-01-01T00:00:00Z/9999-12-31T23:59:59Z",
+                //availability: satellite.pathPrediction.startDate.toString() + "/" + satellite.pathPrediction.endDate.toString(),
+                point: {
+                    show: true,
+                    pixelSize: satellite.pointSize,
+                    color: {
+                        "rgba": sateye.hexToCesiumColor(satellite.pointColor)
+                    }
+                },
+                path: {
+                    show: true,
+                    width: satellite.pathWidth,
+                    material: {
+                        solidColor: {
+                            color: {
+                                "rgba": sateye.hexToCesiumColor(satellite.pathColor)
+                            }
+                        }
+                    },
+                    resolution: 120,
+                    leadTime: satellite.pathSecondsAhead,
+                    trailTime: satellite.pathSecondsBehind
+                },
+                position: {
+                    interpolationAlgorithm: "LAGRANGE",
+                    interpolationDegree: 5,
+                    cartographicDegrees: joinedPositions
+                },
+                agi_conicSensor: {
+                    show: true,
+                    showIntersection: true,
+                    intersectionColor: {
+                        "rgba": [0, 255, 255, 255]
+                    }
+                }
+            }
+        ];
+
+        return czml;
     },
 }

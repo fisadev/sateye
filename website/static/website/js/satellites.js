@@ -50,7 +50,7 @@ sateye.satellites = {
                 }
             },
 
-            getMorePredictions: function(startDate, endDate, steps) {
+            getMorePredictions: function(startDate, endDate, pathSecondsAhead, pathSecondsBehind) {
                 // get more predictions, to fill X seconds starting at a given date
                 // (usually asking from the current map date, plus X map seconds)
                 console.log("Requesting predictions for satellite " + this.name);
@@ -61,7 +61,8 @@ sateye.satellites = {
                     data: {
                         start_date: startDate.toString(),
                         end_date: endDate.toString(),
-                        steps: steps,
+                        path_seconds_ahead: pathSecondsAhead,
+                        path_seconds_behind: pathSecondsBehind
                     }
                 })
                 .done(function(data) {self.onPredictionsReceived(data)})
@@ -76,7 +77,7 @@ sateye.satellites = {
                 this.pathPrediction = {
                     startDate: sateye.parseDate(data.start_date),
                     endDate: sateye.parseDate(data.end_date),
-                    czml: data.czml,
+                    positions: data.positions
                 }
 
                 sateye.map.onNewPathPrediction(this);

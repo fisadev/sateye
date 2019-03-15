@@ -38,6 +38,20 @@ var sateye = {
         }
     },
 
+    hexToCesiumColor: function(hexColor) {
+        // convert a hex html color, to a array based cesium color
+        var redHex = hexColor.substring(1, 3);
+        var greenHex = hexColor.substring(3, 5);
+        var blueHex = hexColor.substring(5, 7);
+
+        return [
+            parseInt(redHex, 16),
+            parseInt(greenHex, 16),
+            parseInt(blueHex, 16),
+            255,  // opacity
+        ];
+    },
+
     // date utilities
 
     addSeconds: function(date, seconds) {
