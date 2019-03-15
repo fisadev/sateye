@@ -79,6 +79,7 @@ sateye.map = {
             var locationEntity = {
                 id: "Sateye.Location:" + location.id,
                 name: location.name,
+                description: "<!--HTML-->\r\n<h2>" + location.name + "</h2>",
                 point: {
                     show: true,
                     pixelSize: location.pointSize,
