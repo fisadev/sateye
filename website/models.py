@@ -2,12 +2,10 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
-from django.utils.timezone import make_naive
 
-import pytz
 from orbit_predictor import locations as op_locations
 
-from website.utils import get_predictor_from_tle_lines
+from website.utils import get_predictor_from_tle_lines, ensure_naive
 
 
 class Satellite(models.Model):
@@ -83,7 +81,7 @@ class Satellite(models.Model):
         current_date = start_date
         while current_date <= end_date:
             # the predictor works with naive dates only
-            naive_current_date = make_naive(current_date, pytz.utc)
+            naive_current_date = ensure_naive(current_date)
             yield current_date, predictor.get_position(naive_current_date).position_llh
             current_date += step
 
