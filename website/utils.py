@@ -1,3 +1,8 @@
+from datetime import datetime
+import pytz
+
+from django.utils.timezone import make_naive, is_aware
+
 from sgp4.earth_gravity import wgs84
 from sgp4.io import twoline2rv
 from orbit_predictor.accuratepredictor import HighAccuracyTLEPredictor
@@ -19,3 +24,13 @@ def get_predictor_from_tle_lines(tle_lines, precise=False):
         predictor = TLEPredictor(sgp4_sat.satnum, source)
 
     return predictor
+
+
+def ensure_naive(date):
+    """
+    Ensure a datetime is timezone naive.
+    """
+    if is_aware(date):
+        return make_naive(date, pytz.utc)
+    else:
+        return date
