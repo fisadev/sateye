@@ -27,7 +27,7 @@ class SatelliteViewSet(viewsets.ModelViewSet):
         else:
             can_see = Q(owner=None)
 
-        return Satellite.objects.filter(can_see).order_by('pk')
+        return Satellite.objects.filter(can_see).order_by('name')
 
 
 class TLEViewSet(viewsets.ModelViewSet):
@@ -59,7 +59,7 @@ class DashboardViewSet(viewsets.ModelViewSet):
         else:
             can_see = Q(pk=settings.DEFAULT_DASHBOARD)
 
-        return Dashboard.objects.filter(can_see).order_by('pk')
+        return Dashboard.objects.filter(can_see).order_by('name')
 
 
 class LocationViewSet(viewsets.ModelViewSet):
