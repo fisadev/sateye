@@ -82,7 +82,8 @@ class Satellite(models.Model):
         while current_date <= end_date:
             # the predictor works with naive dates only
             naive_current_date = ensure_naive(current_date)
-            yield current_date, predictor.get_position(naive_current_date).position_llh
+            lat, lon, elevation_km = predictor.get_position(naive_current_date).position_llh
+            yield current_date, (lat, lon, elevation_km * 1000)
             current_date += step
 
     def predict_passes(self, location, start_date, end_date):
