@@ -83,9 +83,10 @@ sateye.map = {
                 point: {
                     show: true,
                     pixelSize: location.pointSize,
-                    color: sateye.hexToCesiumColor(location.pointColor)
+                    color: sateye.hexToCesiumColor(location.pointColor),
+                    heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
                 },
-                position: Cesium.Cartesian3.fromDegrees(location.longitude, location.latitude, location.elevation),
+                position: Cesium.Cartesian3.fromDegrees(location.longitude, location.latitude),
             };
 
             sateye.map.mainMap.entities.add(locationEntity);
