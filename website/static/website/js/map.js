@@ -61,9 +61,40 @@ sateye.map = {
         return clock.clockStep * clock.multiplier * realSeconds;
     },
 
+    onNewDashboard: function(dashboard) {
+        // called when we start using a new dashboard
+        sateye.map.clearMapData();
+        sateye.map.onNewLocations(dashboard.locations);
+    },
+
     clearMapData: function() {
-        // remove all data sources from the map
+        // remove all data from the map
         sateye.map.mainMap.dataSources.removeAll();
+        sateye.map.mainMap.entities.removeAll();
+    },
+
+    onNewLocations: function(locations) {
+        // add new locations to the map 
+        for (let location of locations) {
+            var locationEntity = {
+                point: {
+                    show: true,
+                    pixelSize: location.pointSize,
+                    color: {
+                        rgba: sateye.hexToCesiumColor(location.pointColor)
+                    }
+                },
+                position: {
+                    cartographicDegrees: [
+                        location.longitude,
+                        location.latitude,
+                        location.elevation
+                    ]
+                },
+            };
+
+            sateye.map.mainMap.entities.add(locationEntity);
+        }
     },
 
     ensurePathPredictions: function() {

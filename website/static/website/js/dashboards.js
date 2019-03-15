@@ -23,16 +23,20 @@ sateye.dashboards = {
     onDashboardsReceived: function(data) {
         // when we receive response from the dashboards list requeset
         console.log("Dashboards received from the server");
-        sateye.map.clearMapData();
         // if no id was specified, just get the first dashboard
-        sateye.dashboards.current = sateye.dashboards.createDashboard(data[0]);
+        sateye.dashboards.setCurrentDashboard(sateye.dashboards.createDashboard(data[0]));
     },
 
     onDashboardReceived: function(data) {
         // when we receive response from the single dashboard requeset
         console.log("Dashboard received from the server");
-        sateye.map.clearMapData();
-        sateye.dashboards.current = sateye.dashboards.createDashboard(data);
+        sateye.dashboards.setCurrentDashboard(sateye.dashboards.createDashboard(data));
+    },
+
+    setCurrentDashboard: function(dashboard) {
+        // do all the stuff required to set the new dashboard
+        sateye.dashboards.current = dashboard;
+        sateye.map.onNewDashboard(dashboard);
     },
 
     createDashboard: function(dashboardData) {
