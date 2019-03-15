@@ -37,17 +37,25 @@ sateye.dashboards = {
 
     createDashboard: function(dashboardData) {
         // create a new dashboard instance, parsing the json received from an api
-        var satellites = [];
+
         // create satellite instances for each satellite in the dashboard
+        var satellites = [];
         for (let satelliteConfig of dashboardData.satellite_configs) {
             var satellite = sateye.satellites.createSatellite(satelliteConfig);
             satellites.push(satellite);
+        }
+        // create location instances for each location in the dashboard
+        var locations = [];
+        for (let locationConfig of dashboardData.location_configs) {
+            var location = sateye.locations.createLocation(locationConfig);
+            locations.push(location);
         }
 
         return {
             id: dashboardData.id,
             name: dashboardData.name,
             satellites: satellites,
+            locations: locations,
         }
     },
 }
