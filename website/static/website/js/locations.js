@@ -9,6 +9,9 @@ sateye.locations = {
             id: dashboardLocationConfig.location.id,
             name: dashboardLocationConfig.location.name,
             description: dashboardLocationConfig.location.description,
+            latitude: dashboardLocationConfig.location.latitude,
+            longitude: dashboardLocationConfig.location.longitude,
+            elevation: dashboardLocationConfig.location.elevation,
 
             // config of the point
             pointSize: dashboardLocationConfig.point_size,
