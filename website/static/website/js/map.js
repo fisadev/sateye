@@ -165,8 +165,8 @@ sateye.map = {
                 id: "Sateye.Satellite:" + satellite.id.toString(),
                 name: satellite.name,
                 description: "<!--HTML-->\r\n<h2>" + satellite.name + "</h2>",
-                availability: "1-01-01T00:00:00Z/9999-12-31T23:59:59Z",
-                //availability: satellite.pathPrediction.startDate.toString() + "/" + satellite.pathPrediction.endDate.toString(),
+                availability: satellite.pathPrediction.startDate.toString() + "/" + 
+                              satellite.pathPrediction.endDate.toString(),
                 point: {
                     show: true,
                     pixelSize: satellite.pointSize,
