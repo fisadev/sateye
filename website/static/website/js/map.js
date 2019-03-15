@@ -124,7 +124,7 @@ sateye.map = {
                 sateye.parseDate(dateAndPosition[0]).toString(),  // date
                 dateAndPosition[1][1],  // lon
                 dateAndPosition[1][0],  // lat
-                dateAndPosition[1][2] * 1000,  // alt
+                dateAndPosition[1][2] * 1000,  // elev
             );
         }
 
