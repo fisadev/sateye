@@ -7,7 +7,6 @@ from rest_framework import viewsets
 
 from iso8601 import parse_date
 
-from website import cesium_utils
 from website.api import serializers
 from website.models import Dashboard, Location, Satellite, TLE
 
@@ -78,16 +77,15 @@ def predict_path(request, satellite_id):
     satellite = Satellite.objects.get(pk=satellite_id)
     start_date = parse_date(request.GET['start_date'])
     end_date = parse_date(request.GET['end_date'])
-    steps = int(request.GET['steps'])
 
     duration = (end_date - start_date).total_seconds()
+    steps = 100  # TODO configurable? user configurable? where?
     step_seconds = duration / steps
-
     positions = satellite.predict_path(start_date, end_date, step_seconds)
-    cesium_data = cesium_utils.generate_path_data(satellite, start_date, end_date, positions)
 
     return JsonResponse({
-        'czml': cesium_data,
         'start_date': start_date.isoformat(),
         'end_date': end_date.isoformat(),
+        'positions': list((current_date.isoformat(), position)
+                          for current_date, position in positions),
     })
