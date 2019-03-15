@@ -17,14 +17,14 @@ sateye.satellites = {
         });
     },
 
-    createSatellite: function(satelliteData, dashboardSatelliteConfig) {
+    createSatellite: function(dashboardSatelliteConfig) {
         // create a new satellite instance, parsing the json received from an api
         return {
             // general satellite data
-            id: satelliteData.id,
-            name: satelliteData.name,
-            description: satelliteData.description,
-            noradId: satelliteData.norad_id,
+            id: dashboardSatelliteConfig.satellite.id,
+            name: dashboardSatelliteConfig.satellite.name,
+            description: dashboardSatelliteConfig.satellite.description,
+            noradId: dashboardSatelliteConfig.satellite.norad_id,
             pathPrediction: null,
 
             // config of the point

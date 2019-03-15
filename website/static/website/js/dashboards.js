@@ -40,7 +40,7 @@ sateye.dashboards = {
         var satellites = [];
         // create satellite instances for each satellite in the dashboard
         for (let satelliteConfig of dashboardData.satellite_configs) {
-            var satellite = sateye.satellites.createSatellite(satelliteConfig.satellite, satelliteConfig);
+            var satellite = sateye.satellites.createSatellite(satelliteConfig);
             satellites.push(satellite);
         }
 
