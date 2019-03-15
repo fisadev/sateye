@@ -70,6 +70,7 @@ class Satellite(models.Model):
         """
         Predict the positions of a satellite during a period of time, with certain step precision.
         """
+        assert start_date < end_date
         # get a predictor that is, on average, closest to the dates we will be using in this
         # period of time
         period_length = end_date - start_date
