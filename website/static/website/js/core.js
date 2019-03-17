@@ -38,24 +38,18 @@ var sateye = {
         }
     },
 
-    hexToCzmlColor: function(hexColor) {
-        // convert a hex html color, to a array based cesium color
+    hexToCesiumColor: function(hexColor) {
+        // convert a hex html color, to a cesium Color instance
         var redHex = hexColor.substring(1, 3);
         var greenHex = hexColor.substring(3, 5);
         var blueHex = hexColor.substring(5, 7);
 
-        return [
-            parseInt(redHex, 16),
-            parseInt(greenHex, 16),
-            parseInt(blueHex, 16),
-            255,  // opacity
-        ];
-    },
-
-    hexToCesiumColor: function(hexColor) {
-        // convert a hex html color, to a cesium Color instance
-        var colorAsArray = sateye.hexToCzmlColor(hexColor);
-        return new Cesium.Color(colorAsArray);
+        return new Cesium.Color(
+            parseInt(redHex, 16) / 255.0,
+            parseInt(greenHex, 16) / 255.0,
+            parseInt(blueHex, 16) / 255.0,
+            1.0,  // opacity
+        );
     },
 
     // date utilities
