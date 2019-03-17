@@ -119,7 +119,7 @@ sateye.map = {
                     endDate,
                     satellite.pathSecondsAhead,
                     satellite.pathSecondsBehind,
-                    sateye.map._predictionsRefreshRealSeconds,  // used as timeout
+                    sateye.map._predictionsRefreshRealSeconds * 1000,  // used as timeout
                 );
             }
         }
