@@ -4,7 +4,6 @@
 }
 
 #main-map-container {
-    height: 500px;
     overflow: auto;
     resize: vertical;
     padding: 0 0 20px 0;
