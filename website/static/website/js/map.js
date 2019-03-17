@@ -1,6 +1,5 @@
 sateye.map = {
     mainMap: null,
-    czmlSourceStream: null,
     cesiumConfig: {
         homeButton: false,
         navigationInstructionsInitiallyVisible: false,
@@ -34,7 +33,6 @@ sateye.map = {
     configureCesiumMap: function() {
         // configure the cesium map
         sateye.map.mainMap = new Cesium.Viewer("main-map", sateye.map.cesiumConfig);
-        sateye.map.czmlSourceStream = new Cesium.CzmlDataSource();
 
         // center on 0,0 with enough distance to see the whole planet
         var center = Cesium.Cartesian3.fromDegrees(0, 0);
@@ -69,7 +67,6 @@ sateye.map = {
 
     clearMapData: function() {
         // remove all data from the map
-        sateye.map.mainMap.dataSources.removeAll();
         sateye.map.mainMap.entities.removeAll();
     },
 
@@ -127,83 +124,82 @@ sateye.map = {
 
     onNewPathPrediction: function(satellite) {
         // process new path prediction from a satellite
-        var satelliteCzml = sateye.map.buildSatelliteCzml(satellite);
+        sateye.map.updateSatelliteInMap(satellite);
+    },
 
-        if (sateye.map.mainMap.dataSources.contains(sateye.map.czmlSourceStream)) {
-            sateye.map.czmlSourceStream.process(satelliteCzml);
-        } else {
-            sateye.map.mainMap.dataSources.add(sateye.map.czmlSourceStream.load(satelliteCzml));
+    getSatelliteMapId: function(satellite) {
+        // unified way of identifying satellites in the maps
+        return "Sateye.Satellite:" + satellite.id.toString();
+    },
+
+    buildOrCreateSatelliteEntity: function(satellite) {
+        // build a cesium entity to display the satellite and its path in the map, or return an
+        // existing one if it's already there
+
+        var satelliteMapId = sateye.map.getSatelliteMapId(satellite);
+        var satelliteEntity = sateye.map.mainMap.entities.getById(satelliteMapId);
+
+        if (satelliteEntity === undefined) {
+            satelliteEntity = sateye.map.mainMap.entities.add({
+                id: satelliteMapId,
+                availability: new Cesium.TimeIntervalCollection(),
+            });
         }
+
+        return satelliteEntity;
+    },
+
+    updateSatelliteInMap: function(satellite) {
+        // update the display data for a satellite shown in the map, based on its path predictions
+        // this will even add the satellite for the map if it wasn't already there
+        var satelliteEntity = sateye.map.buildOrCreateSatelliteEntity(satellite);
+
+        // general satellite data
+        satelliteEntity.name = satellite.name;
+        //satelliteEntity.description = "<!--HTML-->\r\n<h2>" + satellite.name + "</h2>";
+
+        // show satellite in this specific interval
+        // (we only trust the latest predictions, stuff like new tles could invalidate previous ones)
+        satelliteEntity.availability.removeAll();
+        satelliteEntity.availability.addInterval(new Cesium.TimeInterval({
+            start: satellite.pathPrediction.startDate,
+            stop: satellite.pathPrediction.endDate,
+        }));
+
+        // a point in the satellite position, that moves over time
+        satelliteEntity.point = new Cesium.PointGraphics({
+            show: true,
+            pixelSize: satellite.pointSize,
+            color: sateye.hexToCesiumColor(satellite.pointColor),
+        });
+
+        // satellite positions over time
+        positionProperty = new Cesium.SampledPositionProperty();
+        for (let dateAndPosition of satellite.pathPrediction.positions) {
+            positionProperty.addSample(
+                sateye.parseDate(dateAndPosition[0]),
+                Cesium.Cartesian3.fromDegrees(
+                    dateAndPosition[1][1],  // lon
+                    dateAndPosition[1][0],  // lat
+                    dateAndPosition[1][2],  // elev
+                ),
+            );
+        }
+        satelliteEntity.position = positionProperty;
+
+        // path predicted behind and ahead the satellite
+        satelliteEntity.path = new Cesium.PathGraphics({
+            show: true,
+            width: satellite.pathWidth,
+            material: new Cesium.ColorMaterialProperty(sateye.hexToCesiumColor(satellite.pathColor)),
+            resolution: 120,
+            leadTime: satellite.pathSecondsAhead,
+            trailTime: satellite.pathSecondsBehind
+        });
     },
 
     onNightShadowChange: function(e) {
         // on input change, decide wether to show or not the night shadow
         sateye.map.mainMap.scene.globe.enableLighting = sateye.map.dom.nightShadowInput.is(":checked");
-    },
-
-    buildSatelliteCzml: function(satellite) {
-        // build a czml to display the satellite and its path in the map
-
-        // cesium expects all the positions in a single list with this format:
-        // [date_as_str1, lon1, lat1, alt1, date_as_str2, lon2, lat2, alt2, ...]
-        var joinedPositions = [];
-        for (let dateAndPosition of satellite.pathPrediction.positions) {
-            joinedPositions.push(
-                sateye.parseDate(dateAndPosition[0]).toString(),  // date
-                dateAndPosition[1][1],  // lon
-                dateAndPosition[1][0],  // lat
-                dateAndPosition[1][2],  // elev
-            );
-        }
-
-        var czml = [
-            {
-                id: "document",
-                name: "Sateye CZML",
-                version: "1.0",
-            },
-            {
-                id: "Sateye.Satellite:" + satellite.id.toString(),
-                name: satellite.name,
-                description: "<!--HTML-->\r\n<h2>" + satellite.name + "</h2>",
-                availability: satellite.pathPrediction.startDate.toString() + "/" + 
-                              satellite.pathPrediction.endDate.toString(),
-                point: {
-                    show: true,
-                    pixelSize: satellite.pointSize,
-                    color: {
-                        rgba: sateye.hexToCzmlColor(satellite.pointColor)
-                    }
-                },
-                path: {
-                    show: true,
-                    width: satellite.pathWidth,
-                    material: {
-                        solidColor: {
-                            color: {
-                                rgba: sateye.hexToCzmlColor(satellite.pathColor)
-                            }
-                        }
-                    },
-                    resolution: 120,
-                    leadTime: satellite.pathSecondsAhead,
-                    trailTime: satellite.pathSecondsBehind
-                },
-                position: {
-                    interpolationAlgorithm: "LAGRANGE",
-                    interpolationDegree: 5,
-                    cartographicDegrees: joinedPositions
-                },
-                agi_conicSensor: {
-                    show: true,
-                    showIntersection: true,
-                    intersectionColor: {
-                        rgba: [0, 255, 255, 255]
-                    }
-                }
-            }
-        ];
-
-        return czml;
     },
 }
