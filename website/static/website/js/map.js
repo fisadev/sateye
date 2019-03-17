@@ -14,7 +14,7 @@ sateye.map = {
 
     // chunking configs. More info at docs/prediction_chunks.rst
     // how often do we check if we need to refresh predictions?
-    _predictionsRefreshRealSeconds: 5,
+    _predictionsRefreshRealSeconds: 2,
     // how many real seconds do we want to get on each prediction?
     _predictionsChunkRealSeconds: 30 * 60,
     // how many real seconds before we run out of predictions should fire a new request for predictions?
@@ -118,7 +118,8 @@ sateye.map = {
                     startDate,
                     endDate,
                     satellite.pathSecondsAhead,
-                    satellite.pathSecondsBehind
+                    satellite.pathSecondsBehind,
+                    sateye.map._predictionsRefreshRealSeconds,  // used as timeout
                 );
             }
         }
