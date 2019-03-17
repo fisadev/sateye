@@ -43,6 +43,7 @@
   "fields": {
     "owner": null,
     "name": "UTN Los Reyunos",
+    "description": "Complejo del PyCamp 2019",
     "latitude": -34.596123,
     "longitude": -68.642255,
     "elevation": 1036.0

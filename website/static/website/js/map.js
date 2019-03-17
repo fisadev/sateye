@@ -76,7 +76,7 @@ sateye.map = {
             var locationEntity = {
                 id: "Sateye.Location:" + location.id,
                 name: location.name,
-                description: "<!--HTML-->\r\n<h2>" + location.name + "</h2>",
+                description: "<!--HTML-->\r\n<p>" + location.description + "</p>",
                 point: {
                     show: true,
                     pixelSize: location.pointSize,
@@ -156,7 +156,7 @@ sateye.map = {
 
         // general satellite data
         satelliteEntity.name = satellite.name;
-        //satelliteEntity.description = "<!--HTML-->\r\n<h2>" + satellite.name + "</h2>";
+        satelliteEntity.description = "<!--HTML-->\r\n<p>" + satellite.description + "</p>";
 
         // show satellite in this specific interval
         // (we only trust the latest predictions, stuff like new tles could invalidate previous ones)
