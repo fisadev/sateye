@@ -1,19 +1,19 @@
-<div id="main-map-container">
-    <div id="main-map"></div>
+<div id="main-map-container" class="row">
+    <div class="col-2">
+        <h4>
+            <i class="fas fa-binoculars"></i>
+            Passes
+        </h4>
+        <p>a pass</p>
+        <p>a pass</p>
+        <p>a pass</p>
+    </div>
+    <div class="col-10">
+        <div class="row">
+            <div id="main-map" class="col-12"></div>
+            <div id="main-map-controls" class="col-12 btn-group-toggle" data-toggle="buttons">
+                <input id="night-shadow-input" type="checkbox" data-toggle="toggle" data-on="Day/Night" data-off="No shadow" data-size="sm">
+            </div>
+        </div>
+    </div>
 </div>
-
-{% comment %}
-<div id="main-map-controls" class="btn-group-toggle" data-toggle="buttons">
-    <input id="night-shadow-input" type="checkbox" data-toggle="toggle" data-on="Day/Night" data-off="No shadow" data-size="sm">
-</div>
-<h3>
-    <i class="fas fa-binoculars"></i>
-    Passes
-</h3>
-
-<div class="table-responsive">
-    <p>a pass</p>
-    <p>a pass</p>
-    <p>a pass</p>
-</div>
-{% endcomment %}

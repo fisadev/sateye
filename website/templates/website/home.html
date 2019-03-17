@@ -20,27 +20,26 @@
 
 
 <body>
-    {% include "website/navbar.html" %}
-
     <div class="container-fluid">
         <div class="row">
-            <main role="main" class="col p-0">
-                <div id="alerts-bar"></div>
-                <div class="tab-content">
-                    <div class="tab-pane fade show active" id="tab-map" role="tabpanel">
-                        {% include 'website/map.html' %}
-                    </div>
-                    <div class="tab-pane fade" id="tab-satellites" role="tabpanel">
-                        {% include 'website/satellites.html' %}
-                    </div>
-                    <div class="tab-pane fade" id="tab-locations" role="tabpanel">
-                        {% include 'website/locations.html' %}
-                    </div>
-                    <div class="tab-pane fade" id="tab-settings" role="tabpanel">
-                        {% include 'website/settings.html' %}
-                    </div>
+            {% include "website/navbar.html" %}
+        </div>
+        <div class="row">
+            <div id="alerts-bar"></div>
+            <div class="col p-0 tab-content">
+                <div class="tab-pane fade show active" id="tab-map" role="tabpanel">
+                    {% include 'website/map.html' %}
                 </div>
-            </main>
+                <div class="tab-pane fade" id="tab-satellites" role="tabpanel">
+                    {% include 'website/satellites.html' %}
+                </div>
+                <div class="tab-pane fade" id="tab-locations" role="tabpanel">
+                    {% include 'website/locations.html' %}
+                </div>
+                <div class="tab-pane fade" id="tab-settings" role="tabpanel">
+                    {% include 'website/settings.html' %}
+                </div>
+            </div>
         </div>
     </div>
 
