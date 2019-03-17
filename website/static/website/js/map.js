@@ -13,7 +13,7 @@ sateye.map = {
 
     // chunking configs. More info at docs/prediction_chunks.rst
     // how often do we check if we need to refresh predictions?
-    _predictionsRefreshRealSeconds: 2,
+    _predictionsRefreshRealSeconds: 3,
     // how many real seconds do we want to get on each prediction?
     _predictionsChunkRealSeconds: 30 * 60,
     // how many real seconds before we run out of predictions should fire a new request for predictions?
@@ -41,7 +41,7 @@ sateye.map = {
         // every some time, ensure we have paths for each satellite
         //sateye.map.mainMap.clock.onTick.addEventListener(sateye.map.onMapTick);
         setInterval(sateye.map.ensurePathPredictions,
-                    sateye.map._predictionsRefreshRealSeconds * 1000);
+                    (sateye.map._predictionsRefreshRealSeconds - 1) * 1000);
 
         // remove fog and ground atmosphere on 3d globe
         sateye.map.mainMap.scene.fog.enabled = false;
