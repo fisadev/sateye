@@ -8,13 +8,15 @@ sateye.satellites = {
         return $.ajax({
             url: "/api/satellites/",
             cache: false,
-        }).done(function(data) {
-            for (var i = 0; i < data.length; i++) {
-                // Render satellites in list
-                var element = sateye.templates.satellite(data[i]);
-                sateye.dom.satelliteList.append(element);
-            }
-        });
+        }).done(function(data) { self.onSatelliteListRetrieved(data) });
+    },
+
+    onSatelliteListRetrieved: function(data) {
+        for (var i = 0; i < data.length; i++) {
+            // Render satellites in list
+            var element = sateye.templates.satellite(data[i]);
+            sateye.dom.satelliteList.append(element);
+        }
     },
 
     createSatellite: function(dashboardSatelliteConfig) {
@@ -41,7 +43,7 @@ sateye.satellites = {
                 // check that the satellite has predictions covering a specific range of time
                 // (usually asking from the current map date, plus X map seconds)
                 if (this.pathPrediction === null) {
-                    return false; 
+                    return false;
                 } else {
                     var predictionsStartBefore = Cesium.JulianDate.lessThanOrEquals(this.pathPrediction.startDate, startDate);
                     var predictionsEndAfter = Cesium.JulianDate.greaterThanOrEquals(this.pathPrediction.endDate, endDate);

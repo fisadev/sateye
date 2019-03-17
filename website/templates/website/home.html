@@ -1,6 +1,7 @@
 {% load staticfiles %}
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -19,23 +20,12 @@
 
 
 <body>
-    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">
-            <img src="{% static 'website/img/logo_big.png' %}" width="30" height="30" />
-            SatEye
-        </a>
-        <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
-    </nav>
-
+    {% include "website/navbar.html" %}
 
     <div class="container-fluid">
         <div class="row">
-            {% include 'website/side_menu.html' %}
-
-            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-                <div id="alerts-bar">
-                </div>
-
+            <main role="main" class="col p-0">
+                <div id="alerts-bar"></div>
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="tab-map" role="tabpanel">
                         {% include 'website/map.html' %}
