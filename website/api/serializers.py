@@ -17,10 +17,17 @@ class SatelliteSerializer(serializers.ModelSerializer):
     Serializer for the satellite api.
     """
     newest_tle = TLESerializer()
+    public = serializers.SerializerMethodField()
+
+    def get_public(self, obj):
+        """
+        Inform which satellites are public and which are private.
+        """
+        return obj.owner is None
 
     class Meta:
         model = models.Satellite
-        fields = ['id', 'name', 'norad_id', 'description', 'newest_tle']
+        fields = ['id', 'name', 'norad_id', 'description', 'newest_tle', 'public']
 
 
 class LocationSerializer(serializers.ModelSerializer):
