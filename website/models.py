@@ -90,6 +90,7 @@ class Satellite(models.Model):
         """
         Predict the passes of a satellite over a location on TCA between two dates.
         """
+        end_date = ensure_naive(end_date)
         location = location.get_op_location()
         predictor = self.get_predictor(precise=True)
 

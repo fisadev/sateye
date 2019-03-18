@@ -2,8 +2,10 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db.models import Q
-from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from iso8601 import parse_date
 
@@ -81,11 +83,13 @@ class LocationViewSet(viewsets.ModelViewSet):
         return Location.objects.filter(can_see).order_by('name')
 
 
+@api_view(['GET'])
 def predict_path(request, satellite_id):
     """
     Get predictions for a satellite.
     """
-    satellite = Satellite.objects.get(pk=satellite_id)
+    satellite = get_object_or_404(Satellite, pk=satellite_id)
+
     start_date = parse_date(request.GET['start_date'])
     end_date = parse_date(request.GET['end_date'])
 
@@ -94,9 +98,28 @@ def predict_path(request, satellite_id):
     step_seconds = duration / steps
     positions = satellite.predict_path(start_date, end_date, step_seconds)
 
-    return JsonResponse({
+    return Response({
         'start_date': start_date.isoformat(),
         'end_date': end_date.isoformat(),
         'positions': list((current_date.isoformat(), position)
                           for current_date, position in positions),
     })
+
+
+@api_view(['GET'])
+def predict_passes(request, satellite_id):
+    """
+    Get next passes for a satellite over a certain location.
+    """
+    location_id = int(request.GET['location'])
+
+    satellite = get_object_or_404(Satellite, pk=satellite_id)
+    location = get_object_or_404(Location, pk=location_id)
+
+    start_date = parse_date(request.GET['start_date'])
+    end_date = parse_date(request.GET['end_date'])
+
+    passes = satellite.predict_passes(location, start_date, end_date)
+    serializer = serializers.PassSerializer(passes, many=True)
+
+    return Response(serializer.data)
