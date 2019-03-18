@@ -7,3 +7,8 @@
     overflow: auto;
     resize: vertical;
 }
+
+#existing-satellites-list {
+    overflow-y: scroll;
+    max-height: 200px;
+}

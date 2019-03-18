@@ -13,9 +13,10 @@ var sateye = {
         sateye.templates.alert = Handlebars.compile(document.getElementById("alert-template").innerHTML);
         sateye.templates.satellite = Handlebars.compile(document.getElementById("satellite-template").innerHTML);
 
+        // references to the dom
         sateye.dom.alertsBar = $("#alerts-bar");
-        sateye.dom.satelliteList = $("#satellite-list");
 
+        // initialize submodules
         sateye.map.initialize();
         sateye.satellites.initialize();
         sateye.locations.initialize();

@@ -37,6 +37,7 @@ sateye.dashboards = {
         // do all the stuff required to set the new dashboard
         sateye.dashboards.current = dashboard;
         sateye.map.onNewDashboard(dashboard);
+        sateye.satellites.onNewSatellites(dashboard.satellites);
     },
 
     createDashboard: function(dashboardData) {
@@ -60,6 +61,17 @@ sateye.dashboards = {
             name: dashboardData.name,
             satellites: satellites,
             locations: locations,
+
+            getSatellite: function(satelliteId) {
+                // get a satellite from the dashboard, by id
+                // if the satellite is not found, returns null
+                for (let satellite of this.satellites) {
+                    if (satellite.id === satelliteId) {
+                        return satellite;
+                    }
+                }
+                return null;
+            }
         }
     },
 }

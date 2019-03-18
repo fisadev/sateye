@@ -1,22 +1,17 @@
 {% verbatim %}
 <script id="satellite-template" type="text/x-handlebars-template">
-  <h3>{{ name }}</h3>
-  <p>{{ description }}</p>
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">Recorded at</th>
-        <td scope="col">TLE</td>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each tles}}
-      <tr>
-        <th scope="row">{{ this.at }}</th>
-        <td scope="row">{{ this.lines }}</th>
-      </tr>
-      {{/each}}
-    </tbody>
-  </table>
+    <div class="row p-3 mb-2 bg-secondary text-white rounded">
+        <div>
+            <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-satellite"></i> {{name}}</button>
+        </div>
+        <div class="ml-auto mr-2">
+            {{#unless public}}
+                <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-pencil-alt"></i> Edit</button>
+            {{/unless}}
+            <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-circle" style="color:{{pointColor}};"></i> Dot style</button>
+            <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-minus" style="color:{{pathColor}};"></i> Line style</button>
+            <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
 </script>
 {% endverbatim %}
