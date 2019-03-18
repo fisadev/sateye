@@ -76,3 +76,13 @@ class DashboardSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Satellite
         fields = ['id', 'name', 'satellite_configs', 'location_configs']
+
+
+class PassSerializer(serializers.Serializer):
+    """
+    Serializer for the pass prediction endpoint.
+    """
+    max_elevation_degrees = serializers.FloatField(source='max_elevation_deg')
+    max_elevation_date = serializers.DateTimeField()
+    aos = serializers.DateTimeField()
+    los = serializers.DateTimeField()
