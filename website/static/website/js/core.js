@@ -4,22 +4,31 @@ var Alert = {
     ERROR: "error"
 }
 
+var templatesMap = {
+    alert: "#alert-template",
+    satellite: "#satellite-template",
+    passList: "#pass-list-template",
+};
+
 var sateye = {
     templates: {},
     dom: {},
 
     initialize: function() {
-        // initialize the whole client side app
-        sateye.templates.alert = Handlebars.compile(document.getElementById("alert-template").innerHTML);
-        sateye.templates.satellite = Handlebars.compile(document.getElementById("satellite-template").innerHTML);
+        // compile templates
+        for (name in templatesMap) {
+            sateye.templates[name] = Handlebars.compile($(templatesMap[name]).html());
+        }
 
         // references to the dom
         sateye.dom.alertsBar = $("#alerts-bar");
+        sateye.dom.passList = $("#pass-list");
 
         // initialize submodules
         sateye.map.initialize();
         sateye.satellites.initialize();
         sateye.locations.initialize();
+        sateye.passes.initialize();
         sateye.dashboards.initialize();
     },
 

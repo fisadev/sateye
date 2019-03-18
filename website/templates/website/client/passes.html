@@ -1,0 +1,15 @@
+{% verbatim %}
+<script id="pass-list-template" type="text/x-handlebars-template">
+    <ul class="list-group">
+    {{#each passes}}
+        <li class="list-group-item">
+            <ul>
+            <li>AOS: {{ this.aos }}</li>
+            <li>LOS: {{ this.los }}</li>
+            <li>TCA: {{ this.max_elevation_degrees }}° at {{ this.max_elevation_date }}</li>
+            </ul>
+        </li>
+    {{/each}}
+    </ul>
+</script>
+{% endverbatim %}

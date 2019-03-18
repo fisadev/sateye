@@ -69,7 +69,7 @@ sateye.map = {
     },
 
     onNewLocations: function(locations) {
-        // add new locations to the map 
+        // add new locations to the map
         for (let location of locations) {
             var locationEntity = {
                 id: "Sateye.Location:" + location.id,
