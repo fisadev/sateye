@@ -26,7 +26,7 @@
         </div>
         <div class="row">
             <div id="alerts-bar"></div>
-            <div class="col p-0 tab-content">
+            <div class="col tab-content">
                 {% include 'website/map.html' %}
             </div>
         </div>
@@ -45,11 +45,13 @@
 
     {% include "website/client/alert.html" %}
     {% include "website/client/satellite.html" %}
+    {% include "website/client/passes.html" %}
 
     <script src="{% static 'website/js/core.js' %}"></script>
     <script src="{% static 'website/js/map.js' %}"></script>
     <script src="{% static 'website/js/satellites.js' %}"></script>
     <script src="{% static 'website/js/locations.js' %}"></script>
+    <script src="{% static 'website/js/passes.js' %}"></script>
     <script src="{% static 'website/js/dashboards.js' %}"></script>
 
     <script src="{% static 'website/js/home.js' %}"></script>
