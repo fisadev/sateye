@@ -25,7 +25,13 @@ sateye.passes = {
   },
 
   onPassesRetrieved: function(data) {
+    var date_format = 'DD/MM/YYYY HH:mm:ss'
+
     // TODO: Dynamic selection of satellite and location
+    data.forEach(function(pass) {
+      pass.max_elevation_date =  dayjs(pass.max_elevation_date).format(date_format);
+    });
+
     var context = {
       passes: data,
       location: 'UTN Los Reyunos',
