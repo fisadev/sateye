@@ -2,8 +2,11 @@ sateye.passes = {
   dom: {},
 
   initialize: function() {
+    var start = dayjs().format('YYYY-MM-DD');
+    var end = dayjs().add(3, 'day').format('YYYY-MM-DD');
+
     sateye.passes.dom.passList = $('#pass-list');
-    sateye.passes.predictPasses('2019-03-14', '2019-03-15', 1, 1);
+    sateye.passes.predictPasses(start, end, 1, 1);
   },
 
   predictPasses: function(startDate, endDate, satelliteId, locationId) {
