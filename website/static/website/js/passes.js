@@ -1,12 +1,23 @@
 sateye.passes = {
   dom: {},
 
+  instances: [],
+
   initialize: function() {
     var start = dayjs().format('YYYY-MM-DD');
     var end = dayjs().add(3, 'day').format('YYYY-MM-DD');
 
     sateye.passes.dom.passList = $('#pass-list');
     sateye.passes.predictPasses(start, end, 1, 1);
+  },
+
+  createPass: function(passData) {
+    var dateFormat = 'DD/MM/YYYY HH:mm:ss';
+    return {
+      aos: dayjs(passData.aos).format(dateFormat),
+      los: dayjs(passData.los).format(dateFormat),
+      maxElevationDate: dayjs(passData.max_elevation_date).format(dateFormat),
+    };
   },
 
   predictPasses: function(startDate, endDate, satelliteId, locationId) {
@@ -25,18 +36,15 @@ sateye.passes = {
   },
 
   onPassesRetrieved: function(data) {
-    var date_format = 'DD/MM/YYYY HH:mm:ss'
-
-    // TODO: Dynamic selection of satellite and location
-    data.forEach(function(pass) {
-      pass.max_elevation_date =  dayjs(pass.max_elevation_date).format(date_format);
-    });
-
     var context = {
-      passes: data,
+      passes: [],
       location: 'UTN Los Reyunos',
       satellite: 'ISS',
     };
+
+    for (let passData of data) {
+      context.passes.push(this.createPass(passData));
+    }
 
     var content = sateye.templates.passList(context);
     sateye.dom.passList.html(content);
