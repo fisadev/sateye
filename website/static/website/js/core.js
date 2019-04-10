@@ -4,12 +4,6 @@ var Alert = {
     ERROR: "error"
 }
 
-var templatesMap = {
-    alert: "#alert-template",
-    satellite: "#satellite-template",
-    passList: "#pass-list-template",
-};
-
 var sateye = function() {
     var self = {};
     self.templates = {};
@@ -17,6 +11,12 @@ var sateye = function() {
 
     self.initialize = function() {
         // compile templates
+        var templatesMap = {
+            alert: "#alert-template",
+            satellite: "#satellite-template",
+            passList: "#pass-list-template",
+        };
+
         for (name in templatesMap) {
             self.templates[name] = Handlebars.compile($(templatesMap[name]).html());
         }
