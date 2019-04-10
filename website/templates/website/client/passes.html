@@ -1,15 +1,24 @@
 {% verbatim %}
 <script id="pass-list-template" type="text/x-handlebars-template">
-    <ul class="list-group">
-    {{#each passes}}
-        <li class="list-group-item">
-            <ul>
-            <li>AOS: {{ this.aos }}</li>
-            <li>LOS: {{ this.los }}</li>
-            <li>TCA: {{ this.max_elevation_degrees }}° at {{ this.max_elevation_date }}</li>
-            </ul>
-        </li>
-    {{/each}}
-    </ul>
+    <table class="table table-dark table-striped table-hover table-sm">
+        <thead>
+            <tr>
+                <th class="text-center"></th>
+                <th class="text-center">Satellite</th>
+                <th class="text-center">Location</th>
+                <th class="text-center">TCA</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each passes}}
+            <tr>
+                <td class="text-center"><i class="fas fa-eye-slash"></i></td>
+                <td class="text-center">{{ ../satellite }}</td>
+                <td class="text-center">{{ ../location }}</td>
+                <td class="text-center">{{ this.maxElevationDate }}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
 </script>
 {% endverbatim %}
