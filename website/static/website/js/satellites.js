@@ -13,6 +13,7 @@ sateye.satellites = {
         // assign event handlers
         sateye.satellites.dom.satellitesModal.on("show.bs.modal", sateye.satellites.onSatellitesModalShown);
         sateye.satellites.dom.existingSatellitesForm.on("show.bs.collapse", sateye.satellites.onExistingSatellitesFormShown);
+        sateye.satellites.dom.createSatelliteForm.on("show.bs.collapse", sateye.satellites.onCreateSatelliteFormShown);
         sateye.satellites.dom.filterSatellitesInput.on("keyup", sateye.satellites.onFilterExistingSatellites);
 
         sateye.satellites.onNewSatellites([]);
@@ -26,6 +27,9 @@ sateye.satellites = {
     onExistingSatellitesFormShown: function(e) {
         // when the existing satellites form is shown, populate the satellites list
 
+        // hide the creation form
+        sateye.satellites.dom.createSatelliteForm.collapse("hide");
+
         // the user must know the list is loading
         sateye.satellites.dom.existingSatellitesList.html("");
         sateye.satellites.dom.existingSatellitesList.append("<p>Loading...</p>");
@@ -35,6 +39,11 @@ sateye.satellites = {
             url: "/api/satellites/",
             cache: false,
         }).done(sateye.satellites.onSatellitesReceived);
+    },
+
+    onCreateSatelliteFormShown: function(e) {
+        // when the create satellite form is shown hide the existing satellites form
+        sateye.satellites.dom.existingSatellitesForm.collapse("hide");
     },
 
     onSatellitesReceived: function(data) {
