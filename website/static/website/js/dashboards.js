@@ -1,11 +1,12 @@
-sateye.dashboards = {
-    current: null,
+sateye.dashboards = function() {
+    var self = {};
+    self.current = null;
 
-    initialize: function() {
-        sateye.dashboards.loadDashboard();
-    },
+    self.initialize = function() {
+        self.loadDashboard();
+    }
 
-    loadDashboard: function(dashboardId) {
+    self.loadDashboard = function(dashboardId) {
         // load the user dashboard config from the server
         // if the dashboard_id isn't specified, load the first dashboard available
         console.log("Requesting dashboards...");
@@ -13,34 +14,34 @@ sateye.dashboards = {
         // temporal hack, until we have some kind of dashboard picker and the logic gets separated
         if (dashboardId === undefined) {
             $.ajax({url: "/api/dashboards/", cache: false})
-             .done(sateye.dashboards.onDashboardsReceived);
+             .done(self.onDashboardsReceived);
         } else {
             $.ajax({url: "/api/dashboards/" + dashboardId.toString() + "/", cache: false})
-             .done(sateye.dashboards.onDashboardReceived);
+             .done(self.onDashboardReceived);
         }
-    },
+    }
 
-    onDashboardsReceived: function(data) {
+    self.onDashboardsReceived = function(data) {
         // when we receive response from the dashboards list requeset
         console.log("Dashboards received from the server");
         // if no id was specified, just get the first dashboard
-        sateye.dashboards.setCurrentDashboard(sateye.dashboards.createDashboard(data[0]));
-    },
+        self.setCurrentDashboard(self.createDashboard(data[0]));
+    }
 
-    onDashboardReceived: function(data) {
+    self.onDashboardReceived = function(data) {
         // when we receive response from the single dashboard requeset
         console.log("Dashboard received from the server");
-        sateye.dashboards.setCurrentDashboard(sateye.dashboards.createDashboard(data));
-    },
+        self.setCurrentDashboard(self.createDashboard(data));
+    }
 
-    setCurrentDashboard: function(dashboard) {
+    self.setCurrentDashboard = function(dashboard) {
         // do all the stuff required to set the new dashboard
-        sateye.dashboards.current = dashboard;
+        self.current = dashboard;
         sateye.map.onNewDashboard(dashboard);
         sateye.satellites.onNewSatellites(dashboard.satellites);
-    },
+    }
 
-    createDashboard: function(dashboardData) {
+    self.createDashboard = function(dashboardData) {
         // create a new dashboard instance, parsing the json received from an api
 
         // create satellite instances for each satellite in the dashboard
@@ -73,5 +74,7 @@ sateye.dashboards = {
                 return null;
             }
         }
-    },
-}
+    }
+
+    return self;
+}();

@@ -1,75 +1,75 @@
-sateye.map = {
-    mainMap: null,
-    cesiumConfig: {
+sateye.map = function() {
+    var self = {};
+    self.viewer = null;
+    self.cesiumConfig = {
         homeButton: false,
         navigationInstructionsInitiallyVisible: false,
         sceneMode: Cesium.SceneMode.SCENE2D,
         fullscreenButton: false,
         shouldAnimate: true,
-    },
-    dom: {},
+    }
+    self.dom = {};
 
     // chunking configs. More info at docs/prediction_chunks.rst
     // how often do we check if we need to refresh predictions?
-    _predictionsRefreshRealSeconds: 3,
+    self._predictionsRefreshRealSeconds = 3;
     // how many real seconds do we want to get on each prediction?
-    _predictionsChunkRealSeconds: 30 * 60,
+    self._predictionsChunkRealSeconds = 30 * 60;
     // how many real seconds before we run out of predictions should fire a new request for predictions?
-    _predictionsTooLowThresholdRealSeconds: 15 * 60,
+    self._predictionsTooLowThresholdRealSeconds = 15 * 60;
 
-    initialize: function() {
+    self.initialize = function() {
         // initialize the map module
-        sateye.map.configureCesiumMap();
+        self.configureCesiumMap();
 
         // control display of night shadow with the checkbox
         nightShadowInput = $("#night-shadow-input");
-        sateye.map.dom.nightShadowInput = nightShadowInput;
-        nightShadowInput.on("change", sateye.map.onNightShadowChange);
-        sateye.map.onNightShadowChange();
-    },
+        self.dom.nightShadowInput = nightShadowInput;
+        nightShadowInput.on("change", self.onNightShadowChange);
+        self.onNightShadowChange();
+    }
 
-    configureCesiumMap: function() {
+    self.configureCesiumMap = function() {
         // configure the cesium map
         Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmNTM4OTc3ZS0zZmVjLTQ0M2EtYThjYy1kYWJhN2RhOGJlM2QiLCJpZCI6ODU0Mywic2NvcGVzIjpbImFzbCIsImFzciIsImdjIl0sImlhdCI6MTU1MjI0MTkxOX0.VCvIgLNku8mLpI6KIUq3ldjE-KNE5MDksNuCrPMVk48";
-        sateye.map.mainMap = new Cesium.Viewer("main-map", sateye.map.cesiumConfig);
+        self.viewer = new Cesium.Viewer("main-map", self.cesiumConfig);
 
         // center on 0,0 with enough distance to see the whole planet
         var center = Cesium.Cartesian3.fromDegrees(0, 0);
-        sateye.map.mainMap.camera.setView({destination: center});
+        self.viewer.camera.setView({destination: center});
 
         // every some time, ensure we have paths for each satellite
-        //sateye.map.mainMap.clock.onTick.addEventListener(sateye.map.onMapTick);
-        setInterval(sateye.map.ensurePathPredictions,
-                    (sateye.map._predictionsRefreshRealSeconds - 1) * 1000);
+        //self.viewer.clock.onTick.addEventListener(self.onMapTick);
+        setInterval(self.ensurePathPredictions, (self._predictionsRefreshRealSeconds - 1) * 1000);
 
         // remove fog and ground atmosphere on 3d globe
-        sateye.map.mainMap.scene.fog.enabled = false;
-        sateye.map.mainMap.scene.globe.showGroundAtmosphere = false;
-    },
+        self.viewer.scene.fog.enabled = false;
+        self.viewer.scene.globe.showGroundAtmosphere = false;
+    }
 
-    onMapTick: function(clock) {
+    self.onMapTick = function(clock) {
         // time has passed in the map
-    },
+    }
 
-    realToMapSeconds: function(realSeconds) {
+    self.realToMapSeconds = function(realSeconds) {
         // convert real seconds to map seconds, because the map can be moving at a different
         // speed
-        var clock = sateye.map.mainMap.clock;
+        var clock = self.viewer.clock;
         return clock.clockStep * clock.multiplier * realSeconds;
-    },
+    }
 
-    onNewDashboard: function(dashboard) {
+    self.onNewDashboard = function(dashboard) {
         // called when we start using a new dashboard
-        sateye.map.clearMapData();
-        sateye.map.onNewLocations(dashboard.locations);
-    },
+        self.clearMapData();
+        self.onNewLocations(dashboard.locations);
+    }
 
-    clearMapData: function() {
+    self.clearMapData = function() {
         // remove all data from the map
-        sateye.map.mainMap.entities.removeAll();
-    },
+        self.viewer.entities.removeAll();
+    }
 
-    onNewLocations: function(locations) {
+    self.onNewLocations = function(locations) {
         // add new locations to the map
         for (let location of locations) {
             var locationEntity = {
@@ -85,28 +85,28 @@ sateye.map = {
                 position: Cesium.Cartesian3.fromDegrees(location.longitude, location.latitude),
             };
 
-            sateye.map.mainMap.entities.add(locationEntity);
+            self.viewer.entities.add(locationEntity);
         }
-    },
+    }
 
-    ensurePathPredictions: function() {
+    self.ensurePathPredictions = function() {
         // ensure the map has enough info to display paths for shown satellites
 
         // if we have less than X real seconds of predictions left, then ask for Y predicted
         // seconds
         // more info at docs/prediction_chunks.rst
         for (let satellite of sateye.dashboards.current.satellites) {
-            var currentDate = sateye.map.mainMap.clock.currentTime;
+            var currentDate = self.viewer.clock.currentTime;
 
             // we should ensure we have predictions enough to cover the time between the current date and
             // currentDate + _predictionsTooLowThresholdRealSeconds
             var ensurePredictionsUntil = sateye.addSeconds(
                 currentDate,
-                sateye.map.realToMapSeconds(sateye.map._predictionsTooLowThresholdRealSeconds),
+                self.realToMapSeconds(self._predictionsTooLowThresholdRealSeconds),
             );
 
             if (!satellite.predictionsCover(currentDate, ensurePredictionsUntil)) {
-                var mapSecondsArround = sateye.map.realToMapSeconds(sateye.map._predictionsChunkRealSeconds);
+                var mapSecondsArround = self.realToMapSeconds(self._predictionsChunkRealSeconds);
                 var startDate = sateye.addSeconds(currentDate, -mapSecondsArround);
                 var endDate = sateye.addSeconds(currentDate, mapSecondsArround);
 
@@ -115,43 +115,43 @@ sateye.map = {
                     endDate,
                     satellite.pathSecondsAhead,
                     satellite.pathSecondsBehind,
-                    sateye.map._predictionsRefreshRealSeconds * 1000,  // used as timeout
+                    self._predictionsRefreshRealSeconds * 1000,  // used as timeout
                 );
             }
         }
-    },
+    }
 
-    onNewPathPrediction: function(satellite) {
+    self.onNewPathPrediction = function(satellite) {
         // process new path prediction from a satellite
-        sateye.map.updateSatelliteInMap(satellite);
-    },
+        self.updateSatelliteInMap(satellite);
+    }
 
-    getSatelliteMapId: function(satellite) {
+    self.getSatelliteMapId = function(satellite) {
         // unified way of identifying satellites in the maps
         return "Sateye.Satellite:" + satellite.id.toString();
-    },
+    }
 
-    buildOrCreateSatelliteEntity: function(satellite) {
+    self.buildOrCreateSatelliteEntity = function(satellite) {
         // build a cesium entity to display the satellite and its path in the map, or return an
         // existing one if it's already there
 
-        var satelliteMapId = sateye.map.getSatelliteMapId(satellite);
-        var satelliteEntity = sateye.map.mainMap.entities.getById(satelliteMapId);
+        var satelliteMapId = self.getSatelliteMapId(satellite);
+        var satelliteEntity = self.viewer.entities.getById(satelliteMapId);
 
         if (satelliteEntity === undefined) {
-            satelliteEntity = sateye.map.mainMap.entities.add({
+            satelliteEntity = self.viewer.entities.add({
                 id: satelliteMapId,
                 availability: new Cesium.TimeIntervalCollection(),
             });
         }
 
         return satelliteEntity;
-    },
+    }
 
-    updateSatelliteInMap: function(satellite) {
+    self.updateSatelliteInMap = function(satellite) {
         // update the display data for a satellite shown in the map, based on its path predictions
         // this will even add the satellite for the map if it wasn't already there
-        var satelliteEntity = sateye.map.buildOrCreateSatelliteEntity(satellite);
+        var satelliteEntity = self.buildOrCreateSatelliteEntity(satellite);
 
         // general satellite data
         satelliteEntity.name = satellite.name;
@@ -195,10 +195,12 @@ sateye.map = {
             leadTime: satellite.pathSecondsAhead,
             trailTime: satellite.pathSecondsBehind
         });
-    },
+    }
 
-    onNightShadowChange: function(e) {
+    self.onNightShadowChange = function(e) {
         // on input change, decide wether to show or not the night shadow
-        sateye.map.mainMap.scene.globe.enableLighting = sateye.map.dom.nightShadowInput.is(":checked");
-    },
-}
+        self.viewer.scene.globe.enableLighting = self.dom.nightShadowInput.is(":checked");
+    }
+
+    return self;
+}();
