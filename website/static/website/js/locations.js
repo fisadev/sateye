@@ -1,8 +1,10 @@
-sateye.locations = {
-    initialize: function() {
-    },
+sateye.locations = function() {
+    var self = {};
 
-    createLocation: function(dashboardLocationConfig) {
+    self.initialize = function() {
+    }
+
+    self.createLocation = function(dashboardLocationConfig) {
         // create a new location instance, parsing the json received from an api
         return {
             // general location data
@@ -17,5 +19,7 @@ sateye.locations = {
             pointSize: dashboardLocationConfig.point_size,
             pointColor: dashboardLocationConfig.point_color,
         }
-    },
-}
+    }
+
+    return self;
+}();
