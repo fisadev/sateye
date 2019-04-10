@@ -1,6 +1,6 @@
 sateye.map = function() {
     var self = {};
-    self.mainMap = null;
+    self.viewer = null;
     self.cesiumConfig = {
         homeButton: false,
         navigationInstructionsInitiallyVisible: false,
@@ -32,19 +32,19 @@ sateye.map = function() {
     self.configureCesiumMap = function() {
         // configure the cesium map
         Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmNTM4OTc3ZS0zZmVjLTQ0M2EtYThjYy1kYWJhN2RhOGJlM2QiLCJpZCI6ODU0Mywic2NvcGVzIjpbImFzbCIsImFzciIsImdjIl0sImlhdCI6MTU1MjI0MTkxOX0.VCvIgLNku8mLpI6KIUq3ldjE-KNE5MDksNuCrPMVk48";
-        self.mainMap = new Cesium.Viewer("main-map", self.cesiumConfig);
+        self.viewer = new Cesium.Viewer("main-map", self.cesiumConfig);
 
         // center on 0,0 with enough distance to see the whole planet
         var center = Cesium.Cartesian3.fromDegrees(0, 0);
-        self.mainMap.camera.setView({destination: center});
+        self.viewer.camera.setView({destination: center});
 
         // every some time, ensure we have paths for each satellite
-        //self.mainMap.clock.onTick.addEventListener(self.onMapTick);
+        //self.viewer.clock.onTick.addEventListener(self.onMapTick);
         setInterval(self.ensurePathPredictions, (self._predictionsRefreshRealSeconds - 1) * 1000);
 
         // remove fog and ground atmosphere on 3d globe
-        self.mainMap.scene.fog.enabled = false;
-        self.mainMap.scene.globe.showGroundAtmosphere = false;
+        self.viewer.scene.fog.enabled = false;
+        self.viewer.scene.globe.showGroundAtmosphere = false;
     }
 
     self.onMapTick = function(clock) {
@@ -54,7 +54,7 @@ sateye.map = function() {
     self.realToMapSeconds = function(realSeconds) {
         // convert real seconds to map seconds, because the map can be moving at a different
         // speed
-        var clock = self.mainMap.clock;
+        var clock = self.viewer.clock;
         return clock.clockStep * clock.multiplier * realSeconds;
     }
 
@@ -66,7 +66,7 @@ sateye.map = function() {
 
     self.clearMapData = function() {
         // remove all data from the map
-        self.mainMap.entities.removeAll();
+        self.viewer.entities.removeAll();
     }
 
     self.onNewLocations = function(locations) {
@@ -85,7 +85,7 @@ sateye.map = function() {
                 position: Cesium.Cartesian3.fromDegrees(location.longitude, location.latitude),
             };
 
-            self.mainMap.entities.add(locationEntity);
+            self.viewer.entities.add(locationEntity);
         }
     }
 
@@ -96,7 +96,7 @@ sateye.map = function() {
         // seconds
         // more info at docs/prediction_chunks.rst
         for (let satellite of sateye.dashboards.current.satellites) {
-            var currentDate = self.mainMap.clock.currentTime;
+            var currentDate = self.viewer.clock.currentTime;
 
             // we should ensure we have predictions enough to cover the time between the current date and
             // currentDate + _predictionsTooLowThresholdRealSeconds
@@ -136,10 +136,10 @@ sateye.map = function() {
         // existing one if it's already there
 
         var satelliteMapId = self.getSatelliteMapId(satellite);
-        var satelliteEntity = self.mainMap.entities.getById(satelliteMapId);
+        var satelliteEntity = self.viewer.entities.getById(satelliteMapId);
 
         if (satelliteEntity === undefined) {
-            satelliteEntity = self.mainMap.entities.add({
+            satelliteEntity = self.viewer.entities.add({
                 id: satelliteMapId,
                 availability: new Cesium.TimeIntervalCollection(),
             });
@@ -199,7 +199,7 @@ sateye.map = function() {
 
     self.onNightShadowChange = function(e) {
         // on input change, decide wether to show or not the night shadow
-        self.mainMap.scene.globe.enableLighting = self.dom.nightShadowInput.is(":checked");
+        self.viewer.scene.globe.enableLighting = self.dom.nightShadowInput.is(":checked");
     }
 
     return self;
