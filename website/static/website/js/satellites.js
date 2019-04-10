@@ -1,102 +1,103 @@
-sateye.satellites = {
-    dom: {},
+sateye.satellites = function() {
+    var self = {};
+    self.dom = {};
 
-    initialize: function() {
+    self.initialize = function() {
         // references to the dom
-        sateye.satellites.dom.satellitesList = $("#satellites-list");
-        sateye.satellites.dom.satellitesModal = $("#satellites-modal");
-        sateye.satellites.dom.existingSatellitesForm = $("#existing-satellites-form");
-        sateye.satellites.dom.existingSatellitesList = $("#existing-satellites-list");
-        sateye.satellites.dom.filterSatellitesInput = $("#filter-satellites-input");
-        sateye.satellites.dom.createSatelliteForm = $("#create-satellite-form");
+        self.dom.satellitesList = $("#satellites-list");
+        self.dom.satellitesModal = $("#satellites-modal");
+        self.dom.existingSatellitesForm = $("#existing-satellites-form");
+        self.dom.existingSatellitesList = $("#existing-satellites-list");
+        self.dom.filterSatellitesInput = $("#filter-satellites-input");
+        self.dom.createSatelliteForm = $("#create-satellite-form");
 
         // assign event handlers
-        sateye.satellites.dom.satellitesModal.on("show.bs.modal", sateye.satellites.onSatellitesModalShown);
-        sateye.satellites.dom.existingSatellitesForm.on("show.bs.collapse", sateye.satellites.onExistingSatellitesFormShown);
-        sateye.satellites.dom.createSatelliteForm.on("show.bs.collapse", sateye.satellites.onCreateSatelliteFormShown);
-        sateye.satellites.dom.filterSatellitesInput.on("keyup", sateye.satellites.onFilterExistingSatellites);
+        self.dom.satellitesModal.on("show.bs.modal", self.onSatellitesModalShown);
+        self.dom.existingSatellitesForm.on("show.bs.collapse", self.onExistingSatellitesFormShown);
+        self.dom.createSatelliteForm.on("show.bs.collapse", self.onCreateSatelliteFormShown);
+        self.dom.filterSatellitesInput.on("keyup", self.onFilterExistingSatellites);
 
-        sateye.satellites.onNewSatellites([]);
-    },
+        self.onNewSatellites([]);
+    }
 
-    onSatellitesModalShown: function(e) {
-        sateye.satellites.dom.existingSatellitesForm.collapse("hide");
-        sateye.satellites.dom.createSatelliteForm.collapse("hide");
-    },
+    self.onSatellitesModalShown = function(e) {
+        self.dom.existingSatellitesForm.collapse("hide");
+        self.dom.createSatelliteForm.collapse("hide");
+    }
 
-    onExistingSatellitesFormShown: function(e) {
+    self.onExistingSatellitesFormShown = function(e) {
         // when the existing satellites form is shown, populate the satellites list
 
         // hide the creation form
-        sateye.satellites.dom.createSatelliteForm.collapse("hide");
+        self.dom.createSatelliteForm.collapse("hide");
 
         // the user must know the list is loading
-        sateye.satellites.dom.existingSatellitesList.html("");
-        sateye.satellites.dom.existingSatellitesList.append("<p>Loading...</p>");
+        self.dom.existingSatellitesList.html("");
+        self.dom.existingSatellitesList.append("<p>Loading...</p>");
 
         // request the list
         return $.ajax({
             url: "/api/satellites/",
             cache: false,
-        }).done(sateye.satellites.onSatellitesReceived);
-    },
+        }).done(self.onSatellitesReceived);
+    }
 
-    onCreateSatelliteFormShown: function(e) {
+    self.onCreateSatelliteFormShown = function(e) {
         // when the create satellite form is shown hide the existing satellites form
-        sateye.satellites.dom.existingSatellitesForm.collapse("hide");
-    },
+        self.dom.existingSatellitesForm.collapse("hide");
+    }
 
-    onSatellitesReceived: function(data) {
+    self.onSatellitesReceived = function(data) {
         // list of satellites received, populate the existing satellites list
-        sateye.satellites.dom.existingSatellitesList.html("");
+        self.dom.existingSatellitesList.html("");
         var satelliteElement;
         for (let satellite of data) {
             // only add satellites not present in the dashboard
             if (sateye.dashboards.current.getSatellite(satellite.id) === null) {
                 satelliteElement = $('<li class="list-group-item list-group-item-action">' + satellite.name + '</li>');
                 satelliteElement.data("satelliteId", satellite.id)
-                sateye.satellites.dom.existingSatellitesList.append(satelliteElement);
+                self.dom.existingSatellitesList.append(satelliteElement);
 
                 // and add the click handler, so the satellite is added
-                satelliteElement.on("click", sateye.satellites.onExistingSatelliteClicked);
+                satelliteElement.on("click", self.onExistingSatelliteClicked);
             }
         }
-    },
+    }
 
-    onExistingSatelliteClicked: function(e) {
+    self.onExistingSatelliteClicked = function(e) {
         // the user clicked an existing satellite to add it to the dashboard
-        var self = $(this);
+        var clickedItem = $(this);
         console.log('clicked:');
-        console.log(self);
-        var satelliteId = self.data("satelliteId");
-        self.remove();
-    },
+        console.log(clickedItem);
+        var satelliteId = clickedItem.data("satelliteId");
+        clickedItem.remove();
+    }
 
-    onFilterExistingSatellites: function(e) {
+    self.onFilterExistingSatellites = function(e) {
         // filter the existing satellites list, in the add existing satellite form
-        var filterText = sateye.satellites.dom.filterSatellitesInput.val().toLowerCase();
+        var filterText = self.dom.filterSatellitesInput.val().toLowerCase();
 
-        sateye.satellites.dom.existingSatellitesList.children("li").filter(function() {
-            var self = $(this)
-            var containsFilterText = self.text().toLowerCase().indexOf(filterText) > -1
-            self.toggle(containsFilterText);
+        self.dom.existingSatellitesList.children("li").filter(function() {
+            var item = $(this)
+            var containsFilterText = item.text().toLowerCase().indexOf(filterText) > -1
+            item.toggle(containsFilterText);
         });
-    },
+    }
 
-    onNewSatellites: function(satellites) {
+    self.onNewSatellites = function(satellites) {
         // when the satellites list changes, update the list in the abm
 
         // remove old list
-        sateye.satellites.dom.satellitesList.html("");
+        self.dom.satellitesList.html("");
 
         // add satellites to list
         for (let satellite of satellites) {
             var element = sateye.templates.satellite(satellite);
-            sateye.satellites.dom.satellitesList.append(element);
+            self.dom.satellitesList.append(element);
         }
-    },
+    }
 
-    createSatellite: function(dashboardSatelliteConfig) {
+    self.createSatellite = function(dashboardSatelliteConfig) {
         // create a new satellite instance, parsing the json received from an api
         return {
             // general satellite data
@@ -134,7 +135,7 @@ sateye.satellites = {
                 // get more predictions, to fill X seconds starting at a given date
                 // (usually asking from the current map date, plus X map seconds)
                 console.log("Requesting predictions for satellite " + this.name);
-                var self = this;
+                var satellite = this;
                 $.ajax({
                     url: "/api/satellites/" + this.id + "/predict_path/",
                     cache: false,
@@ -146,8 +147,8 @@ sateye.satellites = {
                         path_seconds_behind: pathSecondsBehind
                     }
                 })
-                .done(function(data) {self.onPredictionsReceived(data)})
-                .fail(function(data) {self.onPredictionsError(data)});
+                .done(function(data) {satellite.onPredictionsReceived(data)})
+                .fail(function(data) {satellite.onPredictionsError(data)});
             },
 
             onPredictionsReceived: function(data) {
@@ -170,5 +171,7 @@ sateye.satellites = {
                 console.log(data);
             },
         }
-    },
-}
+    }
+
+    return self;
+}();
