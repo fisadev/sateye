@@ -30,7 +30,7 @@ sateye.map = {
 
     configureCesiumMap: function() {
         // configure the cesium map
-         Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmNTM4OTc3ZS0zZmVjLTQ0M2EtYThjYy1kYWJhN2RhOGJlM2QiLCJpZCI6ODU0Mywic2NvcGVzIjpbImFzbCIsImFzciIsImdjIl0sImlhdCI6MTU1MjI0MTkxOX0.VCvIgLNku8mLpI6KIUq3ldjE-KNE5MDksNuCrPMVk48";
+        Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmNTM4OTc3ZS0zZmVjLTQ0M2EtYThjYy1kYWJhN2RhOGJlM2QiLCJpZCI6ODU0Mywic2NvcGVzIjpbImFzbCIsImFzciIsImdjIl0sImlhdCI6MTU1MjI0MTkxOX0.VCvIgLNku8mLpI6KIUq3ldjE-KNE5MDksNuCrPMVk48";
         sateye.map.mainMap = new Cesium.Viewer("main-map", sateye.map.cesiumConfig);
 
         // center on 0,0 with enough distance to see the whole planet
