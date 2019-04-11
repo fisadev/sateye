@@ -67,8 +67,6 @@ sateye.satellites = function() {
     self.onExistingSatelliteClicked = function(e) {
         // the user clicked an existing satellite to add it to the dashboard
         var clickedItem = $(this);
-        console.log('clicked:');
-        console.log(clickedItem);
         var satelliteId = clickedItem.data("satelliteId");
         clickedItem.remove();
     }
