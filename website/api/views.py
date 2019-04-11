@@ -131,12 +131,17 @@ def predict_passes(request, satellite_id):
     passes = satellite.predict_passes(location, start_date, end_date,
                                       min_tca_elevation=min_tca_elevation,
                                       min_sun_elevation=min_sun_elevation)
-    passes_serializer = serializers.PassSerializer(passes, many=True)
+    passes_serialized = [{'aos': pass_.aos.isoformat(),
+                          'los': pass_.los.isoformat(),
+                          'tca': pass_.tca.isoformat(),
+                          'tca_elevation': pass_.tca_elevation,
+                          'sun_elevation': pass_.sun_elevation}
+                         for pass_ in passes]
 
     return Response({
         'start_date': start_date.isoformat(),
         'end_date': end_date.isoformat(),
         'satellite_id': satellite_id,
         'location_id': location_id,
-        'passes': passes_serializer.data,
+        'passes': passes_serialized,
     })

@@ -83,14 +83,3 @@ class DashboardSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Satellite
         fields = ['id', 'name', 'satellite_configs', 'location_configs']
-
-
-class PassSerializer(serializers.Serializer):
-    """
-    Serializer for the pass prediction endpoint.
-    """
-    aos = serializers.DateTimeField()
-    los = serializers.DateTimeField()
-    tca = serializers.DateTimeField()
-    tca_elevation = serializers.DecimalField(max_digits=8, decimal_places=4)
-    sun_elevation = serializers.DecimalField(max_digits=8, decimal_places=4)
