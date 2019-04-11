@@ -1,7 +1,9 @@
 from datetime import timedelta
+import pytz
 
 from django.conf import settings
 from django.db import models
+from django.utils.timezone import make_aware
 
 from orbit_predictor import locations as op_locations
 
@@ -108,9 +110,9 @@ class Satellite(models.Model):
         for pass_ in passes_iterator:
             # TODO calculate sun elevation, and filter passes by it
             yield Pass(
-                aos=pass_.aos,
-                los=pass_.los,
-                tca=pass_.max_elevation_date,
+                aos=make_aware(pass_.aos, timezone=pytz.utc),
+                los=make_aware(pass_.los, timezone=pytz.utc),
+                tca=make_aware(pass_.max_elevation_date, timezone=pytz.utc),
                 tca_elevation=pass_.max_elevation_deg,
                 sun_elevation=None,  # TODO return calculated sun elevation
             )
