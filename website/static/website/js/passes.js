@@ -9,7 +9,7 @@ sateye.passes = function() {
 
         // samples passes retrieved, placeholder until we have GUI to ask for passes
         var startDate = sateye.map.viewer.clock.currentTime;
-        var endDate = sateye.addSeconds(start, 3600 * 24 * 10);
+        var endDate = sateye.addSeconds(startDate, 3600 * 24 * 10);
         self.predictPasses(startDate, endDate, 1, 1);
     }
 
