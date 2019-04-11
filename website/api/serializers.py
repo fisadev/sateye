@@ -89,9 +89,8 @@ class PassSerializer(serializers.Serializer):
     """
     Serializer for the pass prediction endpoint.
     """
-    max_elevation_degrees = serializers.DecimalField(
-        max_digits=5, decimal_places=2, source='max_elevation_deg'
-    )
-    max_elevation_date = serializers.DateTimeField()
     aos = serializers.DateTimeField()
     los = serializers.DateTimeField()
+    tca = serializers.DateTimeField()
+    tca_elevation = serializers.DecimalField(max_digits=8, decimal_places=4)
+    sun_elevation = serializers.DecimalField(max_digits=8, decimal_places=4)
