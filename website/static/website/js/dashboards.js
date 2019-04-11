@@ -72,6 +72,17 @@ sateye.dashboards = function() {
                     }
                 }
                 return null;
+            },
+
+            getLocation: function(locationId) {
+                // get a location from the dashboard, by id
+                // if the location is not found, returns null
+                for (let location of this.locations) {
+                    if (location.id === locationId) {
+                        return location;
+                    }
+                }
+                return null;
             }
         }
     }
