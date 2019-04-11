@@ -1,3 +1,4 @@
+from collections import namedtuple
 from datetime import datetime
 import pytz
 
@@ -8,6 +9,9 @@ from sgp4.io import twoline2rv
 from orbit_predictor.accuratepredictor import HighAccuracyTLEPredictor
 from orbit_predictor.predictors import TLEPredictor
 from orbit_predictor.sources import MemoryTLESource
+
+
+Pass = namedtuple('Pass', 'aos tca los tca_elevation sun_elevation')
 
 
 def get_predictor_from_tle_lines(tle_lines, precise=False):
