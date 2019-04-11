@@ -13,9 +13,9 @@
             {{#each passes}}
             <tr>
                 <td class="text-center"><i class="fas fa-eye-slash"></i></td>
-                <td class="text-center">{{ ../satellite }}</td>
-                <td class="text-center">{{ ../location }}</td>
-                <td class="text-center">{{ this.maxElevationDate }}</td>
+                <td class="text-center">{{ ../satellite.name }}</td>
+                <td class="text-center">{{ ../location.name }}</td>
+                <td class="text-center">{{ this.tca }}</td>
             </tr>
             {{/each}}
         </tbody>

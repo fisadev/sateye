@@ -39,14 +39,27 @@ sateye.passes = function() {
 
     self.onPassesRetrieved = function(data) {
         // list of passes received, populate the passes list
+        var dashboard = sateye.dashboards.current;
+        console.log(data)
+        var satellite = dashboard.getSatellite(data.satellite_id);
+        var location = dashboard.getLocation(data.location_id);
+        console.log(satellite);
+        console.log(location);
+
+        if (satellite === null || location === null) {
+            sateye.showAlert(sateye.Alert.ERROR, 
+                             "Something went wrong retrieving the passes predictions.");
+            return;
+        }
+
         var context = {
+            satellite: satellite,
+            location: location,
             passes: [],
-            location: 'UTN Los Reyunos',
-            satellite: 'ISS',
         };
 
-        for (let passData of data) {
-            context.passes.push(this.createPass(passData));
+        for (let passData of data.passes) {
+            context.passes.push(self.createPass(passData));
         }
 
         var content = sateye.templates.passesList(context);
