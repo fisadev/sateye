@@ -12,26 +12,25 @@ sateye.passes = function() {
     }
 
     self.createPass = function(passData) {
-        var dateFormat = 'DD/MM/YYYY HH:mm:ss';
         return {
-            aos: dayjs(passData.aos).format(dateFormat),
-            los: dayjs(passData.los).format(dateFormat),
-            maxElevationDate: dayjs(passData.max_elevation_date).format(dateFormat),
+            aos: sateye.parseDate(passData.aos),
+            los: sateye.parseDate(passData.los),
+            tca: sateye.parseDate(passData.tca),
+            tcaElevation: passData.tca_elevation,
+            sunElevation: passData.sun_elevation,
         };
     }
 
     self.predictPasses = function(startDate, endDate, satelliteId, locationId) {
-        var params = {
-            start_date: startDate,
-            end_date: endDate,
-            location: locationId,
-        };
-
         $.ajax({
             url: '/api/satellites/' + satelliteId + '/predict_passes/',
             cache: false,
-            data: params,
-        }).done(function(data) { self.onPassesRetrieved(data) });
+            data: {
+                start_date: startDate.toString(),
+                end_date: endDate.toString(),
+                location: locationId,
+            },
+        }).done(self.onPassesRetrieved);
     }
 
     self.onPassesRetrieved = function(data) {
