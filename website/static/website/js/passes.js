@@ -10,7 +10,7 @@ sateye.passes = function() {
         // samples passes retrieved, placeholder until we have GUI to ask for passes
         var startDate = sateye.map.viewer.clock.currentTime;
         var endDate = sateye.addSeconds(startDate, 3600 * 24 * 10);
-        self.getPassesPredictions(startDate, endDate, 1, 1);
+        setTimeout(function() {self.getPassesPredictions(startDate, endDate, 1, 1)}, 5000)
     }
 
     self.createPass = function(passData) {
