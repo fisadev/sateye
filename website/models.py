@@ -5,7 +5,7 @@ from django.db import models
 
 from orbit_predictor import locations as op_locations
 
-from website.utils import get_predictor_from_tle_lines, ensure_naive
+from website.utils import get_predictor_from_tle_lines, ensure_naive, Pass
 
 
 class Satellite(models.Model):
@@ -86,19 +86,34 @@ class Satellite(models.Model):
             yield current_date, (lat, lon, elevation_km * 1000)
             current_date += step
 
-    def predict_passes(self, location, start_date, end_date):
+    def predict_passes(self, location, start_date, end_date, min_tca_elevation=None,
+                       min_sun_elevation=None):
         """
         Predict the passes of a satellite over a location on TCA between two dates.
         """
+        start_date = ensure_naive(start_date)
         end_date = ensure_naive(end_date)
         location = location.get_op_location()
         predictor = self.get_predictor(precise=True)
 
-        for pass_ in predictor.passes_over(location, start_date):
-            if pass_.los > end_date:
-                break
+        # this is done like this, because orbit_predictor interprets max_elevation_gt=None as
+        # an angle and explodes
+        extra_filters = {}
+        if min_tca_elevation is not None:
+            extra_filters['max_elevation_gt'] = min_tca_elevation
 
-            yield pass_
+        passes_iterator = predictor.passes_over(location, start_date, limit_date=end_date,
+                                                **extra_filters)
+
+        for pass_ in passes_iterator:
+            # TODO calculate sun elevation, and filter passes by it
+            yield Pass(
+                aos=pass_.aos,
+                los=pass_.los,
+                tca=pass_.max_elevation_date,
+                tca_elevation=pass_.max_elevation_deg,
+                sun_elevation=None,  # TODO return calculated sun elevation
+            )
 
     @property
     def newest_tle(self):
