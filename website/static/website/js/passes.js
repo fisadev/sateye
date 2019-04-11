@@ -7,8 +7,8 @@ sateye.passes = function() {
         var start = dayjs().format('YYYY-MM-DD');
         var end = dayjs().add(3, 'day').format('YYYY-MM-DD');
 
-        sateye.passes.dom.passList = $('#pass-list');
-        sateye.passes.predictPasses(start, end, 1, 1);
+        self.dom.passList = $('#pass-list');
+        self.predictPasses(start, end, 1, 1);
     }
 
     self.createPass = function(passData) {
