@@ -99,6 +99,7 @@ def predict_path(request, satellite_id):
     positions = satellite.predict_path(start_date, end_date, step_seconds)
 
     return Response({
+        'satellite_id': satellite_id,
         'start_date': start_date.isoformat(),
         'end_date': end_date.isoformat(),
         'positions': list((current_date.isoformat(), position)
@@ -119,7 +120,23 @@ def predict_passes(request, satellite_id):
     start_date = parse_date(request.GET['start_date'])
     end_date = parse_date(request.GET['end_date'])
 
-    passes = satellite.predict_passes(location, start_date, end_date)
-    serializer = serializers.PassSerializer(passes, many=True)
+    min_tca_elevation = request.GET.get('min_tca_elevation')
+    if min_tca_elevation is not None:
+        min_tca_elevation = float(min_tca_elevation)
 
-    return Response(serializer.data)
+    min_sun_elevation = request.GET.get('min_sun_elevation')
+    if min_sun_elevation is not None:
+        min_sun_elevation = float(min_sun_elevation)
+
+    passes = satellite.predict_passes(location, start_date, end_date,
+                                      min_tca_elevation=min_tca_elevation,
+                                      min_sun_elevation=min_sun_elevation)
+    passes_serializer = serializers.PassSerializer(passes, many=True)
+
+    return Response({
+        'start_date': start_date.isoformat(),
+        'end_date': end_date.isoformat(),
+        'satellite_id': satellite_id,
+        'location_id': location_id,
+        'passes': passes_serializer.data,
+    })
