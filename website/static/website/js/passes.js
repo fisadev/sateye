@@ -4,11 +4,11 @@ sateye.passes = function() {
     self.instances = [];
 
     self.initialize = function() {
-        var start = dayjs().format('YYYY-MM-DD');
-        var end = dayjs().add(3, 'day').format('YYYY-MM-DD');
+        self.dom.passesList = $('#passes-list');
 
-        self.dom.passList = $('#pass-list');
-        self.predictPasses(start, end, 1, 1);
+        var startDate = sateye.map.viewer.clock.currentTime;
+        var endDate = sateye.addSeconds(start, 3600 * 24 * 10);
+        self.predictPasses(startDate, endDate, 1, 1);
     }
 
     self.createPass = function(passData) {
@@ -45,8 +45,8 @@ sateye.passes = function() {
             context.passes.push(this.createPass(passData));
         }
 
-        var content = sateye.templates.passList(context);
-        sateye.dom.passList.html(content);
+        var content = sateye.templates.passesList(context);
+        self.dom.passesList.html(content);
     }
 
     return self;

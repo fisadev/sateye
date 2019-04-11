@@ -14,7 +14,7 @@ var sateye = function() {
         var templatesMap = {
             alert: "#alert-template",
             satellite: "#satellite-template",
-            passList: "#pass-list-template",
+            passesList: "#passes-list-template",
         };
 
         for (name in templatesMap) {
@@ -23,7 +23,6 @@ var sateye = function() {
 
         // references to the dom
         self.dom.alertsBar = $("#alerts-bar");
-        self.dom.passList = $("#pass-list");
 
         // initialize submodules
         self.map.initialize();
