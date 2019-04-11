@@ -132,7 +132,7 @@ sateye.satellites = function() {
             },
 
             getPathPredictions: function(startDate, endDate, pathSecondsAhead, pathSecondsBehind, timeout) {
-                // get more predictions, to fill X seconds starting at a given date
+                // get path predictions, to fill X seconds starting at a given date
                 // (usually asking from the current map date, plus X map seconds)
                 console.log("Requesting predictions for satellite " + this.name);
                 var satellite = this;

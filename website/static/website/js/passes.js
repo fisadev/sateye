@@ -4,14 +4,17 @@ sateye.passes = function() {
     self.instances = [];
 
     self.initialize = function() {
+        // references to the dom
         self.dom.passesList = $('#passes-list');
 
+        // samples passes retrieved, placeholder until we have GUI to ask for passes
         var startDate = sateye.map.viewer.clock.currentTime;
         var endDate = sateye.addSeconds(start, 3600 * 24 * 10);
         self.predictPasses(startDate, endDate, 1, 1);
     }
 
     self.createPass = function(passData) {
+        // create a new pass instance, parsing the json received from an api
         return {
             aos: sateye.parseDate(passData.aos),
             los: sateye.parseDate(passData.los),
@@ -22,6 +25,7 @@ sateye.passes = function() {
     }
 
     self.getPassesPredictions = function(startDate, endDate, satelliteId, locationId) {
+        // get passes predictions of a satellite over a location during a period of time
         $.ajax({
             url: '/api/satellites/' + satelliteId + '/predict_passes/',
             cache: false,
@@ -34,6 +38,7 @@ sateye.passes = function() {
     }
 
     self.onPassesRetrieved = function(data) {
+        // list of passes received, populate the passes list
         var context = {
             passes: [],
             location: 'UTN Los Reyunos',
