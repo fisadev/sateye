@@ -32,7 +32,7 @@ sateye.passes = function() {
             data: {
                 start_date: startDate.toString(),
                 end_date: endDate.toString(),
-                location: locationId,
+                location_id: locationId,
             },
         }).done(self.onPassesRetrieved);
     }

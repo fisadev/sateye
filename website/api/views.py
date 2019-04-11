@@ -112,7 +112,7 @@ def predict_passes(request, satellite_id):
     """
     Get next passes for a satellite over a certain location.
     """
-    location_id = int(request.GET['location'])
+    location_id = int(request.GET['location_id'])
 
     satellite = get_object_or_404(Satellite, pk=satellite_id)
     location = get_object_or_404(Location, pk=location_id)
