@@ -1,13 +1,12 @@
-var Alert = {
-    INFO: "info",
-    WARNING: "warning",
-    ERROR: "error"
-}
-
 var sateye = function() {
     var self = {};
     self.templates = {};
     self.dom = {};
+    self.Alert = {
+        INFO: "info",
+        WARNING: "warning",
+        ERROR: "error"
+    };
 
     self.initialize = function() {
         // compile templates
