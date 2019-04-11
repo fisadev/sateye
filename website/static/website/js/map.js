@@ -110,7 +110,7 @@ sateye.map = function() {
                 var startDate = sateye.addSeconds(currentDate, -mapSecondsArround);
                 var endDate = sateye.addSeconds(currentDate, mapSecondsArround);
 
-                satellite.getMorePredictions(
+                satellite.getPathPredictions(
                     startDate,
                     endDate,
                     satellite.pathSecondsAhead,

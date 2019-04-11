@@ -21,7 +21,7 @@ sateye.passes = function() {
         };
     }
 
-    self.predictPasses = function(startDate, endDate, satelliteId, locationId) {
+    self.getPassesPredictions = function(startDate, endDate, satelliteId, locationId) {
         $.ajax({
             url: '/api/satellites/' + satelliteId + '/predict_passes/',
             cache: false,
