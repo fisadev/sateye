@@ -4,3 +4,4 @@ attrs==18.2.0
 pytz==2018.9
 iso8601
 djangorestframework==3.9.2
+django-extensions==2.1.6
