@@ -12,5 +12,5 @@ router.register(r'locations', views.LocationViewSet, basename='Location')
 urlpatterns = router.urls
 urlpatterns += [
     path('satellites/<int:satellite_id>/predict_path/', views.predict_path),
-    path('satellites/<int:satellite_id>/predict_passes/', views.predict_passes),
+    path('predict_passes/', views.predict_passes),
 ]

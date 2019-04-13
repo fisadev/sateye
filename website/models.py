@@ -95,7 +95,7 @@ class Satellite(models.Model):
         """
         start_date = ensure_naive(start_date)
         end_date = ensure_naive(end_date)
-        location = location.get_op_location()
+        op_location = location.get_op_location()
         predictor = self.get_predictor(precise=True)
 
         # this is done like this, because orbit_predictor interprets max_elevation_gt=None as
@@ -104,12 +104,14 @@ class Satellite(models.Model):
         if min_tca_elevation is not None:
             extra_filters['max_elevation_gt'] = min_tca_elevation
 
-        passes_iterator = predictor.passes_over(location, start_date, limit_date=end_date,
+        passes_iterator = predictor.passes_over(op_location, start_date, limit_date=end_date,
                                                 **extra_filters)
 
         for pass_ in passes_iterator:
             # TODO calculate sun elevation, and filter passes by it
             yield Pass(
+                satellite=self,
+                location=location,
                 aos=make_aware(pass_.aos, timezone=pytz.utc),
                 los=make_aware(pass_.los, timezone=pytz.utc),
                 tca=make_aware(pass_.max_elevation_date, timezone=pytz.utc),

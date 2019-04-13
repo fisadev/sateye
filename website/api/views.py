@@ -107,15 +107,24 @@ def predict_path(request, satellite_id):
     })
 
 
+def get_objects_from_ids(model, request_param):
+    """
+    Get model instances from ids expressed as a list of ids in a request param.
+    """
+    ids = [int(thing_id)
+           for thing_id in request_param.split(',')]
+
+    # TODO what if some ids don't exist? raise 404?
+    return model.objects.filter(pk__in=ids)
+
+
 @api_view(['GET'])
-def predict_passes(request, satellite_id):
+def predict_passes(request):
     """
     Get next passes for a satellite over a certain location.
     """
-    location_id = int(request.GET['location_id'])
-
-    satellite = get_object_or_404(Satellite, pk=satellite_id)
-    location = get_object_or_404(Location, pk=location_id)
+    satellites = get_objects_from_ids(Satellite, request.GET['satellite_ids'])
+    locations = get_objects_from_ids(Location, request.GET['location_ids'])
 
     start_date = parse_date(request.GET['start_date'])
     end_date = parse_date(request.GET['end_date'])
@@ -128,10 +137,17 @@ def predict_passes(request, satellite_id):
     if min_sun_elevation is not None:
         min_sun_elevation = float(min_sun_elevation)
 
-    passes = satellite.predict_passes(location, start_date, end_date,
-                                      min_tca_elevation=min_tca_elevation,
-                                      min_sun_elevation=min_sun_elevation)
-    passes_serialized = [{'aos': pass_.aos.isoformat(),
+    passes = []
+
+    for satellite in satellites:
+        for location in locations:
+            passes.extend(satellite.predict_passes(location, start_date, end_date,
+                                                   min_tca_elevation=min_tca_elevation,
+                                                   min_sun_elevation=min_sun_elevation))
+
+    passes_serialized = [{'satellite_id': pass_.satellite.pk,
+                          'location_id': pass_.location.pk,
+                          'aos': pass_.aos.isoformat(),
                           'los': pass_.los.isoformat(),
                           'tca': pass_.tca.isoformat(),
                           'tca_elevation': pass_.tca_elevation,
@@ -141,7 +157,5 @@ def predict_passes(request, satellite_id):
     return Response({
         'start_date': start_date.isoformat(),
         'end_date': end_date.isoformat(),
-        'satellite_id': satellite_id,
-        'location_id': location_id,
         'passes': passes_serialized,
     })

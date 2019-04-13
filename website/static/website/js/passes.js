@@ -9,13 +9,15 @@ sateye.passes = function() {
 
         // samples passes retrieved, placeholder until we have GUI to ask for passes
         var startDate = sateye.map.viewer.clock.currentTime;
-        var endDate = sateye.addSeconds(startDate, 3600 * 24 * 10);
-        setTimeout(function() {self.getPassesPredictions(startDate, endDate, 1, 1)}, 5000)
+        var endDate = sateye.addSeconds(startDate, 3600 * 24 * 5);
+        setTimeout(function() {self.getPassesPredictions(startDate, endDate, [1, 2], [1])}, 5000)
     }
 
     self.createPass = function(passData) {
         // create a new pass instance, parsing the json received from an api
         return {
+            satellite: sateye.dashboards.current.getSatellite(passData.satellite_id),
+            location: sateye.dashboards.current.getLocation(passData.location_id),
             aos: sateye.parseDate(passData.aos),
             los: sateye.parseDate(passData.los),
             tca: sateye.parseDate(passData.tca),
@@ -24,45 +26,29 @@ sateye.passes = function() {
         };
     }
 
-    self.getPassesPredictions = function(startDate, endDate, satelliteId, locationId) {
-        // get passes predictions of a satellite over a location during a period of time
+    self.getPassesPredictions = function(startDate, endDate, satelliteIds, locationIds) {
+        // get passes predictions of a group of satellites over a group of locations during a 
+        // period of time
         $.ajax({
-            url: '/api/satellites/' + satelliteId + '/predict_passes/',
+            url: '/api/predict_passes/',
             cache: false,
             data: {
                 start_date: startDate.toString(),
                 end_date: endDate.toString(),
-                location_id: locationId,
+                satellite_ids: satelliteIds.join(","),
+                location_ids: locationIds.join(","),
             },
         }).done(self.onPassesRetrieved);
     }
 
     self.onPassesRetrieved = function(data) {
         // list of passes received, populate the passes list
-        var dashboard = sateye.dashboards.current;
-        console.log(data)
-        var satellite = dashboard.getSatellite(data.satellite_id);
-        var location = dashboard.getLocation(data.location_id);
-        console.log(satellite);
-        console.log(location);
-
-        if (satellite === null || location === null) {
-            sateye.showAlert(sateye.Alert.ERROR, 
-                             "Something went wrong retrieving the passes predictions.");
-            return;
-        }
-
-        var context = {
-            satellite: satellite,
-            location: location,
-            passes: [],
-        };
-
+        var passes = [];
         for (let passData of data.passes) {
-            context.passes.push(self.createPass(passData));
+            passes.push(self.createPass(passData));
         }
 
-        var content = sateye.templates.passesList(context);
+        var content = sateye.templates.passesList({passes: passes});
         self.dom.passesList.html(content);
     }
 
