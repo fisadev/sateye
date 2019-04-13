@@ -21,6 +21,7 @@ var sateye = function() {
         }
         // register useful function to be able to use them from templates
         Handlebars.registerHelper("dateAsHuman", sateye.dateAsHuman);
+        Handlebars.registerHelper("numberAsHuman", sateye.numberAsHuman);
 
         // references to the dom
         self.dom.alertsBar = $("#alerts-bar");
@@ -80,6 +81,11 @@ var sateye = function() {
     self.dateAsHuman = function(date) {
         // format date as human readable 
         return date.toString().substr(0, 19).replace("T", " ") + " utc";
+    }
+
+    self.numberAsHuman = function(number) {
+        // format number as human readable 
+        return number.toFixed(2);
     }
 
     return self;
