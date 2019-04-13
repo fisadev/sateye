@@ -6,6 +6,7 @@ sateye.passes = function() {
     self.initialize = function() {
         // references to the dom
         self.dom.passesList = $('#passes-list');
+        self.dom.passesModal = $('#passes-modal');
 
         // samples passes retrieved, placeholder until we have GUI to ask for passes
         var startDate = sateye.map.viewer.clock.currentTime;
@@ -66,6 +67,7 @@ sateye.passes = function() {
         var passId = $(this).data('pass-id');
 
         sateye.map.viewer.clock.currentTime = self.current[passId].tca;
+        self.dom.passesModal.modal('hide');
     }
 
     return self;
