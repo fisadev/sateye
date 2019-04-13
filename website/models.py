@@ -111,9 +111,8 @@ class Satellite(models.Model):
                                                 **extra_filters)
 
         for pass_ in passes_iterator:
-            tca = make_aware(pass_.max_elevation_date, timezone=pytz.utc)
             azimuth_elevation = sun_azimuth_elevation(
-                op_location.latitude_deg, op_location.longitude_deg, tca,
+                op_location.latitude_deg, op_location.longitude_deg, pass_.max_elevation_date,
             )
 
             if min_sun_elevation is not None and azimuth_elevation.elevation < min_sun_elevation:
@@ -125,7 +124,7 @@ class Satellite(models.Model):
                 location=location,
                 aos=make_aware(pass_.aos, timezone=pytz.utc),
                 los=make_aware(pass_.los, timezone=pytz.utc),
-                tca=tca,
+                tca=make_aware(pass_.max_elevation_date, timezone=pytz.utc),
                 tca_elevation=pass_.max_elevation_deg,
                 sun_azimuth=azimuth_elevation.azimuth,
                 sun_elevation=azimuth_elevation.elevation,
