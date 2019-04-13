@@ -151,6 +151,7 @@ def predict_passes(request):
                           'los': pass_.los.isoformat(),
                           'tca': pass_.tca.isoformat(),
                           'tca_elevation': pass_.tca_elevation,
+                          'sun_azimuth': pass_.sun_azimuth,
                           'sun_elevation': pass_.sun_elevation}
                          for pass_ in passes]
 

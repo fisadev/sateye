@@ -6,6 +6,7 @@ from django.db import models
 from django.utils.timezone import make_aware
 
 from orbit_predictor import locations as op_locations
+from orbit_predictor.utils import sun_azimuth_elevation
 from orbit_predictor.sources import get_predictor_from_tle_lines
 
 from website.utils import ensure_naive, Pass
@@ -110,15 +111,24 @@ class Satellite(models.Model):
                                                 **extra_filters)
 
         for pass_ in passes_iterator:
-            # TODO calculate sun elevation, and filter passes by it
+            tca = make_aware(pass_.max_elevation_date, timezone=pytz.utc)
+            azimuth_elevation = sun_azimuth_elevation(
+                op_location.latitude_deg, op_location.longitude_deg, tca,
+            )
+
+            if min_sun_elevation is not None and azimuth_elevation.elevation < min_sun_elevation:
+                # Sun is too close to the horizon, skip this pass
+                continue
+
             yield Pass(
                 satellite=self,
                 location=location,
                 aos=make_aware(pass_.aos, timezone=pytz.utc),
                 los=make_aware(pass_.los, timezone=pytz.utc),
-                tca=make_aware(pass_.max_elevation_date, timezone=pytz.utc),
+                tca=tca,
                 tca_elevation=pass_.max_elevation_deg,
-                sun_elevation=None,  # TODO return calculated sun elevation
+                sun_azimuth=azimuth_elevation.azimuth,
+                sun_elevation=azimuth_elevation.elevation,
             )
 
     @property
