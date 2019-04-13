@@ -20,21 +20,13 @@
 
 
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            {% include "website/navbar.html" %}
-        </div>
-        <div class="row">
-            <div id="alerts-bar"></div>
-            <div class="col tab-content">
-                {% include 'website/map.html' %}
-            </div>
-        </div>
-    </div>
+    {% include "website/navbar.html" %}
+    {% include "website/map.html" %}
 
     {% include 'website/satellites_modal.html' %}
     {% include 'website/locations_modal.html' %}
     {% include 'website/settings_modal.html' %}
+    {% include 'website/passes_modal.html' %}
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

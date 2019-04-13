@@ -1,11 +1,19 @@
-#main-map {
-    width: 100%;
-    height: 100%;
+#main-navbar {
+    z-index: 100 !important;
 }
 
-#main-map-container {
-    overflow: auto;
-    resize: vertical;
+#main-map {
+    width: 100%;
+    position: absolute;
+    top: 54px;
+    bottom: 48px;
+}
+
+#map-controls {
+    width: 100%;
+    position: absolute;
+    height: 48px;
+    bottom: 0px;
 }
 
 #existing-satellites-list {
