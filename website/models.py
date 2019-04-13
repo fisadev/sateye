@@ -116,7 +116,7 @@ class Satellite(models.Model):
             )
 
             if min_sun_elevation is not None and azimuth_elevation.elevation < min_sun_elevation:
-                # Sun is too close to the horizon, skip this pass
+                # Sun is too low, skip this pass
                 continue
 
             yield Pass(
