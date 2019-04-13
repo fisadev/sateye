@@ -1,5 +1,5 @@
 django==2.1.7
-orbit-predictor==1.8.6
+orbit-predictor==1.9.0
 attrs==18.2.0
 pytz==2018.9
 iso8601
