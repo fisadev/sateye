@@ -1,7 +1,7 @@
 sateye.passes = function() {
     var self = {};
     self.dom = {};
-    self.instances = [];
+    self.current = {};
 
     self.initialize = function() {
         // references to the dom
@@ -16,6 +16,7 @@ sateye.passes = function() {
     self.createPass = function(passData) {
         // create a new pass instance, parsing the json received from an api
         return {
+            id: passData.id,
             satellite: sateye.dashboards.current.satellites[passData.satellite_id],
             location: sateye.dashboards.current.locations[passData.location_id],
             aos: sateye.parseDate(passData.aos),
@@ -43,13 +44,28 @@ sateye.passes = function() {
 
     self.onPassesRetrieved = function(data) {
         // list of passes received, populate the passes list
-        var passes = [];
+        self.current = {};
+        var passId = 0;  // we create pass ids in the front end, just to be able to reference them
         for (let passData of data.passes) {
-            passes.push(self.createPass(passData));
+            passData.id = passId;
+            self.current[passId] = self.createPass(passData);
+
+            passId += 1;
         }
 
-        var content = sateye.templates.passesList({passes: passes});
+        // show the passes list
+        var content = sateye.templates.passesList({passes: Object.values(self.current)});
         self.dom.passesList.html(content);
+
+        // assign click handlers for the tca links
+        $('.pass-tca-link').on('click', self.onPassTcaClicked);
+    },
+
+    self.onPassTcaClicked = function(data) {
+        // a tca date was clicked from the list of passes
+        var passId = $(this).data('pass-id');
+
+        sateye.map.viewer.clock.currentTime = self.current[passId].tca;
     }
 
     return self;

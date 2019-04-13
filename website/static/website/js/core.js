@@ -19,6 +19,8 @@ var sateye = function() {
         for (name in templatesMap) {
             self.templates[name] = Handlebars.compile($(templatesMap[name]).html());
         }
+        // register useful function to be able to use them from templates
+        Handlebars.registerHelper("dateAsHuman", sateye.dateAsHuman);
 
         // references to the dom
         self.dom.alertsBar = $("#alerts-bar");
@@ -73,6 +75,11 @@ var sateye = function() {
     self.parseDate = function(iso8601string) {
         // parse an iso formatted date into a cesium julian date
         return Cesium.JulianDate.fromIso8601(iso8601string);
+    }
+
+    self.dateAsHuman = function(date) {
+        // format date as human readable 
+        return date.toString().substr(0, 19).replace("T", " ") + " utc";
     }
 
     return self;

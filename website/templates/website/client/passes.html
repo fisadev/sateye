@@ -15,7 +15,10 @@
                 <td class="text-center"><i class="fas fa-eye-slash"></i></td>
                 <td class="text-center">{{ this.satellite.name }}</td>
                 <td class="text-center">{{ this.location.name }}</td>
-                <td class="text-center">{{ this.tca }}</td>
+                <td class="text-center">
+                    {{ dateAsHuman this.tca }}
+                    <a href="#" class="pass-tca-link" data-pass-id="{{ this.id }}"><i class="fas fa-clock"></i></a>
+                </td>
             </tr>
             {{/each}}
         </tbody>
