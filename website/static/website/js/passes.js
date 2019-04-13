@@ -16,8 +16,8 @@ sateye.passes = function() {
     self.createPass = function(passData) {
         // create a new pass instance, parsing the json received from an api
         return {
-            satellite: sateye.dashboards.current.getSatellite(passData.satellite_id),
-            location: sateye.dashboards.current.getLocation(passData.location_id),
+            satellite: sateye.dashboards.current.satellites[passData.satellite_id],
+            location: sateye.dashboards.current.locations[passData.location_id],
             aos: sateye.parseDate(passData.aos),
             los: sateye.parseDate(passData.los),
             tca: sateye.parseDate(passData.tca),

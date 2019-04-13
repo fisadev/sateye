@@ -38,23 +38,23 @@ sateye.dashboards = function() {
         // do all the stuff required to set the new dashboard
         self.current = dashboard;
         sateye.map.onNewDashboard(dashboard);
-        sateye.satellites.onNewSatellites(dashboard.satellites);
+        sateye.satellites.onNewSatellites(Object.values(dashboard.satellites));
     }
 
     self.createDashboard = function(dashboardData) {
         // create a new dashboard instance, parsing the json received from an api
 
         // create satellite instances for each satellite in the dashboard
-        var satellites = [];
+        var satellites = {};
         for (let satelliteConfig of dashboardData.satellite_configs) {
             var satellite = sateye.satellites.createSatellite(satelliteConfig);
-            satellites.push(satellite);
+            satellites[satellite.id] = satellite;
         }
         // create location instances for each location in the dashboard
-        var locations = [];
+        var locations = {};
         for (let locationConfig of dashboardData.location_configs) {
             var location = sateye.locations.createLocation(locationConfig);
-            locations.push(location);
+            locations[location.id] = location;
         }
 
         return {
@@ -62,28 +62,6 @@ sateye.dashboards = function() {
             name: dashboardData.name,
             satellites: satellites,
             locations: locations,
-
-            getSatellite: function(satelliteId) {
-                // get a satellite from the dashboard, by id
-                // if the satellite is not found, returns null
-                for (let satellite of this.satellites) {
-                    if (satellite.id === satelliteId) {
-                        return satellite;
-                    }
-                }
-                return null;
-            },
-
-            getLocation: function(locationId) {
-                // get a location from the dashboard, by id
-                // if the location is not found, returns null
-                for (let location of this.locations) {
-                    if (location.id === locationId) {
-                        return location;
-                    }
-                }
-                return null;
-            }
         }
     }
 

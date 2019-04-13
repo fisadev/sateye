@@ -53,7 +53,7 @@ sateye.satellites = function() {
         var satelliteElement;
         for (let satellite of data) {
             // only add satellites not present in the dashboard
-            if (sateye.dashboards.current.getSatellite(satellite.id) === null) {
+            if (sateye.dashboards.current.satellites[satellite.id] === undefined) {
                 satelliteElement = $('<li class="list-group-item list-group-item-action">' + satellite.name + '</li>');
                 satelliteElement.data("satelliteId", satellite.id)
                 self.dom.existingSatellitesList.append(satelliteElement);

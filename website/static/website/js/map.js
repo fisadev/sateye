@@ -61,7 +61,7 @@ sateye.map = function() {
     self.onNewDashboard = function(dashboard) {
         // called when we start using a new dashboard
         self.clearMapData();
-        self.onNewLocations(dashboard.locations);
+        self.onNewLocations(Object.values(dashboard.locations));
     }
 
     self.clearMapData = function() {
@@ -95,7 +95,7 @@ sateye.map = function() {
         // if we have less than X real seconds of predictions left, then ask for Y predicted
         // seconds
         // more info at docs/prediction_chunks.rst
-        for (let satellite of sateye.dashboards.current.satellites) {
+        for (let satellite of Object.values(sateye.dashboards.current.satellites)) {
             var currentDate = self.viewer.clock.currentTime;
 
             // we should ensure we have predictions enough to cover the time between the current date and
