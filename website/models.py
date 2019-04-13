@@ -6,8 +6,9 @@ from django.db import models
 from django.utils.timezone import make_aware
 
 from orbit_predictor import locations as op_locations
+from orbit_predictor.sources import get_predictor_from_tle_lines
 
-from website.utils import get_predictor_from_tle_lines, ensure_naive, Pass
+from website.utils import ensure_naive, Pass
 
 
 class Satellite(models.Model):
@@ -54,7 +55,7 @@ class Satellite(models.Model):
 
         return closest_tle
 
-    def get_predictor(self, for_date=None, precise=False):
+    def get_predictor(self, for_date=None):
         """
         Build an orbit predictor for the satellite, using its known TLEs.
         """
@@ -64,7 +65,7 @@ class Satellite(models.Model):
         else:
             best_tle = self.tles.order_by('at').last()
 
-        return get_predictor_from_tle_lines(best_tle.lines.split('\n'), precise=precise)
+        return get_predictor_from_tle_lines(best_tle.lines.split('\n'))
 
     def predict_path(self, start_date, end_date, step_seconds=60):
         """
@@ -75,7 +76,7 @@ class Satellite(models.Model):
         # period of time
         period_length = end_date - start_date
         period_center = start_date + period_length / 2
-        predictor = self.get_predictor(for_date=period_center, precise=True)
+        predictor = self.get_predictor(for_date=period_center)
 
         step = timedelta(seconds=step_seconds)
 
@@ -95,8 +96,9 @@ class Satellite(models.Model):
         """
         start_date = ensure_naive(start_date)
         end_date = ensure_naive(end_date)
+
         op_location = location.get_op_location()
-        predictor = self.get_predictor(precise=True)
+        predictor = self.get_predictor()
 
         # this is done like this, because orbit_predictor interprets max_elevation_gt=None as
         # an angle and explodes
