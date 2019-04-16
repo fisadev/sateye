@@ -20,6 +20,16 @@
   }
 },
 {
+  "model": "website.satellite",
+  "pk": 3,
+  "fields": {
+    "name": "Maryam",
+    "norad_id": 43204,
+    "description": "Maryam",
+    "owner": 1
+  }
+},
+{
   "model": "website.tle",
   "pk": 1,
   "fields": {
@@ -38,6 +48,15 @@
   }
 },
 {
+  "model": "website.tle",
+  "pk": 3,
+  "fields": {
+    "satellite": 3,
+    "at": "2019-04-16T03:10:00Z",
+    "lines": "1 43204U 18015K   19105.85507487  .00001878  00000-0  80587-4 0  9994\r\n2 43204  97.3851 234.3837 0017881 162.1300 316.4167 15.23828077 66212"
+  }
+},
+{
   "model": "website.location",
   "pk": 1,
   "fields": {
@@ -47,6 +66,18 @@
     "latitude": -34.596123,
     "longitude": -68.642255,
     "elevation": 1036.0
+  }
+},
+{
+  "model": "website.location",
+  "pk": 2,
+  "fields": {
+    "owner": null,
+    "name": "Rafaela",
+    "description": "Ciudad en provincia de Santa Fe",
+    "latitude": -31.2526,
+    "longitude": -61.4916,
+    "elevation": 90.0
   }
 },
 {
@@ -78,11 +109,27 @@
   }
 },
 {
+  "model": "website.dashboardsatelliteconfig",
+  "pk": 3,
+  "fields": {
+    "dashboard": 1,
+    "satellite": 3
+  }
+},
+{
   "model": "website.dashboardlocationconfig",
   "pk": 1,
   "fields": {
     "dashboard": 1,
     "location": 1
+  }
+},
+{
+  "model": "website.dashboardlocationconfig",
+  "pk": 2,
+  "fields": {
+    "dashboard": 1,
+    "location": 2
   }
 }
 ]
