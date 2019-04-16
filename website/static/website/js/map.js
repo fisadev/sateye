@@ -22,10 +22,14 @@ sateye.map = function() {
         // initialize the map module
         self.configureCesiumMap();
 
-        // control display of night shadow with the checkbox
-        nightShadowInput = $("#night-shadow-input");
-        self.dom.nightShadowInput = nightShadowInput;
-        nightShadowInput.on("change", self.onNightShadowChange);
+        // references to the dom
+        self.dom.nightShadowInput = $("#night-shadow-input");
+        self.dom.mapDatePicker = $("#map-date-picker");
+        self.dom.goToDateButton = $("#go-to-date");
+
+        // assign event handlers
+        self.dom.goToDateButton.on("click", self.onGoToDateClick);
+        self.dom.nightShadowInput.on("change", self.onNightShadowChange);
         self.onNightShadowChange();
     }
 
@@ -49,6 +53,11 @@ sateye.map = function() {
 
     self.onMapTick = function(clock) {
         // time has passed in the map
+    }
+
+    self.onGoToDateClick = function(clock) {
+        // go to the selected date
+		self.viewer.clock.currentTime = sateye.parseDate(self.dom.mapDatePicker.val() + "Z");
     }
 
     self.realToMapSeconds = function(realSeconds) {

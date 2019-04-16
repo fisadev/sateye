@@ -1,7 +1,10 @@
 <div id="main-map"></div>
 <div id="map-controls" class="bg-dark p-2">
-    <div class="btn-group">
-        <input id="night-shadow-input" type="checkbox" data-toggle="toggle" 
+    <div class="btn-group" role="group">
+        <input id="map-date-picker" name="map-date-picker" type="datetime-local" step="1">
+		<button id="go-to-date" type="button" class="btn-sm btn-primary mr-5">Go</button>
+        <input id="night-shadow-input"
+         type="checkbox" data-toggle="toggle" 
          data-on="Day/Night" data-onstyle="success" 
          data-off="No shadow" data-offstyle="secondary"
          data-size="sm">
