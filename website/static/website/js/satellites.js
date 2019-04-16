@@ -59,12 +59,12 @@ sateye.satellites = function() {
                 self.dom.existingSatellitesList.append(satelliteElement);
 
                 // and add the click handler, so the satellite is added
-                satelliteElement.on("click", self.onExistingSatelliteClicked);
+                satelliteElement.on("click", self.onExistingSatelliteClick);
             }
         }
     }
 
-    self.onExistingSatelliteClicked = function(e) {
+    self.onExistingSatelliteClick = function(e) {
         // the user clicked an existing satellite to add it to the dashboard
         var clickedItem = $(this);
         var satelliteId = clickedItem.data("satelliteId");

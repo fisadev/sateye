@@ -59,10 +59,10 @@ sateye.passes = function() {
         self.dom.passesList.html(content);
 
         // assign click handlers for the tca links
-        $('.pass-tca-link').on('click', self.onPassTcaClicked);
+        $('.pass-tca-link').on('click', self.onPassTcaClick);
     },
 
-    self.onPassTcaClicked = function(data) {
+    self.onPassTcaClick = function(data) {
         // a tca date was clicked from the list of passes
         var passId = $(this).data('pass-id');
 
