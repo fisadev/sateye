@@ -77,9 +77,6 @@ class DashboardSerializer(serializers.ModelSerializer):
     """
     Serializer for the dashboard api.
     """
-    satellite_configs = DashboardSatelliteConfigSerializer(many=True)
-    location_configs = DashboardLocationConfigSerializer(many=True)
-
     class Meta:
         model = models.Satellite
-        fields = ['id', 'name', 'satellite_configs', 'location_configs']
+        fields = ['id', 'name']

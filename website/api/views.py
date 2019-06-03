@@ -10,7 +10,14 @@ from rest_framework.response import Response
 from iso8601 import parse_date
 
 from website.api import serializers
-from website.models import Dashboard, Location, Satellite, TLE
+from website.models import (
+    Dashboard,
+    DashboardLocationConfig,
+    DashboardSatelliteConfig,
+    Location,
+    Satellite,
+    TLE,
+)
 
 
 class SatelliteViewSet(viewsets.ModelViewSet):
@@ -62,6 +69,34 @@ class DashboardViewSet(viewsets.ModelViewSet):
             can_see = Q(pk=settings.DEFAULT_DASHBOARD)
 
         return Dashboard.objects.filter(can_see).order_by('name')
+
+
+class DashboardSatelliteConfigViewSet(viewsets.ModelViewSet):
+    """
+    Basic dashboard satellite configs api views.
+    """
+    serializer_class = serializers.DashboardSatelliteConfigSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the satellite configs for the specified dashboard.
+        """
+        dashboard_id = self.kwargs['dashboard_id']
+        return DashboardSatelliteConfig.objects.filter(dashboard_id=dashboard_id)
+
+
+class DashboardLocationConfigViewSet(viewsets.ModelViewSet):
+    """
+    Basic dashboard location configs api views.
+    """
+    serializer_class = serializers.DashboardLocationConfigSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the location configs for the specified dashboard.
+        """
+        dashboard_id = self.kwargs['dashboard_id']
+        return DashboardLocationConfig.objects.filter(dashboard_id=dashboard_id)
 
 
 class LocationViewSet(viewsets.ModelViewSet):
