@@ -95,7 +95,7 @@ sateye.satellites = function() {
 
         if (sateye.dashboards.current != null) {
             // add satellites to list
-            for (let satellite of sateye.dashboards.current.satellites) {
+            for (let satellite of Object.values(sateye.dashboards.current.satellites)) {
                 var element = sateye.templates.satellite(satellite);
                 self.dom.satellitesList.append(element);
             }
