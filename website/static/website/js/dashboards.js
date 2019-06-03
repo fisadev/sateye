@@ -37,32 +37,84 @@ sateye.dashboards = function() {
     self.setCurrentDashboard = function(dashboard) {
         // do all the stuff required to set the new dashboard
         self.current = dashboard;
-        sateye.map.onNewDashboard(dashboard);
-        sateye.satellites.onNewSatellites(Object.values(dashboard.satellites));
+        sateye.map.dashboardChanged();
     }
 
     self.createDashboard = function(dashboardData) {
         // create a new dashboard instance, parsing the json received from an api
-
-        // create satellite instances for each satellite in the dashboard
-        var satellites = {};
-        for (let satelliteConfig of dashboardData.satellite_configs) {
-            var satellite = sateye.satellites.createSatellite(satelliteConfig);
-            satellites[satellite.id] = satellite;
-        }
-        // create location instances for each location in the dashboard
-        var locations = {};
-        for (let locationConfig of dashboardData.location_configs) {
-            var location = sateye.locations.createLocation(locationConfig);
-            locations[location.id] = location;
-        }
-
-        return {
+        var dashboard = {
             id: dashboardData.id,
             name: dashboardData.name,
-            satellites: satellites,
-            locations: locations,
+            satellites: {},
+            locations: {},
+
+            loadSatelliteConfigs: function() {
+                // request all the satellite configs from this dashboard
+                var dashboard = this;  
+                $.ajax({url: "/api/dashboards/" + this.id + "/satellite_configs/"})
+                 // we must define these as function(...) so "this" inside them is the dashboard
+                 .done(function(data) {dashboard.onSatelliteConfigsReceived(data)}) 
+                 .fail(function(data) {dashboard.onSatelliteConfigsFailed(data)});
+            },
+
+            onSatelliteConfigsReceived: function(data) {
+                // create satellite instances for each satellite in the dashboard
+                var satellites = {};
+                for (let satelliteConfig of data) {
+                    var satellite = sateye.satellites.createSatellite(satelliteConfig);
+                    satellites[satellite.id] = satellite;
+                }
+
+                this.satellites = satellites;
+
+                if (this === self.current) {
+                    sateye.map.dashboardChanged();
+                }
+            },
+
+            onSatelliteConfigsFailed: function() {
+                sateye.showAlert(
+                    sateye.Alert.ERROR, 
+                    "Failed to load satellites from this dashboard. Try reloading the website, sorry!", 
+                );
+            },
+
+            loadLocationConfigs: function() {
+                // request all the location configs from this dashboard
+                var dashboard = this;  
+                $.ajax({url: "/api/dashboards/" + this.id + "/location_configs/"})
+                 // we must define these as function(...) so "this" inside them is the dashboard
+                 .done(function(data) {dashboard.onLocationConfigsReceived(data)}) 
+                 .fail(function(data) {dashboard.onLocationConfigsFailed(data)});
+            },
+
+            onLocationConfigsReceived: function(data) {
+                // create location instances for each location in the dashboard
+                var locations = {};
+                for (let locationConfig of data) {
+                    var location = sateye.locations.createLocation(locationConfig);
+                    locations[location.id] = location;
+                }
+
+                this.locations = locations;
+
+                if (this === self.current) {
+                    sateye.map.dashboardChanged();
+                }
+            },
+
+            onLocationConfigsFailed: function() {
+                sateye.showAlert(
+                    sateye.Alert.ERROR, 
+                    "Failed to load locations from this dashboard. Try reloading the website, sorry!", 
+                );
+            },
         }
+
+        dashboard.loadSatelliteConfigs();
+        dashboard.loadLocationConfigs();
+
+        return dashboard;
     }
 
     return self;
