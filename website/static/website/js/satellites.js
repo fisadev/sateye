@@ -17,10 +17,11 @@ sateye.satellites = function() {
         self.dom.createSatelliteForm.on("show.bs.collapse", self.onCreateSatelliteFormShown);
         self.dom.filterSatellitesInput.on("keyup", self.onFilterExistingSatellites);
 
-        self.onNewSatellites([]);
+        self.refreshSatellitesList();
     }
 
     self.onSatellitesModalShown = function(e) {
+        self.refreshSatellitesList();
         self.dom.existingSatellitesForm.collapse("hide");
         self.dom.createSatelliteForm.collapse("hide");
     }
@@ -86,16 +87,18 @@ sateye.satellites = function() {
         });
     }
 
-    self.onNewSatellites = function(satellites) {
-        // when the satellites list changes, update the list in the abm
+    self.refreshSatellitesList = function() {
+        // update the list in the abm
 
         // remove old list
         self.dom.satellitesList.html("");
 
-        // add satellites to list
-        for (let satellite of satellites) {
-            var element = sateye.templates.satellite(satellite);
-            self.dom.satellitesList.append(element);
+        if (sateye.dashboards.current != null) {
+            // add satellites to list
+            for (let satellite of sateye.dashboards.current.satellites) {
+                var element = sateye.templates.satellite(satellite);
+                self.dom.satellitesList.append(element);
+            }
         }
     }
 
