@@ -45,7 +45,7 @@ var sateye = function() {
 
     self.showAlertsFromApiResponse = function(data) {
         // extract alerts that came in an api response
-        for (alert in data.alerts) {
+        for (let alert of data.alerts) {
             self.showAlert(alert.type, alert.message);
         }
     }
