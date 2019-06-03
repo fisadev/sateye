@@ -67,10 +67,12 @@ sateye.map = function() {
         return clock.clockStep * clock.multiplier * realSeconds;
     }
 
-    self.onNewDashboard = function(dashboard) {
-        // called when we start using a new dashboard
+    self.dashboardChanged = function() {
+        // called when the current dashboard suffers any change
         self.clearMapData();
-        self.onNewLocations(Object.values(dashboard.locations));
+        if (sateye.dashboards.current != null) {
+            self.onNewLocations(Object.values(sateye.dashboards.current.locations));
+        }
     }
 
     self.clearMapData = function() {
