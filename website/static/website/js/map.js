@@ -31,6 +31,9 @@ sateye.map = function() {
         self.dom.goToDateButton.on("click", self.onGoToDateClick);
         self.dom.nightShadowInput.on("change", self.onNightShadowChange);
         self.onNightShadowChange();
+
+        // let us know when the dashboard or its data changes
+        sateye.dashboards.onDashboardChangedCallbacks.push(self.onDashboardChanged)
     }
 
     self.configureCesiumMap = function() {
@@ -67,7 +70,7 @@ sateye.map = function() {
         return clock.clockStep * clock.multiplier * realSeconds;
     }
 
-    self.dashboardChanged = function() {
+    self.onDashboardChanged = function() {
         // called when the current dashboard suffers any change
         self.clearMapData();
         if (sateye.dashboards.current != null) {
