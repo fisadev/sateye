@@ -1,6 +1,7 @@
 sateye.dashboards = function() {
     var self = {};
     self.current = null;
+    self.onDashboardChangedCallbacks = [];
 
     self.initialize = function() {
         self.loadDashboard();
@@ -37,7 +38,15 @@ sateye.dashboards = function() {
     self.setCurrentDashboard = function(dashboard) {
         // do all the stuff required to set the new dashboard
         self.current = dashboard;
-        sateye.map.dashboardChanged();
+        self.broadcastDashboardChange();
+    }
+
+    self.broadcastDashboardChange = function() {
+        // inform anyone interested, that the current dashboard has changed 
+        // (either a new dashboard, or changes in the data from the current dashboard)
+        for (let dashboardChangedCallback of self.onDashboardChangedCallbacks) {
+            dashboardChangedCallback();
+        }
     }
 
     self.createDashboard = function(dashboardData) {
@@ -68,7 +77,7 @@ sateye.dashboards = function() {
                 this.satellites = satellites;
 
                 if (this === self.current) {
-                    sateye.map.dashboardChanged();
+                    self.broadcastDashboardChange();
                 }
             },
 
@@ -99,7 +108,7 @@ sateye.dashboards = function() {
                 this.locations = locations;
 
                 if (this === self.current) {
-                    sateye.map.dashboardChanged();
+                    self.broadcastDashboardChange();
                 }
             },
 
