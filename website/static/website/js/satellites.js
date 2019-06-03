@@ -50,11 +50,15 @@ sateye.satellites = function() {
     self.onSatellitesReceived = function(data) {
         // list of satellites received, populate the existing satellites list
         self.dom.existingSatellitesList.html("");
-        var satelliteElement;
+        var satelliteElement, satelliteDescription;
         for (let satellite of data) {
             // only add satellites not present in the dashboard
             if (sateye.dashboards.current.satellites[satellite.id] === undefined) {
-                satelliteElement = $('<li class="list-group-item list-group-item-action">' + satellite.name + '</li>');
+                satelliteDescription = satellite.name;
+                if (satellite.norad_id != null || satellite.norad_id != "") {
+                    satelliteDescription += " (" + satellite.norad_id + ")";
+                }
+                satelliteElement = $('<li class="list-group-item list-group-item-action">' + satelliteDescription + '</li>');
                 satelliteElement.data("satelliteId", satellite.id)
                 self.dom.existingSatellitesList.append(satelliteElement);
 
