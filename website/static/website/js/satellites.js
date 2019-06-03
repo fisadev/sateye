@@ -149,6 +149,7 @@ sateye.satellites = function() {
                         path_seconds_behind: pathSecondsBehind
                     }
                 })
+                // we must define these as function(...) so "this" inside them is the satellite
                 .done(function(data) {satellite.onPredictionsReceived(data)})
                 .fail(function(data) {satellite.onPredictionsError(data)});
             },
