@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'website',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -122,5 +123,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 DEFAULT_DASHBOARD = 1
-
-INSTALLED_APPS += ['django_extensions']
