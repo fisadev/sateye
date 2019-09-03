@@ -43,12 +43,16 @@ class DashboardSatelliteConfigSerializer(serializers.ModelSerializer):
     """
     Serializer for the satellite configs in the dashboard api.
     """
-    satellite = SatelliteSerializer()
+    satellite = SatelliteSerializer(read_only=True)
+    satellite_id = serializers.IntegerField(write_only=True)
+    dashboard_id = serializers.IntegerField()
 
     class Meta:
         model = models.DashboardSatelliteConfig
         fields = [
+            'dashboard_id',
             'satellite',
+            'satellite_id',
             'point_size',
             'point_color',
             'path_width',
@@ -62,12 +66,16 @@ class DashboardLocationConfigSerializer(serializers.ModelSerializer):
     """
     Serializer for the location configs in the dashboard api.
     """
-    location = LocationSerializer()
+    location = LocationSerializer(read_only=True)
+    location_id = serializers.IntegerField(write_only=True)
+    dashboard_id = serializers.IntegerField()
 
     class Meta:
         model = models.DashboardLocationConfig
         fields = [
+            'dashboard_id',
             'location',
+            'location_id',
             'point_size',
             'point_color',
         ]
