@@ -208,6 +208,9 @@ class DashboardSatelliteConfig(models.Model):
     def __str__(self):
         return "{} in {}".format(self.satellite.name, self.dashboard.name)
 
+    class Meta:
+        unique_together = ('dashboard', 'satellite')
+
 
 class DashboardLocationConfig(models.Model):
     """
@@ -222,3 +225,6 @@ class DashboardLocationConfig(models.Model):
 
     def __str__(self):
         return "{} in {}".format(self.location.name, self.dashboard.name)
+
+    class Meta:
+        unique_together = ('dashboard', 'location')
