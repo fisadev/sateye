@@ -1,6 +1,14 @@
 sateye.satellites = function() {
     var self = {};
     self.dom = {};
+    self.defaultSatelliteConfig = {
+            pointSize: 10,
+            pointColor: "green",
+            pathWidth: 3,
+            pathColor: "red",
+            pathSecondsAhead: 30,
+            pathSecondsBehind: 10
+    };
 
     self.initialize = function() {
         // references to the dom
@@ -73,7 +81,36 @@ sateye.satellites = function() {
         // the user clicked an existing satellite to add it to the dashboard
         var clickedItem = $(this);
         var satelliteId = clickedItem.data("satelliteId");
+        var dashboardId = sateye.dashboards.current.id;
+
+        var data = {
+            dashboard_id: dashboardId,
+            satellite_id: satelliteId,
+            point_size: self.defaultSatelliteConfig.pointSize,
+            point_color: self.defaultSatelliteConfig.pointColor,
+            path_width: self.defaultSatelliteConfig.pathWidth,
+            path_color: self.defaultSatelliteConfig.pathColor,
+            path_seconds_ahead: self.defaultSatelliteConfig.pathSecondsAhead,
+            path_seconds_behind: self.defaultSatelliteConfig.pathSecondsBehind
+        };
+
+        $.ajax({
+            method: "POST",
+            url: "/api/dashboards/" + dashboardId + "/satellite_configs/",
+            data: data,
+        })
+        .done(self.onSatelliteAddedToDashboard)
+        .fail(self.onSatelliteToDashboardFailed);
+    }
+
+    self.onSatelliteAddedToDashboard = function(data) {
+        sateye.dashboards.current.loadSatelliteConfigs();
+        var listItem = self.dom.existingSatellitesList.children("[data-satelliteId=" + data.satellite.id.toString() + "]");
         clickedItem.remove();
+    }
+
+    self.onSatelliteToDashboardFailed = function(data) {
+        console.log("Failed to post new satellite config");
     }
 
     self.onFilterExistingSatellites = function(e) {
