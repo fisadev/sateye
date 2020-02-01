@@ -72,7 +72,9 @@
             "point_size": 25,
             "point_color": "#00F0FF",
             "path_color": "#FFFF00",
-            "path_width": 3
+            "path_width": 3,
+            "path_seconds_ahead": 30,
+            "path_seconds_behind": 10
           },
           {
             "id": 2,
@@ -80,11 +82,7 @@
             "norad_id": 42760,
             "description": "Milanesat",
             "tle": "1 42760U 17034C   19070.46618549  .00000282  00000-0  30543-4 0  9995\r\n2 42760  43.0166  56.1509 0009676 356.3576 146.0151 15.09909885 95848",
-            "tle_date": "2019-03-11T19:26:00Z",
-            "point_size": null,
-            "point_color": null,
-            "path_color": null,
-            "path_width": null
+            "tle_date": "2019-03-11T19:26:00Z"
           }
         ],
         "locations": [
