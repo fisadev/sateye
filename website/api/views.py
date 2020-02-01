@@ -47,7 +47,7 @@ class DashboardViewSet(viewsets.ModelViewSet):
         return Dashboard.objects.filter(can_see).order_by('name')
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def predict_path(request):
     """
     Get predictions for a satellite.
@@ -72,7 +72,7 @@ def predict_path(request):
     })
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def predict_passes(request):
     """
     Get next passes for a satellite over a certain location.
