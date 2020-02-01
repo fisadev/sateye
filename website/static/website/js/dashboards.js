@@ -51,77 +51,36 @@ sateye.dashboards = function() {
 
     self.createDashboard = function(dashboardData) {
         // create a new dashboard instance, parsing the json received from an api
+
+        var config = JSON.parse(dashboardData.config);
+
+        // create satellite instances for each satellite in the dashboard
+        var satellites = {};
+        for (let satelliteConfig of config.satellites) {
+            var satellite = sateye.satellites.createSatellite(satelliteConfig);
+            satellites[satellite.id] = satellite;
+        }
+
+        // create location instances for each location in the dashboard
+        var locations = {};
+        for (let locationConfig of config.locations) {
+            var location = sateye.locations.createLocation(locationConfig);
+            locations[location.id] = location;
+        }
+
         var dashboard = {
             id: dashboardData.id,
             name: dashboardData.name,
-            satellites: {},
-            locations: {},
+            satellites: satellites,
+            locations: locations,
 
-            loadSatelliteConfigs: function() {
-                // request all the satellite configs from this dashboard
-                var dashboard = this;  
-                $.ajax({url: "/api/dashboards/" + this.id + "/satellite_configs/"})
-                 // we must define these as function(...) so "this" inside them is the dashboard
-                 .done(function(data) {dashboard.onSatelliteConfigsReceived(data)}) 
-                 .fail(function(data) {dashboard.onSatelliteConfigsFailed(data)});
-            },
-
-            onSatelliteConfigsReceived: function(data) {
-                // create satellite instances for each satellite in the dashboard
-                var satellites = {};
-                for (let satelliteConfig of data) {
-                    var satellite = sateye.satellites.createSatellite(satelliteConfig);
-                    satellites[satellite.id] = satellite;
-                }
-
-                this.satellites = satellites;
-
-                if (this === self.current) {
-                    self.broadcastDashboardChange();
-                }
-            },
-
-            onSatelliteConfigsFailed: function() {
-                sateye.showAlert(
-                    sateye.Alert.ERROR, 
-                    "Failed to load satellites from this dashboard. Try reloading the website, sorry!", 
-                );
-            },
-
-            loadLocationConfigs: function() {
-                // request all the location configs from this dashboard
-                var dashboard = this;  
-                $.ajax({url: "/api/dashboards/" + this.id + "/location_configs/"})
-                 // we must define these as function(...) so "this" inside them is the dashboard
-                 .done(function(data) {dashboard.onLocationConfigsReceived(data)}) 
-                 .fail(function(data) {dashboard.onLocationConfigsFailed(data)});
-            },
-
-            onLocationConfigsReceived: function(data) {
-                // create location instances for each location in the dashboard
-                var locations = {};
-                for (let locationConfig of data) {
-                    var location = sateye.locations.createLocation(locationConfig);
-                    locations[location.id] = location;
-                }
-
-                this.locations = locations;
-
-                if (this === self.current) {
-                    self.broadcastDashboardChange();
-                }
-            },
-
-            onLocationConfigsFailed: function() {
-                sateye.showAlert(
-                    sateye.Alert.ERROR, 
-                    "Failed to load locations from this dashboard. Try reloading the website, sorry!", 
-                );
-            },
+            saveToServer: function() {
+                // save the dashboard config to the server db
+                console.log('WARNING: saving not implemented');
+            }
         }
 
-        dashboard.loadSatelliteConfigs();
-        dashboard.loadLocationConfigs();
+        self.broadcastDashboardChange();
 
         return dashboard;
     }
