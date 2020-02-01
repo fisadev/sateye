@@ -93,8 +93,8 @@ sateye.map = function() {
                 description: "<!--HTML-->\r\n<p>" + location.description + "</p>",
                 point: {
                     show: true,
-                    pixelSize: location.pointSize,
-                    color: sateye.hexToCesiumColor(location.pointColor),
+                    pixelSize: location.pointSizeOrDefault(),
+                    color: sateye.hexToCesiumColor(location.pointColorOrDefault()),
                     heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
                 },
                 position: Cesium.Cartesian3.fromDegrees(location.longitude, location.latitude),
@@ -128,8 +128,6 @@ sateye.map = function() {
                 satellite.getPathPredictions(
                     startDate,
                     endDate,
-                    satellite.pathSecondsAhead,
-                    satellite.pathSecondsBehind,
                     self._predictionsRefreshRealSeconds * 1000,  // used as timeout
                 );
             }
@@ -183,19 +181,19 @@ sateye.map = function() {
         // a point in the satellite position, that moves over time
         satelliteEntity.point = new Cesium.PointGraphics({
             show: true,
-            pixelSize: satellite.pointSize,
-            color: sateye.hexToCesiumColor(satellite.pointColor),
+            pixelSize: satellite.pointSizeOrDefault(),
+            color: sateye.hexToCesiumColor(satellite.pointColorOrDefault()),
         });
 
         // satellite positions over time
         positionProperty = new Cesium.SampledPositionProperty();
-        for (let dateAndPosition of satellite.pathPrediction.positions) {
+        for (let position of satellite.pathPrediction.positions) {
             positionProperty.addSample(
-                sateye.parseDate(dateAndPosition[0]),
+                sateye.parseDate(position.at_date),
                 Cesium.Cartesian3.fromDegrees(
-                    dateAndPosition[1][1],  // lon
-                    dateAndPosition[1][0],  // lat
-                    dateAndPosition[1][2],  // elev
+                    position.longitude,
+                    position.latitude,
+                    position.altitude,
                 ),
             );
         }
@@ -204,11 +202,11 @@ sateye.map = function() {
         // path predicted behind and ahead the satellite
         satelliteEntity.path = new Cesium.PathGraphics({
             show: true,
-            width: satellite.pathWidth,
-            material: new Cesium.ColorMaterialProperty(sateye.hexToCesiumColor(satellite.pathColor)),
+            width: satellite.pathWidthOrDefault(),
+            material: new Cesium.ColorMaterialProperty(sateye.hexToCesiumColor(satellite.pathColorOrDefault())),
             resolution: 120,
-            leadTime: satellite.pathSecondsAhead,
-            trailTime: satellite.pathSecondsBehind
+            leadTime: satellite.pathSecondsAheadOrDefault(),
+            trailTime: satellite.pathSecondsBehindOrDefault()
         });
     }
 
