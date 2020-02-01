@@ -30,6 +30,26 @@
   }
 },
 {
+  "model": "website.satellite",
+  "pk": 4,
+  "fields": {
+    "name": "Sophie",
+    "norad_id": 45017,
+    "description": "Sophie (NUSAT-7)",
+    "owner": 1
+  }
+},
+{
+  "model": "website.satellite",
+  "pk": 5,
+  "fields": {
+    "name": "Marie",
+    "norad_id": 45018,
+    "description": "Marie (NUSAT-8)",
+    "owner": 1
+  }
+},
+{
   "model": "website.tle",
   "pk": 1,
   "fields": {
@@ -54,6 +74,24 @@
     "satellite": 3,
     "at": "2019-04-16T03:10:00Z",
     "lines": "1 43204U 18015K   19105.85507487  .00001878  00000-0  80587-4 0  9994\r\n2 43204  97.3851 234.3837 0017881 162.1300 316.4167 15.23828077 66212"
+  }
+},
+{
+  "model": "website.tle",
+  "pk": 4,
+  "fields": {
+    "satellite": 4,
+    "at": "2020-01-31T00:00:00Z",
+    "lines": "1 45017U 20003B   20031.57019514  .00001463  00000-0  57371-4 0  9991\r\n2 45017  97.3341 100.1971 0012358 207.3777 303.2505 15.27288151  2502"
+  }
+},
+{
+  "model": "website.tle",
+  "pk": 5,
+  "fields": {
+    "satellite": 5,
+    "at": "2020-01-31T00:00:00Z",
+    "lines": "1 45018U 20003C   20031.56313594 -.00000072  00000-0  00000+0 0  9994\r\n2 45018  97.3365 100.1881 0011693 204.8611 261.6244 15.27049454  2507"
   }
 },
 {
@@ -113,7 +151,15 @@
   "pk": 3,
   "fields": {
     "dashboard": 1,
-    "satellite": 3
+    "satellite": 4
+  }
+},
+{
+  "model": "website.dashboardsatelliteconfig",
+  "pk": 4,
+  "fields": {
+    "dashboard": 1,
+    "satellite": 5
   }
 },
 {
