@@ -3,11 +3,11 @@ sateye.satellites = function() {
     self.dom = {};
     self.defaultSatelliteConfig = {
         pointSize: 10,
-        pointColor: "green",
-        pathWidth: 3,
-        pathColor: "red",
-        pathSecondsAhead: 30,
-        pathSecondsBehind: 10
+        pointColor: "FFFF00",
+        pathWidth: 2,
+        pathColor: "00FF00",
+        pathSecondsAhead: 60 * 45,
+        pathSecondsBehind: 60 * 10,
     };
 
     self.initialize = function() {
@@ -141,24 +141,54 @@ sateye.satellites = function() {
 
     self.createSatellite = function(dashboardSatelliteConfig) {
         // create a new satellite instance, parsing the json received from an api
-        return {
+
+        var tleDate = dashboardSatelliteConfig.tle_date;
+        if (tleDate) {
+            tleDate = sateye.parseDate(tleDate);
+        }
+
+        var valueOrDefault = function(fieldName) {
+            // create a function that is able to get the specified field, 
+            // or return the default from the module defaults if value is 
+            // null or undefined
+            var getter = function() {
+                var currentValue = this[fieldName];
+                if (currentValue == null || currentValue === undefined) {
+                    currentValue = self.defaultSatelliteConfig[fieldName];
+                }
+                return currentValue;
+            }
+
+            return getter;
+        }
+
+        return satellite = {
             // general satellite data
-            id: dashboardSatelliteConfig.satellite.id,
-            name: dashboardSatelliteConfig.satellite.name,
-            description: dashboardSatelliteConfig.satellite.description,
-            public: dashboardSatelliteConfig.satellite.public,
-            noradId: dashboardSatelliteConfig.satellite.norad_id,
+            id: dashboardSatelliteConfig.id,
+            name: dashboardSatelliteConfig.name,
+            description: dashboardSatelliteConfig.description,
+            noradId: dashboardSatelliteConfig.norad_id,
+            tle: dashboardSatelliteConfig.tle,
+            tleDate: tleDate,
             pathPrediction: null,
 
             // config of the point
             pointSize: dashboardSatelliteConfig.point_size,
             pointColor: dashboardSatelliteConfig.point_color,
 
+            pointSizeOrDefault: valueOrDefault('pointSize'),
+            pointColorOrDefault: valueOrDefault('pointColor'),
+
             // config of the path
             pathWidth: dashboardSatelliteConfig.path_width,
             pathColor: dashboardSatelliteConfig.path_color,
             pathSecondsAhead: dashboardSatelliteConfig.path_seconds_ahead,
             pathSecondsBehind: dashboardSatelliteConfig.path_seconds_behind,
+
+            pathWidthOrDefault: valueOrDefault('pathWidth'),
+            pathColorOrDefault: valueOrDefault('pathColor'),
+            pathSecondsAheadOrDefault: valueOrDefault('pathSecondsAhead'),
+            pathSecondsBehindOrDefault: valueOrDefault('pathSecondsBehind'),
 
             predictionsCover: function(startDate, endDate) {
                 // check that the satellite has predictions covering a specific range of time
@@ -173,21 +203,22 @@ sateye.satellites = function() {
                 }
             },
 
-            getPathPredictions: function(startDate, endDate, pathSecondsAhead, pathSecondsBehind, timeout) {
+            getPathPredictions: function(startDate, endDate, timeout) {
                 // get path predictions, to fill X seconds starting at a given date
                 // (usually asking from the current map date, plus X map seconds)
                 console.log("Requesting predictions for satellite " + this.name);
                 var satellite = this;
                 $.ajax({
-                    url: "/api/satellites/" + this.id + "/predict_path/",
+                    url: "/api/predict_path/",
+                    method: "POST",
                     cache: false,
                     timeout: timeout,
-                    data: {
+                    data: JSON.stringify({
+                        satellite_id: satellite.id,
+                        tle: satellite.tle,
                         start_date: startDate.toString(),
                         end_date: endDate.toString(),
-                        path_seconds_ahead: pathSecondsAhead,
-                        path_seconds_behind: pathSecondsBehind
-                    }
+                    })
                 })
                 // we must define these as function(...) so "this" inside them is the satellite
                 .done(function(data) {satellite.onPredictionsReceived(data)})
@@ -213,7 +244,7 @@ sateye.satellites = function() {
                 console.log("Error getting predictions for satellite " + this.name);
                 console.log(data);
             },
-        }
+        };
     }
 
     return self;
