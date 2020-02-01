@@ -22,7 +22,6 @@ class Position:
                         elevation_m=self.altitude)
 
 
-
 @attr.s
 class Pass:
     """
