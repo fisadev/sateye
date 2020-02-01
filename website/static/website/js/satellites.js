@@ -2,12 +2,12 @@ sateye.satellites = function() {
     var self = {};
     self.dom = {};
     self.defaultSatelliteConfig = {
-            pointSize: 10,
-            pointColor: "green",
-            pathWidth: 3,
-            pathColor: "red",
-            pathSecondsAhead: 30,
-            pathSecondsBehind: 10
+        pointSize: 10,
+        pointColor: "green",
+        pathWidth: 3,
+        pathColor: "red",
+        pathSecondsAhead: 30,
+        pathSecondsBehind: 10
     };
 
     self.initialize = function() {
