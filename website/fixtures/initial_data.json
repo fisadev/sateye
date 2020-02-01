@@ -60,7 +60,48 @@
     "fields": {
       "name": "Default dashboard",
       "owner_id": null,
-      "config": "{}"
+      "config": {
+        "satellites": [
+          {
+            "id": "ISS",
+            "norad_id": 25544,
+            "description": "International Space Station",
+            "tle": "1 25544U 98067A   19065.11099337  .00003087  00000-0  56425-4 0  9998\r\n2 25544  51.6415 153.7071 0003932  80.7085 347.8970 15.52784099159242",
+            "tle_date": "2019-03-05T23:39:50Z",
+            "point_size": 25,
+            "point_color": "#00F0FF",
+            "path_color": "#FFFF00",
+            "path_width": 3
+          },
+          {
+            "id": "NUSAT-3",
+            "norad_id": 42760,
+            "description": "Milanesat",
+            "tle": "1 42760U 17034C   19070.46618549  .00000282  00000-0  30543-4 0  9995\r\n2 42760  43.0166  56.1509 0009676 356.3576 146.0151 15.09909885 95848",
+            "tle_date": "2019-03-11T19:26:00Z",
+            "point_size": null,
+            "point_color": null,
+            "path_color": null,
+            "path_width": null
+          }
+        ],
+        "locations": [
+          {
+            "id": "UTN Los Reyunos",
+            "description": "Complejo del PyCamp 2019",
+            "latitude": -34.596123,
+            "longitude": -68.642255,
+            "altitude": 1036.0
+          },
+          {
+            "id": "Rafaela",
+            "description": "Ciudad en provincia de Santa Fe",
+            "latitude": -31.2526,
+            "longitude": -61.4916,
+            "altitude": 90.0
+          }
+        ]
+      }
     }
   },
   {
@@ -69,7 +110,7 @@
     "fields": {
       "name": "Admin private dashboard",
       "owner_id": 1,
-      "config": "{}"
+      "config": {}
     }
   }
 ]
