@@ -1,4 +1,7 @@
+import json
 from datetime import timedelta
+
+import attr
 
 from django.conf import settings
 from django.db.models import Q
@@ -9,14 +12,12 @@ from rest_framework.response import Response
 
 from iso8601 import parse_date
 
+from website import orbits
 from website.api import serializers
+from website.entities import Position
 from website.models import (
     Dashboard,
-    DashboardLocationConfig,
-    DashboardSatelliteConfig,
-    Location,
     Satellite,
-    TLE,
 )
 
 
@@ -25,32 +26,7 @@ class SatelliteViewSet(viewsets.ModelViewSet):
     Basic satellite api views.
     """
     serializer_class = serializers.SatelliteSerializer
-
-    def get_queryset(self):
-        """
-        This view should return the satellites visible by the user using the app. That means
-        satellites owned by that user, or public satellites (owner=None).
-        """
-        if self.request.user.is_authenticated:
-            can_see = Q(owner=self.request.user) | Q(owner=None)
-        else:
-            can_see = Q(owner=None)
-
-        return Satellite.objects.filter(can_see).order_by('name')
-
-
-class TLEViewSet(viewsets.ModelViewSet):
-    """
-    Basic tle api views.
-    """
-    serializer_class = serializers.TLESerializer
-
-    def get_queryset(self):
-        """
-        This view should return a list of all the tles for the specified satellite.
-        """
-        satellite_id = self.kwargs['satellite_id']
-        return TLE.objects.filter(satellite_id=satellite_id)
+    queryset = Satellite.objects.all().order_by('name')
 
 
 class DashboardViewSet(viewsets.ModelViewSet):
@@ -64,93 +40,36 @@ class DashboardViewSet(viewsets.ModelViewSet):
         This view should return the dashboards available for a user.
         """
         if self.request.user.is_authenticated:
-            can_see = Q(owner=self.request.user)
-        else:
-            can_see = Q(pk=settings.DEFAULT_DASHBOARD)
-
-        return Dashboard.objects.filter(can_see).order_by('name')
-
-
-class DashboardSatelliteConfigViewSet(viewsets.ModelViewSet):
-    """
-    Basic dashboard satellite configs api views.
-    """
-    serializer_class = serializers.DashboardSatelliteConfigSerializer
-
-    def get_queryset(self):
-        """
-        This view should return a list of all the satellite configs for the specified dashboard.
-        """
-        dashboard_id = self.kwargs['dashboard_id']
-        return DashboardSatelliteConfig.objects.filter(dashboard_id=dashboard_id)
-
-
-class DashboardLocationConfigViewSet(viewsets.ModelViewSet):
-    """
-    Basic dashboard location configs api views.
-    """
-    serializer_class = serializers.DashboardLocationConfigSerializer
-
-    def get_queryset(self):
-        """
-        This view should return a list of all the location configs for the specified dashboard.
-        """
-        dashboard_id = self.kwargs['dashboard_id']
-        return DashboardLocationConfig.objects.filter(dashboard_id=dashboard_id)
-
-
-class LocationViewSet(viewsets.ModelViewSet):
-    """
-    Basic location api views.
-    """
-    serializer_class = serializers.LocationSerializer
-
-    def get_queryset(self):
-        """
-        This view should return the locations visible by the user using the app. That means
-        locations owned by that user, or public locations (owner=None).
-        """
-        if self.request.user.is_authenticated:
             can_see = Q(owner=self.request.user) | Q(owner=None)
         else:
             can_see = Q(owner=None)
 
-        return Location.objects.filter(can_see).order_by('name')
+        return Dashboard.objects.filter(can_see).order_by('name')
 
 
 @api_view(['GET'])
-def predict_path(request, satellite_id):
+def predict_path(request):
     """
     Get predictions for a satellite.
     """
-    satellite = get_object_or_404(Satellite, pk=satellite_id)
+    body = json.loads(request.body)
 
-    start_date = parse_date(request.GET['start_date'])
-    end_date = parse_date(request.GET['end_date'])
+    satellite_id = body['satellite_id']
+    tle = body['tle']
+    start_date = parse_date(body['start_date'])
+    end_date = parse_date(body['end_date'])
 
     duration = (end_date - start_date).total_seconds()
     steps = 100  # TODO configurable? user configurable? where?
     step_seconds = duration / steps
-    positions = satellite.predict_path(start_date, end_date, step_seconds)
+    positions = orbits.predict_path(satellite_id, tle, start_date, end_date, step_seconds)
 
     return Response({
         'satellite_id': satellite_id,
         'start_date': start_date.isoformat(),
         'end_date': end_date.isoformat(),
-        'positions': list((current_date.isoformat(), position)
-                          for current_date, position in positions),
+        'positions': [attr.asdict(p) for p in positions],
     })
-
-
-def get_objects_from_ids(model, request_param):
-    """
-    Get model instances from ids expressed as a list of ids in a request param.
-    """
-    ids = [int(thing_id)
-           for thing_id in request_param.split(',')]
-
-    # TODO what if some ids don't exist? raise 404?
-    return model.objects.filter(pk__in=ids)
 
 
 @api_view(['GET'])
@@ -158,40 +77,30 @@ def predict_passes(request):
     """
     Get next passes for a satellite over a certain location.
     """
-    satellites = get_objects_from_ids(Satellite, request.GET['satellite_ids'])
-    locations = get_objects_from_ids(Location, request.GET['location_ids'])
+    body = json.loads(request.body)
 
-    start_date = parse_date(request.GET['start_date'])
-    end_date = parse_date(request.GET['end_date'])
+    # dict: satellite_id -> tle
+    satellites_tles = body['satellites_tles']
+    targets = [Position(**target_fields)
+               for target_fields in body['targets']]
 
-    min_tca_elevation = request.GET.get('min_tca_elevation')
-    if min_tca_elevation is not None:
-        min_tca_elevation = float(min_tca_elevation)
+    start_date = parse_date(body['start_date'])
+    end_date = parse_date(body['end_date'])
 
-    min_sun_elevation = request.GET.get('min_sun_elevation')
-    if min_sun_elevation is not None:
-        min_sun_elevation = float(min_sun_elevation)
+    min_tca_elevation = body.get('min_tca_elevation')
+    min_sun_elevation = body.get('min_sun_elevation')
 
     passes = []
 
-    for satellite in satellites:
-        for location in locations:
-            passes.extend(satellite.predict_passes(location, start_date, end_date,
-                                                   min_tca_elevation=min_tca_elevation,
-                                                   min_sun_elevation=min_sun_elevation))
-
-    passes_serialized = [{'satellite_id': pass_.satellite.pk,
-                          'location_id': pass_.location.pk,
-                          'aos': pass_.aos.isoformat(),
-                          'los': pass_.los.isoformat(),
-                          'tca': pass_.tca.isoformat(),
-                          'tca_elevation': pass_.tca_elevation,
-                          'sun_azimuth': pass_.sun_azimuth,
-                          'sun_elevation': pass_.sun_elevation}
-                         for pass_ in passes]
+    for satellite_id, tle in satellites_tles.items():
+        for target in targets:
+            target_passes = orbits.predict_passes(satellite_id, tle, target, start_date, end_date,
+                                                  min_tca_elevation=min_tca_elevation,
+                                                  min_sun_elevation=min_sun_elevation)
+            passes.extend(target_passes)
 
     return Response({
         'start_date': start_date.isoformat(),
         'end_date': end_date.isoformat(),
-        'passes': passes_serialized,
+        'positions': [attr.asdict(p) for p in passes],
     })
