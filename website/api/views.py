@@ -102,5 +102,5 @@ def predict_passes(request):
     return JsonResponse({
         'start_date': start_date.isoformat(),
         'end_date': end_date.isoformat(),
-        'positions': [attr.asdict(p) for p in passes],
+        'passes': [attr.asdict(p) for p in passes],
     })
