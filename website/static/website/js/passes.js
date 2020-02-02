@@ -11,7 +11,16 @@ sateye.passes = function() {
         // samples passes retrieved, placeholder until we have GUI to ask for passes
         var startDate = sateye.map.viewer.clock.currentTime;
         var endDate = sateye.addSeconds(startDate, 3600 * 24 * 5);
-        setTimeout(function() {self.getPassesPredictions(startDate, endDate, [1, 2], [1])}, 5000)
+        setTimeout(function() {
+            self.getPassesPredictions(
+                startDate, 
+                endDate, 
+                [sateye.dashboards.current.satellites[1], 
+                 sateye.dashboards.current.satellites[2]], 
+                [sateye.dashboards.current.locations[1],
+                 sateye.dashboards.current.locations[2]],
+        )
+        }, 5000);
     }
 
     self.createPass = function(passData) {
@@ -29,30 +38,45 @@ sateye.passes = function() {
         return pass;
     }
 
-    self.getPassesPredictions = function(startDate, endDate, satelliteIds, locationIds) {
+    self.getPassesPredictions = function(startDate, endDate, satellites, locations) {
         // get passes predictions of a group of satellites over a group of locations during a 
         // period of time
+        var satellitesTles = {};
+        for (let satellite of satellites) {
+            if (satellite.tle) {
+                satellitesTles[satellite.id] = satellite.tle;
+            } else {
+                console.log(
+                    "Can't request passes for satellite " + satellite.name +
+                    "because it has no TLE" 
+                );
+            }
+        }
+
+        var targets = [];
+        for (let location of locations) {
+            targets.push(location.serialize());
+        }
+
         $.ajax({
             url: '/api/predict_passes/',
+            method: 'POST',
             cache: false,
-            data: {
+            data: JSON.stringify({
                 start_date: startDate.toString(),
                 end_date: endDate.toString(),
-                satellite_ids: satelliteIds.join(","),
-                location_ids: locationIds.join(","),
-            },
+                satellites_tles: satellitesTles,
+                targets: targets,
+            }),
         }).done(self.onPassesRetrieved);
     }
 
     self.onPassesRetrieved = function(data) {
         // list of passes received, populate the passes list
         self.current = {};
-        var passId = 0;  // we create pass ids in the front end, just to be able to reference them
         for (let passData of data.passes) {
-            passData.id = passId;
-            self.current[passId] = self.createPass(passData);
-
-            passId += 1;
+            var newPass = self.createPass(passData);
+            self.current[newPass.id] = newPass;
         }
 
         // show the passes list
