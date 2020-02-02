@@ -80,8 +80,6 @@ sateye.dashboards = function() {
             }
         }
 
-        self.broadcastDashboardChange();
-
         return dashboard;
     }
 
