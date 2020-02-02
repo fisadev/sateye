@@ -22,6 +22,8 @@ var sateye = function() {
         // register useful function to be able to use them from templates
         Handlebars.registerHelper("dateAsHuman", sateye.dateAsHuman);
         Handlebars.registerHelper("numberAsHuman", sateye.numberAsHuman);
+        Handlebars.registerHelper("satelliteName", sateye.satelliteName);
+        Handlebars.registerHelper("locationName", sateye.locationName);
 
         // references to the dom
         self.dom.alertsBar = $("#alerts-bar");
@@ -86,6 +88,16 @@ var sateye = function() {
     self.numberAsHuman = function(number) {
         // format number as human readable 
         return number.toFixed(2);
+    }
+
+    self.satelliteName = function(satelliteId) {
+        // get the satellite name from a satellite id
+        return sateye.dashboards.current.satellites[satelliteId].name;
+    }
+
+    self.locationName = function(locationId) {
+        // get the location name from a location id
+        return sateye.dashboards.current.locations[locationId].name;
     }
 
     self.uuidv4 = function() {
