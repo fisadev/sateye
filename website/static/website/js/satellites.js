@@ -1,14 +1,6 @@
 sateye.satellites = function() {
     var self = {};
     self.dom = {};
-    self.defaultSatelliteConfig = {
-        pointSize: 10,
-        pointColor: "FFFF00",
-        pathWidth: 2,
-        pathColor: "00FF00",
-        pathSecondsAhead: 60 * 45,
-        pathSecondsBehind: 60 * 10,
-    };
 
     self.initialize = function() {
         // references to the dom
@@ -83,24 +75,7 @@ sateye.satellites = function() {
         var satelliteId = clickedItem.data("satelliteId");
         var dashboardId = sateye.dashboards.current.id;
 
-        var data = {
-            dashboard_id: dashboardId,
-            satellite_id: satelliteId,
-            point_size: self.defaultSatelliteConfig.pointSize,
-            point_color: self.defaultSatelliteConfig.pointColor,
-            path_width: self.defaultSatelliteConfig.pathWidth,
-            path_color: self.defaultSatelliteConfig.pathColor,
-            path_seconds_ahead: self.defaultSatelliteConfig.pathSecondsAhead,
-            path_seconds_behind: self.defaultSatelliteConfig.pathSecondsBehind
-        };
-
-        $.ajax({
-            method: "POST",
-            url: "/api/dashboards/" + dashboardId + "/satellite_configs/",
-            data: data,
-        })
-        .done(self.onSatelliteAddedToDashboard)
-        .fail(self.onSatelliteToDashboardFailed);
+        console.log("WARNING: existing satellite adding not implemented");
     }
 
     self.onSatelliteAddedToDashboard = function(data) {
@@ -140,74 +115,59 @@ sateye.satellites = function() {
     }
 
     self.createSatellite = function(dashboardSatelliteConfig) {
-        // create a new satellite instance, parsing the json received from an api
-
-        var tleDate = dashboardSatelliteConfig.tle_date;
-        if (tleDate) {
-            tleDate = sateye.parseDate(tleDate);
-        }
-
-        var valueOrDefault = function(fieldName) {
-            // create a function that is able to get the specified field, 
-            // or return the default from the module defaults if value is 
-            // null or undefined
-            var getter = function() {
-                var currentValue = this[fieldName];
-                if (currentValue == null || currentValue === undefined) {
-                    currentValue = self.defaultSatelliteConfig[fieldName];
-                }
-                return currentValue;
-            }
-
-            return getter;
-        }
-
-        return satellite = {
+        // create a new satellite instance, optionally parsing the data received from a dashboard config
+        var satellite = {
             // general satellite data
-            id: dashboardSatelliteConfig.id,
-            name: dashboardSatelliteConfig.name,
-            description: dashboardSatelliteConfig.description,
-            noradId: dashboardSatelliteConfig.norad_id,
-            tle: dashboardSatelliteConfig.tle,
-            tleDate: tleDate,
-            pathPrediction: null,
+            id: sateye.uuidv4(),
+            name: 'New satellite',
+            description: 'New satellite',
+            noradId: null,
+            tle: null,
+            tle_date: null,
 
-            // config of the point
-            pointSize: dashboardSatelliteConfig.point_size,
-            pointColor: dashboardSatelliteConfig.point_color,
-
-            pointSizeOrDefault: valueOrDefault('pointSize'),
-            pointColorOrDefault: valueOrDefault('pointColor'),
-
-            // config of the path
-            pathWidth: dashboardSatelliteConfig.path_width,
-            pathColor: dashboardSatelliteConfig.path_color,
-            pathSecondsAhead: dashboardSatelliteConfig.path_seconds_ahead,
-            pathSecondsBehind: dashboardSatelliteConfig.path_seconds_behind,
-
-            pathWidthOrDefault: valueOrDefault('pathWidth'),
-            pathColorOrDefault: valueOrDefault('pathColor'),
-            pathSecondsAheadOrDefault: valueOrDefault('pathSecondsAhead'),
-            pathSecondsBehindOrDefault: valueOrDefault('pathSecondsBehind'),
-
-            predictionsCover: function(startDate, endDate) {
-                // check that the satellite has predictions covering a specific range of time
-                // (usually asking from the current map date, plus X map seconds)
-                if (this.pathPrediction === null) {
-                    return false;
-                } else {
-                    var predictionsStartBefore = Cesium.JulianDate.lessThanOrEquals(this.pathPrediction.startDate, startDate);
-                    var predictionsEndAfter = Cesium.JulianDate.greaterThanOrEquals(this.pathPrediction.endDate, endDate);
-
-                    return (predictionsStartBefore && predictionsEndAfter);
-                }
+            // visual configurations
+            style: {
+                point_size: 10,
+                point_color: "FFFF00",
+                path_width: 2,
+                path_color: "00FF00",
+                path_seconds_ahead: 60 * 45,
+                path_seconds_behind: 60 * 10,
             },
 
-            getPathPredictions: function(startDate, endDate, timeout) {
-                // get path predictions, to fill X seconds starting at a given date
-                // (usually asking from the current map date, plus X map seconds)
-                console.log("Requesting predictions for satellite " + this.name);
-                var satellite = this;
+            // work data, not to be serialized
+            work_data: {
+                path_prediction: null,
+            },
+        };
+
+        // if specified, update the basic satellite with the data from the dashboard config
+        if (dashboardSatelliteConfig) {
+            satellite = Object.assign(satellite, dashboardSatelliteConfig);
+
+            if (satellite.tle_date) {
+                satellite.tle_date = sateye.parseDate(satellite.tle_date);
+            }
+        }
+
+        satellite.predictionsCover = function(startDate, endDate) {
+            // check that the satellite has predictions covering a specific range of time
+            // (usually asking from the current map date, plus X map seconds)
+            if (satellite.work_data.path_prediction === null) {
+                return false;
+            } else {
+                var predictionsStartBefore = Cesium.JulianDate.lessThanOrEquals(satellite.work_data.path_prediction.start_date, startDate);
+                var predictionsEndAfter = Cesium.JulianDate.greaterThanOrEquals(satellite.work_data.path_prediction.end_date, endDate);
+
+                return (predictionsStartBefore && predictionsEndAfter);
+            }
+        }
+
+        satellite.getPathPredictions = function(startDate, endDate, timeout) {
+            // get path predictions, to fill X seconds starting at a given date
+            // (usually asking from the current map date, plus X map seconds)
+            if (satellite.tle) {
+                console.log("Requesting predictions for satellite " + satellite.name);
                 $.ajax({
                     url: "/api/predict_path/",
                     method: "POST",
@@ -223,28 +183,41 @@ sateye.satellites = function() {
                 // we must define these as function(...) so "this" inside them is the satellite
                 .done(function(data) {satellite.onPredictionsReceived(data)})
                 .fail(function(data) {satellite.onPredictionsError(data)});
-            },
+            } else {
+                console.log(
+                    "Can't request predictions for satellite " + satellite.name +
+                    "because it has no TLE" 
+                );
+            }
+        }
 
-            onPredictionsReceived: function(data) {
-                // when we receive the response with the requested predictions
-                console.log("Predictions received for satellite " + this.name);
+        satellite.onPredictionsReceived = function(data) {
+            // when we receive the response with the requested predictions
+            console.log("Predictions received for satellite " + this.name);
 
-                // store the new received path predictions
-                this.pathPrediction = {
-                    startDate: sateye.parseDate(data.start_date),
-                    endDate: sateye.parseDate(data.end_date),
-                    positions: data.positions
-                }
+            // store the new received path predictions
+            satellite.work_data.path_prediction = {
+                start_date: sateye.parseDate(data.start_date),
+                end_date: sateye.parseDate(data.end_date),
+                positions: data.positions
+            }
 
-                sateye.map.onNewPathPrediction(this);
-            },
+            sateye.map.onNewPathPrediction(this);
+        }
 
-            onPredictionsError: function(data) {
-                // when the requested predictions fail
-                console.log("Error getting predictions for satellite " + this.name);
-                console.log(data);
-            },
-        };
+        satellite.onPredictionsError = function(data) {
+            // when the requested predictions fail
+            console.log("Error getting predictions for satellite " + this.name);
+            console.log(data);
+        }
+
+        satellite.serialize = function() {
+            // create a serializable representation, to store in the server saved dashboard config
+            console.log("WARNING: satellite serialization not implemented");
+            return {};
+        }
+
+        return satellite;
     }
 
     return self;

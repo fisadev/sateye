@@ -76,7 +76,7 @@ sateye.dashboards = function() {
 
             saveToServer: function() {
                 // save the dashboard config to the server db
-                console.log('WARNING: saving not implemented');
+                console.log('WARNING: dashboard saving not implemented');
             }
         }
 

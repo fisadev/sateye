@@ -93,8 +93,8 @@ sateye.map = function() {
                 description: "<!--HTML-->\r\n<p>" + location.description + "</p>",
                 point: {
                     show: true,
-                    pixelSize: location.pointSizeOrDefault(),
-                    color: sateye.hexToCesiumColor(location.pointColorOrDefault()),
+                    pixelSize: location.style.point_size,
+                    color: sateye.hexToCesiumColor(location.style.point_color),
                     heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
                 },
                 position: Cesium.Cartesian3.fromDegrees(location.longitude, location.latitude),
@@ -174,20 +174,20 @@ sateye.map = function() {
         // (we only trust the latest predictions, stuff like new tles could invalidate previous ones)
         satelliteEntity.availability.removeAll();
         satelliteEntity.availability.addInterval(new Cesium.TimeInterval({
-            start: satellite.pathPrediction.startDate,
-            stop: satellite.pathPrediction.endDate,
+            start: satellite.work_data.path_prediction.start_date,
+            stop: satellite.work_data.path_prediction.end_date,
         }));
 
         // a point in the satellite position, that moves over time
         satelliteEntity.point = new Cesium.PointGraphics({
             show: true,
-            pixelSize: satellite.pointSizeOrDefault(),
-            color: sateye.hexToCesiumColor(satellite.pointColorOrDefault()),
+            pixelSize: satellite.style.point_size,
+            color: sateye.hexToCesiumColor(satellite.style.point_color),
         });
 
         // satellite positions over time
         positionProperty = new Cesium.SampledPositionProperty();
-        for (let position of satellite.pathPrediction.positions) {
+        for (let position of satellite.work_data.path_prediction.positions) {
             positionProperty.addSample(
                 sateye.parseDate(position.at_date),
                 Cesium.Cartesian3.fromDegrees(
@@ -202,11 +202,11 @@ sateye.map = function() {
         // path predicted behind and ahead the satellite
         satelliteEntity.path = new Cesium.PathGraphics({
             show: true,
-            width: satellite.pathWidthOrDefault(),
-            material: new Cesium.ColorMaterialProperty(sateye.hexToCesiumColor(satellite.pathColorOrDefault())),
+            width: satellite.style.path_width,
+            material: new Cesium.ColorMaterialProperty(sateye.hexToCesiumColor(satellite.style.path_color)),
             resolution: 120,
-            leadTime: satellite.pathSecondsAheadOrDefault(),
-            trailTime: satellite.pathSecondsBehindOrDefault()
+            leadTime: satellite.style.path_seconds_ahead,
+            trailTime: satellite.style.path_seconds_behind
         });
     }
 

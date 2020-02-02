@@ -1,48 +1,39 @@
 sateye.locations = function() {
     var self = {};
-    self.defaultLocationConfig = {
-        pointSize: 10,
-        pointColor: "yellow"
-    };
-
 
     self.initialize = function() {
     }
 
     self.createLocation = function(dashboardLocationConfig) {
-        // create a new location instance, parsing the json received from an api
-
-        var valueOrDefault = function(fieldName) {
-            // create a function that is able to get the specified field, 
-            // or return the default from the module defaults if value is 
-            // null or undefined
-            var getter = function() {
-                var currentValue = this[fieldName];
-                if (currentValue == null || currentValue === undefined) {
-                    currentValue = self.defaultLocationConfig[fieldName];
-                }
-                return currentValue;
-            }
-
-            return getter;
-        }
-
-        return {
+        // create a new location instance, optionally parsing data received from a dashboard config
+        var location = {
             // general location data
-            id: dashboardLocationConfig.id,
-            name: dashboardLocationConfig.name,
-            description: dashboardLocationConfig.description,
-            latitude: dashboardLocationConfig.latitude,
-            longitude: dashboardLocationConfig.longitude,
-            altitude: dashboardLocationConfig.altitude,
+            id: sateye.uuidv4(),
+            name: 'New location',
+            description: 'New location',
+            latitude: 0,
+            longitude: 0,
+            altitude: 0,
 
-            // config of the point
-            pointSize: dashboardLocationConfig.point_size,
-            pointColor: dashboardLocationConfig.point_color,
+            // visual configurations
+            style: {
+                point_size: 10,
+                point_color: "yellow"
+            }
+        };
 
-            pointSizeOrDefault: valueOrDefault('pointSize'),
-            pointColorOrDefault: valueOrDefault('pointColor'),
+        // if specified, update the basic location with the data from the dashboard config
+        if (dashboardLocationConfig) {
+            location = Object.assign(location, dashboardLocationConfig);
         }
+        
+        location.serialize = function() {
+            // create a serializable representation, to store in the server saved dashboard config
+            console.log("WARNING: location serialization not implemented");
+            return {};
+        }
+
+        return location;
     }
 
     return self;
