@@ -33,6 +33,16 @@ sateye.locations = function() {
             return serializedData;
         }
 
+        location.asPosition = function() {
+            // create a Position entity representing the location
+            return {
+                object_id: location.id,
+                latitude: location.latitude,
+                longitude: location.longitude,
+                altitude: location.altitude,
+            };
+        }
+
         return location;
     }
 

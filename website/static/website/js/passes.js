@@ -55,7 +55,7 @@ sateye.passes = function() {
 
         var targets = [];
         for (let location of locations) {
-            targets.push(location.serialize());
+            targets.push(location.asPosition());
         }
 
         $.ajax({
