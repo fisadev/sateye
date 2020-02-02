@@ -18,7 +18,7 @@ sateye.locations = function() {
             // visual configurations
             style: {
                 point_size: 10,
-                point_color: "yellow"
+                point_color: "#FF00FF"
             }
         };
 
