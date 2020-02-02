@@ -16,16 +16,17 @@ sateye.passes = function() {
 
     self.createPass = function(passData) {
         // create a new pass instance, parsing the json received from an api
-        return {
-            id: passData.id,
-            satellite: sateye.dashboards.current.satellites[passData.satellite_id],
-            location: sateye.dashboards.current.locations[passData.location_id],
-            aos: sateye.parseDate(passData.aos),
-            los: sateye.parseDate(passData.los),
-            tca: sateye.parseDate(passData.tca),
-            tcaElevation: passData.tca_elevation,
-            sunElevation: passData.sun_elevation,
+        var pass = {
+            id: sateye.uuidv4(),
         };
+
+        // update the basic pass with the data from the api
+        pass = Object.assign(pass, passData);
+        pass.aos = sateye.parseDate(pass.aos);
+        pass.los = sateye.parseDate(pass.los);
+        pass.tca = sateye.parseDate(pass.tca);
+        
+        return pass;
     }
 
     self.getPassesPredictions = function(startDate, endDate, satelliteIds, locationIds) {
