@@ -14,15 +14,15 @@
             {{#each passes}}
             <tr>
                 <td class="text-center"><i class="fas fa-eye-slash"></i></td>
-                <td class="text-center">{{ this.satellite.name }}</td>
-                <td class="text-center">{{ this.location.name }}</td>
+                <td class="text-center">{{ satelliteName this.satellite_id }}</td>
+                <td class="text-center">{{ locationName this.target_id }}</td>
                 <td class="text-center" title="AOS: {{ dateAsHuman this.aos }}
 LOS: {{ dateAsHuman this.los }}">
                     {{ dateAsHuman this.tca }}
                     <a href="#" class="pass-tca-link" data-pass-id="{{ this.id }}"><i class="fas fa-clock"></i></a>
                 </td>
-                <td class="text-center" title="Sun elevation: {{ numberAsHuman this.sunElevation }}">
-                    {{ numberAsHuman this.tcaElevation }} deg
+                <td class="text-center" title="Sun elevation: {{ numberAsHuman this.sun_elevation }}">
+                    {{ numberAsHuman this.tca_elevation }} deg
                 </td>
             </tr>
             {{/each}}
