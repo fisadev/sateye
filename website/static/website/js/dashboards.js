@@ -56,16 +56,26 @@ sateye.dashboards = function() {
 
         // create satellite instances for each satellite in the dashboard
         var satellites = {};
-        for (let satelliteConfig of config.satellites) {
-            var satellite = sateye.satellites.createSatellite(satelliteConfig);
-            satellites[satellite.id] = satellite;
+        try {
+            for (let satelliteConfig of config.satellites) {
+                var satellite = sateye.satellites.createSatellite(satelliteConfig);
+                satellites[satellite.id] = satellite;
+            }
+        } catch(error) {
+            console.log("Error reading satellites from dashboard config:");
+            console.log(error);
         }
 
         // create location instances for each location in the dashboard
         var locations = {};
-        for (let locationConfig of config.locations) {
-            var location = sateye.locations.createLocation(locationConfig);
-            locations[location.id] = location;
+        try {
+            for (let locationConfig of config.locations) {
+                var location = sateye.locations.createLocation(locationConfig);
+                locations[location.id] = location;
+            }
+        } catch(error) {
+            console.log("Error reading locations from dashboard config:");
+            console.log(error);
         }
 
         var dashboard = {
