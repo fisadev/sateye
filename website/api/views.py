@@ -5,10 +5,10 @@ import attr
 
 from django.conf import settings
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 
 from iso8601 import parse_date
 
@@ -47,7 +47,7 @@ class DashboardViewSet(viewsets.ModelViewSet):
         return Dashboard.objects.filter(can_see).order_by('name')
 
 
-@api_view(['POST'])
+@csrf_exempt
 def predict_path(request):
     """
     Get predictions for a satellite.
@@ -64,7 +64,7 @@ def predict_path(request):
     step_seconds = duration / steps
     positions = orbits.predict_path(satellite_id, tle, start_date, end_date, step_seconds)
 
-    return Response({
+    return JsonResponse({
         'satellite_id': satellite_id,
         'start_date': start_date.isoformat(),
         'end_date': end_date.isoformat(),
@@ -72,7 +72,7 @@ def predict_path(request):
     })
 
 
-@api_view(['POST'])
+@csrf_exempt
 def predict_passes(request):
     """
     Get next passes for a satellite over a certain location.
@@ -99,7 +99,7 @@ def predict_passes(request):
                                                   min_sun_elevation=min_sun_elevation)
             passes.extend(target_passes)
 
-    return Response({
+    return JsonResponse({
         'start_date': start_date.isoformat(),
         'end_date': end_date.isoformat(),
         'positions': [attr.asdict(p) for p in passes],
