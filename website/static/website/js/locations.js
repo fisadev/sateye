@@ -29,8 +29,8 @@ sateye.locations = function() {
         
         location.serialize = function() {
             // create a serializable representation, to store in the server saved dashboard config
-            console.log("WARNING: location serialization not implemented");
-            return {};
+            var serializedData = JSON.parse(JSON.stringify(location));
+            return serializedData;
         }
 
         return location;

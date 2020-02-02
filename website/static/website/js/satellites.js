@@ -213,8 +213,9 @@ sateye.satellites = function() {
 
         satellite.serialize = function() {
             // create a serializable representation, to store in the server saved dashboard config
-            console.log("WARNING: satellite serialization not implemented");
-            return {};
+            var serializedData = JSON.parse(JSON.stringify(satellite));
+            delete serializedData.work_data;
+            return serializedData;
         }
 
         return satellite;
