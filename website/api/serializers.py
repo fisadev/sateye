@@ -25,7 +25,7 @@ class DashboardConfigField(serializers.Field):
         config = json.loads(value)
 
         # populate all fields of satellites that come form the server db
-        for satellite_data in config['satellites']:
+        for satellite_data in config.get('satellites', []):
             if satellite_data['from_db']:
                 satellite = Satellite.objects.get(pk=satellite_data['id'])
                 serializer = SatelliteSerializer(satellite)
@@ -38,7 +38,7 @@ class DashboardConfigField(serializers.Field):
         config = json.loads(data)
 
         # remove all fields from satellites that come form the server db
-        for satellite_data in config['satellites']:
+        for satellite_data in config.get('satellites', []):
             if satellite_data['from_db']:
                 for key in list(satellite_data.keys()):
                     if key not in ('id', 'from_db', 'style'):
