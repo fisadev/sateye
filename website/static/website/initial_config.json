@@ -1,0 +1,94 @@
+{
+    "satellites": [
+        {
+            "id": 1,
+            "from_db": true,
+            "style": {
+                "point_size": 25,
+                "point_color": "#00F0FF",
+                "path_color": "#FFFF00",
+                "path_width": 3,
+                "path_seconds_ahead": 600,
+                "path_seconds_behind": 60
+            }
+        },
+        {
+            "id": 2,
+            "from_db": true
+        },
+        {
+            "id": 4,
+            "from_db": true
+        },
+        {
+            "id": 5,
+            "from_db": true
+        },
+        {
+            "id": "cosmos2542",
+            "from_db": false,
+            "name": "COSMOS 2542",
+            "norad_id": 44797,
+            "description": "Russian satellites-surveillance satellite",
+            "tle": "1 44797U 19079A   20032.70932673  .00002082  00000-0  88692-4 0  9990\r\n2 44797  97.6400  96.3079 0388230  98.6578 265.8806 14.75562208 10051",
+            "style": {
+                "point_size": 25,
+                "point_color": "#FF0000",
+                "path_color": "#FF0000",
+                "path_width": 2,
+                "path_seconds_ahead": 5000,
+                "path_seconds_behind": 600
+            }
+        },
+        {
+            "id": "cosmos2543",
+            "from_db": false,
+            "name": "COSMOS 2543",
+            "norad_id": 44835,
+            "description": "Russian satellites-surveillance smaller satellite deployed from COSMOS 2542",
+            "tle": "1 44835U 19079D   20032.69276958 -.00000041  00000-0  14206-5 0  9993\r\n2 44835  97.8906  94.3053 0192145 108.0125 254.2113 14.50360039  8320",
+            "style": {
+                "point_size": 15,
+                "point_color": "#FF0000",
+                "path_color": "#FF0000",
+                "path_width": 2,
+                "path_seconds_ahead": 5000,
+                "path_seconds_behind": 600
+            }
+        },
+        {
+            "id": "nrol65",
+            "from_db": false,
+            "name": "NROL-65 (USA 245)",
+            "norad_id": 39232,
+            "description": "USA spy satellite",
+            "tle": "1 39232U          20020.39753100  .00000000  00000-0  10147-3 0 00\r\n2 39232  97.8900  83.8854 0535813 159.6956 340.7190 14.76104306    02",
+            "style": {
+                "point_size": 25,
+                "point_color": "#0000FF",
+                "path_color": "#0000FF",
+                "path_width": 2,
+                "path_seconds_ahead": 5000,
+                "path_seconds_behind": 600
+            }
+        }
+    ],
+    "locations": [
+        {
+            "id": 1,
+            "name": "UTN Los Reyunos",
+            "description": "Complejo del PyCamp 2019",
+            "latitude": -34.596123,
+            "longitude": -68.642255,
+            "altitude": 1036.0
+        },
+        {
+            "id": 2,
+            "name": "Rafaela",
+            "description": "Ciudad en provincia de Santa Fe",
+            "latitude": -31.2526,
+            "longitude": -61.4916,
+            "altitude": 90.0
+        }
+    ]
+}
