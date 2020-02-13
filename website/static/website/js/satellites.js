@@ -121,7 +121,7 @@ sateye.satellites = function() {
             id: sateye.uuidv4(),
             name: 'New satellite',
             description: 'New satellite',
-            noradId: null,
+            norad_id: null,
             tle: null,
             tle_date: null,
 
