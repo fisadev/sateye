@@ -59,6 +59,10 @@ def predict_path(request):
     start_date = parse_date(body['start_date'])
     end_date = parse_date(body['end_date'])
 
+    if tle is None:
+        # we must get the tle from the database
+        tle = Satellite.objects.get(pk=satellite_id).tle
+
     duration = (end_date - start_date).total_seconds()
     steps = 100  # TODO configurable? user configurable? where?
     step_seconds = duration / steps
@@ -93,6 +97,10 @@ def predict_passes(request):
     passes = []
 
     for satellite_id, tle in satellites_tles.items():
+        if tle is None:
+            # we must get the tle from the database
+            tle = Satellite.objects.get(pk=satellite_id).tle
+
         for target in targets:
             target_passes = orbits.predict_passes(satellite_id, tle, target, start_date, end_date,
                                                   min_tca_elevation=min_tca_elevation,
