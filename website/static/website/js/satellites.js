@@ -119,6 +119,7 @@ sateye.satellites = function() {
         var satellite = {
             // general satellite data
             id: sateye.uuidv4(),
+            from_db: false,
             name: 'New satellite',
             description: 'New satellite',
             norad_id: null,
