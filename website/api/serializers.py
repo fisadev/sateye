@@ -41,7 +41,7 @@ class DashboardConfigField(serializers.Field):
         for satellite_data in config['satellites']:
             if satellite_data['from_db']:
                 for key in list(satellite_data.keys()):
-                    if key not in ('id', 'from_db'):
+                    if key not in ('id', 'from_db', 'style'):
                         del satellite_data[key]
 
         return json.dumps(config)
