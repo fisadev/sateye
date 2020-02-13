@@ -54,6 +54,13 @@
     <script src="{% static 'website/js/passes.js' %}"></script>
     <script src="{% static 'website/js/dashboards.js' %}"></script>
 
-    <script src="{% static 'website/js/home.js' %}"></script>
+    <script>
+        $(function() {
+            sateye.initialize();
+            {% if dashboard_id %}
+                sateye.dashboards.loadDashboard("{{dashboard_id}}");
+            {% endif %}
+        });
+    </script>
 </body>
 </html>

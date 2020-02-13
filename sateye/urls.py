@@ -20,6 +20,7 @@ from website.views import home
 
 urlpatterns = [
     path('', home),
+    path('<int:dashboard_id>/', home),
     path('api/', include('website.api.urls')),
     path('admin/', admin.site.urls),
 ]

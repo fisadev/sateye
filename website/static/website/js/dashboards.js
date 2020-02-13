@@ -1,32 +1,21 @@
 sateye.dashboards = function() {
     var self = {};
     self.current = null;
+    
     self.onDashboardChangedCallbacks = [];
 
     self.initialize = function() {
-        self.loadDashboard();
+        // always create an empty dashboard, just in case
+        self.setCurrentDashboard(self.createDashboard());
     }
 
     self.loadDashboard = function(dashboardId) {
         // load the user dashboard config from the server
         // if the dashboard_id isn't specified, load the first dashboard available
-        console.log("Requesting dashboards...");
+        console.log("Requesting dashboard...");
 
-        // temporal hack, until we have some kind of dashboard picker and the logic gets separated
-        if (dashboardId === undefined) {
-            $.ajax({url: "/api/dashboards/", cache: false})
-             .done(self.onDashboardsReceived);
-        } else {
-            $.ajax({url: "/api/dashboards/" + dashboardId.toString() + "/", cache: false})
-             .done(self.onDashboardReceived);
-        }
-    }
-
-    self.onDashboardsReceived = function(data) {
-        // when we receive response from the dashboards list requeset
-        console.log("Dashboards received from the server");
-        // if no id was specified, just get the first dashboard
-        self.setCurrentDashboard(self.createDashboard(data[0]));
+        $.ajax({url: "/api/dashboards/" + dashboardId.toString() + "/", cache: false})
+         .done(self.onDashboardReceived);
     }
 
     self.onDashboardReceived = function(data) {
@@ -51,15 +40,42 @@ sateye.dashboards = function() {
 
     self.createDashboard = function(dashboardData) {
         // create a new dashboard instance, parsing the json received from an api
+        var dashboard = {
+            id: null,
+            name: "New dashboard",
+            satellites: {},
+            locations: {},
 
-        var config = JSON.parse(dashboardData.config);
+            saveToServer: function() {
+                // save the dashboard config to the server db
+                console.log('WARNING: dashboard saving not implemented');
+            }
+        }
+
+        // if specified, update the dashboard with the data
+        if (dashboardData) {
+            dashboard = Object.assign(dashboard, dashboardData);
+            dashboard.config = undefined;
+        }
+
+        var rawConfig = {
+            satellites: [],
+            locations: [],
+        }
+        if (dashboardData) {
+            try {
+                rawConfig = JSON.parse(dashboardData.config);
+            } catch(error) {
+                console.log("Error dashboard config:");
+                console.log(error);
+            }
+        }
 
         // create satellite instances for each satellite in the dashboard
-        var satellites = {};
         try {
-            for (let satelliteConfig of config.satellites) {
+            for (let satelliteConfig of rawConfig.satellites) {
                 var satellite = sateye.satellites.createSatellite(satelliteConfig);
-                satellites[satellite.id] = satellite;
+                dashboard.satellites[satellite.id] = satellite;
             }
         } catch(error) {
             console.log("Error reading satellites from dashboard config:");
@@ -67,27 +83,14 @@ sateye.dashboards = function() {
         }
 
         // create location instances for each location in the dashboard
-        var locations = {};
         try {
-            for (let locationConfig of config.locations) {
+            for (let locationConfig of rawConfig.locations) {
                 var location = sateye.locations.createLocation(locationConfig);
-                locations[location.id] = location;
+                dashboard.locations[location.id] = location;
             }
         } catch(error) {
             console.log("Error reading locations from dashboard config:");
             console.log(error);
-        }
-
-        var dashboard = {
-            id: dashboardData.id,
-            name: dashboardData.name,
-            satellites: satellites,
-            locations: locations,
-
-            saveToServer: function() {
-                // save the dashboard config to the server db
-                console.log('WARNING: dashboard saving not implemented');
-            }
         }
 
         return dashboard;
