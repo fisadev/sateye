@@ -31,20 +31,18 @@ class DashboardConfigField(serializers.Field):
                 serializer = SatelliteSerializer(satellite)
                 satellite_data.update(serializer.data)
 
-        return json.dumps(config)
+        return config
 
     def to_internal_value(self, data):
         # TODO handle errors?
-        config = json.loads(data)
-
         # remove all fields from satellites that come form the server db
-        for satellite_data in config.get('satellites', []):
+        for satellite_data in data.get('satellites', []):
             if satellite_data['from_db']:
                 for key in list(satellite_data.keys()):
                     if key not in ('id', 'from_db', 'style'):
                         del satellite_data[key]
 
-        return json.dumps(config)
+        return json.dumps(data)
 
 
 class DashboardSerializer(serializers.ModelSerializer):
