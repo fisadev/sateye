@@ -78,17 +78,21 @@
             "id": 1,
             "name": "UTN Los Reyunos",
             "description": "Complejo del PyCamp 2019",
-            "latitude": -34.596123,
-            "longitude": -68.642255,
-            "altitude": 1036.0
+            "position": {
+                "latitude": -34.596123,
+                "longitude": -68.642255,
+                "altitude": 1036.0
+            }
         },
         {
             "id": 2,
             "name": "Rafaela",
             "description": "Ciudad en provincia de Santa Fe",
-            "latitude": -31.2526,
-            "longitude": -61.4916,
-            "altitude": 90.0
+            "position": {
+                "latitude": -31.2526,
+                "longitude": -61.4916,
+                "altitude": 90.0
+            }
         }
     ]
 }
