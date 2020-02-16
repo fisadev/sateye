@@ -5,6 +5,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.8.7/brython.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.8.7/brython_stdlib.min.js"></script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.4.0/css/bootstrap4-toggle.min.css" crossorigin="anonymous">
@@ -23,7 +25,7 @@
 </head>
 
 
-<body>
+<body onload="brython({pythonpath: ['{% static 'website/py' %}']})">
     {% include "website/navbar.html" %}
     {% include "website/map.html" %}
 
@@ -47,20 +49,16 @@
     {% include "website/client/satellite.html" %}
     {% include "website/client/passes.html" %}
 
-    <script src="{% static 'website/js/core.js' %}"></script>
-    <script src="{% static 'website/js/map.js' %}"></script>
-    <script src="{% static 'website/js/satellites.js' %}"></script>
-    <script src="{% static 'website/js/locations.js' %}"></script>
-    <script src="{% static 'website/js/passes.js' %}"></script>
-    <script src="{% static 'website/js/dashboards.js' %}"></script>
+        <script>
+            window.fisa = {}
+        </script>
 
-    <script>
-        $(function() {
-            sateye.initialize();
-            {% if dashboard_id %}
-                sateye.dashboards.loadDashboard("{{dashboard_id}}");
-            {% endif %}
-        });
+    <script type="text/python">
+        from sateye_client.core import App
+        app = App()
+        {% if dashboard_id %}
+        app.set_current_dashboard({{dashboard_id}})
+        {% endif %}
     </script>
 </body>
 </html>
