@@ -1,9 +1,8 @@
-import json
-
 from browser import ajax, window
 
 
 jq = window.jQuery
+jsjson = window.JSON
 
 
 class SatellitesUI:
@@ -66,13 +65,13 @@ class SatellitesUI:
         List of satellites received, populate the existing satellites list.
         """
         self.existing_satellites_list.html("")
-        received_satellites = json.loads(req.text)
+        received_satellites = jsjson.parse(req.text)
 
         for server_satellite in received_satellites:
             # only add satellites not present in the dashboard
-            if server_satellite["id"] not in self.app.dashboard.satellites:
-                name = server_satellite["name"]
-                norad_id = server_satellite.get("norad_id")
+            if server_satellite.id not in self.app.dashboard.satellites:
+                name = server_satellite.name
+                norad_id = server_satellite.norad_id
                 if norad_id:
                     name += " ({})".format(norad_id)
 
@@ -81,7 +80,7 @@ class SatellitesUI:
                     name,
                 )
                 satellite_element = jq(element_html)
-                satellite_element.data("satellite_id", server_satellite["id"])
+                satellite_element.data("satellite_id", server_satellite.id)
                 self.existing_satellites_list.append(satellite_element)
 
                 # and add the click handler, so the satellite is added

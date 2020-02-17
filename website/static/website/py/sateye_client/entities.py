@@ -1,9 +1,20 @@
-import json
 from uuid import uuid4
 
-from browser import ajax
+from browser import ajax, window
 
 from sateye_client.utils import parse_api_date
+
+
+jsjson = window.JSON
+
+
+def init_params_from_jsobj(jsobj, init_fields):
+    """
+    Try to extract init params from a javascript object, usually the result of a JSON.parse.
+    """
+    return {field: jsobj[field]
+            for field in init_fields
+            if field in jsobj}
 
 
 class Style:
@@ -20,11 +31,14 @@ class Style:
         self.path_seconds_behind = path_seconds_behind
 
     @classmethod
-    def from_json(cls, json_data):
+    def from_jsobj(cls, jsobj):
         """
-        Build a Style extracting data from an api response.
+        Build a Style extracting data from a parsed api response.
         """
-        return cls(**json_data)
+        fields = ("point_size point_color path_width path_color path_seconds_ahead "
+                  "path_seconds_behind".split())
+        init_params = init_params_from_jsobj(jsobj, fields)
+        return cls(**init_params)
 
 
 class Position:
@@ -40,16 +54,17 @@ class Position:
         self.at_date = at_date
 
     @classmethod
-    def from_json(cls, json_data):
+    def from_jsobj(cls, jsobj):
         """
-        Build a Position extracting data from an api response.
+        Build a Position extracting data from a parsed api response.
         """
-        init_params = json_data.copy()
+        fields = "latitude longitude altitude object_id at_date".split()
+        init_params = init_params_from_jsobj(jsobj, fields)
+
         if "at_date" in init_params:
             init_params["at_date"] = parse_api_date(init_params["at_date"])
 
         return cls(**init_params)
-
 
 
 class Satellite:
@@ -99,15 +114,17 @@ class Satellite:
         return data
 
     @classmethod
-    def from_json(cls, json_data):
+    def from_jsobj(cls, jsobj):
         """
-        Build a Satellite extracting data from an api response.
-        (this is meant to be used with the json data from dashboard configs, and not from the
-        satellites api itself)
+        Build a Satellite extracting data from a parsed api response.
+        (this is meant to be used with the data from the json in the dashboard configs, and not
+        from the satellites api itself)
         """
-        init_params = json_data.copy()
+        fields = "id from_db name description norad_id tle tle_date style".split()
+        init_params = init_params_from_jsobj(jsobj, fields)
+
         if "style" in init_params:
-            init_params["style"] = Style.from_json(init_params["style"])
+            init_params["style"] = Style.from_jsobj(init_params["style"])
         if "tle_date" in init_params:
             init_params["tle_date"] = parse_api_date(init_params["tle_date"])
 
@@ -134,7 +151,7 @@ class Satellite:
                 "/api/predict_path/",
                 timeout=timeout,
                 oncomplete=self.on_path_received,
-                data=json.dumps({
+                data=jsjson.stringify({
                     "satellite_id": self.id,
                     "tle": self.tle,
                     "start_date": start_date.isoformat(),
@@ -152,12 +169,12 @@ class Satellite:
 
         if req.status in (0, 200):
             # store the new received path predictions
-            path_data = json.loads(req.text)
+            path_data = jsjson.parse(req.text)
 
             self.path_start_date = parse_api_date(path_data["start_date"])
             self.path_end_date = parse_api_date(path_data["end_date"])
 
-            self.path_positions = [Position.from_json(json_position)
+            self.path_positions = [Position.from_jsobj(json_position)
                                    for json_position in path_data.positions]
 
             # TODO this was changed, we need to add the callback listeners from map/dashboard/?
@@ -202,16 +219,19 @@ class Location:
         return data
 
     @classmethod
-    def from_json(cls, json_data):
+    def from_jsobj(cls, jsobj):
         """
-        Build a Location extracting data from an api response.
-        (this is meant to be used with the json data from dashboard configs)
+        Build a Location extracting data from a parsed api response.
+        (this is meant to be used with the data from the json in the dashboard configs, and not
+        from any locations api)
         """
-        init_params = json_data.copy()
+        fields = "id name description position style".split()
+        init_params = init_params_from_jsobj(jsobj, fields)
+
         if "style" in init_params:
-            init_params["style"] = Style.from_json(init_params["style"])
+            init_params["style"] = Style.from_jsobj(init_params["style"])
         if "position" in init_params:
-            init_params["position"] = Position.from_json(init_params["position"])
+            init_params["position"] = Position.from_jsobj(init_params["position"])
 
         return cls(**init_params)
 
@@ -247,25 +267,24 @@ class Dashboard:
         return data
 
     @classmethod
-    def from_json(cls, json_data):
+    def from_jsobj(cls, jsobj):
         """
-        Build a Dashboard extracting data from an api response.
+        Build a Dashboard extracting data from a parsed api response.
+        jsobj will be an object parsed from javascript.
         """
-        init_params = json_data.copy()
+        fields = "id name".split()
+        init_params = init_params_from_jsobj(jsobj, fields)
 
-        init_params.pop("owner")
-        config = init_params.pop("config", None)
-
-        if config:
-            if "satellites" in config:
+        if "config" in jsobj:
+            if "satellites" in jsobj.config:
                 init_params["satellites"] = {
-                    satellite_data['id']: Satellite.from_json(satellite_data)
-                    for satellite_data in config["satellites"]
+                    satellite_data.id: Satellite.from_jsobj(satellite_data)
+                    for satellite_data in jsobj.config.satellites
                 }
-            if "locations" in config:
+            if "locations" in jsobj.config:
                 init_params["locations"] = {
-                    location_data['id']: Location.from_json(location_data)
-                    for location_data in config["locations"]
+                    location_data.id: Location.from_jsobj(location_data)
+                    for location_data in jsobj.config.locations
                 }
 
         return cls(**init_params)
@@ -283,7 +302,7 @@ class Dashboard:
             """
             if req.status in (0, 200):
                 print("Dashboard received from the server")
-                dashboard = cls.from_json(json.loads(req.text))
+                dashboard = cls.from_jsobj(jsjson.parse(req.text))
                 callback(dashboard)
             else:
                 print("Error reading the dashboard from the server")
