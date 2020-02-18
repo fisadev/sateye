@@ -137,18 +137,18 @@ class MapUI:
         if not self.app.dashboard:
             return
 
+        current_date = cesium_date_to_datetime(self.viewer.clock.currentTime)
+
+        # we should ensure we have predictions enough to cover the time between the current
+        # date and current_date + self.predictions_too_low_threshold_real_seconds
+        map_seconds_until_end = self.real_to_map_seconds(
+            self.predictions_too_low_threshold_real_seconds
+        )
+        ensure_predictions_until = current_date + timedelta(seconds=map_seconds_until_end)
+
         # if we have less than X real seconds of predictions left, then ask for Y predicted
         # seconds (more info at docs/prediction_chunks.rst)
         for satellite in self.app.dashboard.satellites.values():
-            current_date = cesium_date_to_datetime(self.viewer.clock.currentTime)
-
-            # we should ensure we have predictions enough to cover the time between the current
-            # date and current_date + self.predictions_too_low_threshold_real_seconds
-            map_seconds_until_end = self.real_to_map_seconds(
-                self.predictions_too_low_threshold_real_seconds
-            )
-            ensure_predictions_until = current_date + timedelta(seconds=map_seconds_until_end)
-
             if not satellite.path_covers(current_date, ensure_predictions_until):
                 # ensure we will know when the predictions are received
                 if self.update_satellite_in_map not in satellite.on_new_path_callbacks:
