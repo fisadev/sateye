@@ -1,5 +1,3 @@
-from browser import alert
-
 from sateye_client.entities import Dashboard
 
 
