@@ -198,8 +198,8 @@ class MapUI:
         # ones)
         satellite_entity.availability.removeAll()
         satellite_entity.availability.addInterval(cesium.TimeInterval.new({
-            "start": satellite.path_start_date.isoformat(),
-            "stop": satellite.path_end_date.isoformat(),
+            "start": iso_to_cesium_date(satellite.path_start_date.isoformat()),
+            "stop": iso_to_cesium_date(satellite.path_end_date.isoformat()),
         }))
 
         # a point in the satellite position, that moves over time
