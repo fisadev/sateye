@@ -124,8 +124,8 @@ class MapUI:
                     "color": hex_to_cesium_color(location.style.point_color),
                     "heightReference": cesium.HeightReference.CLAMP_TO_GROUND,
                 },
-                "position": cesium.Cartesian3.fromDegrees(location.position.longitude,
-                                                          location.position.latitude),
+                "position": cesium.Cartesian3.fromDegrees(location.longitude,
+                                                          location.latitude),
             }
 
             self.viewer.entities.add(location_entity)
@@ -212,14 +212,7 @@ class MapUI:
         # satellite positions over time
         position_property = cesium.SampledPositionProperty.new()
         for position in satellite.path_positions:
-            position_property.addSample(
-                iso_to_cesium_date(position.at_date.isoformat()),
-                cesium.Cartesian3.fromDegrees(
-                    position.longitude,
-                    position.latitude,
-                    position.altitude,
-                ),
-            )
+            position_property.addSample(position[0], position[1])
 
         satellite_entity.position = position_property
 

@@ -2,10 +2,11 @@ from uuid import uuid4
 
 from browser import ajax, window
 
-from sateye_client.utils import parse_api_date
+from sateye_client.utils import iso_to_cesium_date, parse_api_date
 
 
 jsjson = window.JSON
+cesium = window.Cesium
 
 
 def init_params_from_jsobj(jsobj, init_fields):
@@ -38,32 +39,6 @@ class Style:
         fields = ("point_size point_color path_width path_color path_seconds_ahead "
                   "path_seconds_behind".split())
         init_params = init_params_from_jsobj(jsobj, fields)
-        return cls(**init_params)
-
-
-class Position:
-    """
-    A position with respect to the Earth.
-    """
-    def __init__(self, latitude, longitude, altitude=None, object_id=None, at_date=None):
-        self.latitude = latitude  # degrees
-        self.longitude = longitude  # degrees
-        self.altitude = altitude  # meters
-
-        self.object_id = object_id
-        self.at_date = at_date
-
-    @classmethod
-    def from_jsobj(cls, jsobj):
-        """
-        Build a Position extracting data from a parsed api response.
-        """
-        fields = "latitude longitude altitude object_id at_date".split()
-        init_params = init_params_from_jsobj(jsobj, fields)
-
-        if "at_date" in init_params:
-            init_params["at_date"] = parse_api_date(init_params["at_date"])
-
         return cls(**init_params)
 
 
@@ -174,10 +149,16 @@ class Satellite:
             self.path_start_date = parse_api_date(path_data["start_date"])
             self.path_end_date = parse_api_date(path_data["end_date"])
 
-            self.path_positions = [Position.from_jsobj(json_position)
-                                   for json_position in path_data.positions]
+            # it would be nicer to have python instances instead, but this is waaay faster
+            # (we store them in Cesium format, ready to be used in the map)
+            self.path_positions = [
+                (iso_to_cesium_date(position_data.at_date),
+                 cesium.Cartesian3.fromDegrees(position_data.longitude,
+                                               position_data.latitude,
+                                               position_data.altitude))
+                 for position_data in path_data.positions]
 
-            # TODO this was changed, we need to add the callback listeners from map/dashboard/?
+            # let everyone know we have new predictions
             for callback in self.on_new_path_callbacks:
                 callback(self)
         else:
@@ -190,22 +171,20 @@ class Location:
     """
     A location that's part of a Dashboard.
     """
-    def __init__(self, id=None, name="New location", description="New location", position=None,
-                 style=None):
+    def __init__(self, id=None, name="New location", description="New location", latitude=None,
+                 longitude=None, altitude=None, style=None):
         if id is None:
             id = str(uuid4())
         if style is None:
             style = Style()
-        if position is None:
-            position = Position(0, 0)
 
         self.id = id
         self.name = name
         self.description = description
-        self.position = position
+        self.latitude = latitude
+        self.longitude = longitude
+        self.altitude = altitude
         self.style = style
-
-        self.position.object_id = self.id
 
     def to_json(self):
         """
@@ -225,13 +204,11 @@ class Location:
         (this is meant to be used with the data from the json in the dashboard configs, and not
         from any locations api)
         """
-        fields = "id name description position style".split()
+        fields = "id name description latitude longitude altitude style".split()
         init_params = init_params_from_jsobj(jsobj, fields)
 
         if "style" in init_params:
             init_params["style"] = Style.from_jsobj(init_params["style"])
-        if "position" in init_params:
-            init_params["position"] = Position.from_jsobj(init_params["position"])
 
         return cls(**init_params)
 
