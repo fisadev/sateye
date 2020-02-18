@@ -3,7 +3,8 @@ from sateye_client.entities import Dashboard
 
 class App:
     """
-    Global state for the client side app.
+    The Sateye client side app itself. It also depends on having a BgWorker instance running as a
+    web worker.
     """
     def __init__(self):
         """
