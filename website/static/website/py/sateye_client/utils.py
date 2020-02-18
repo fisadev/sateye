@@ -1,6 +1,6 @@
-from browser import window
+from datetime import datetime
 
-from iso8601 import parse_date
+from browser import window
 
 
 cesium = window.Cesium
@@ -28,4 +28,4 @@ def cesium_date_to_datetime(cesium_date):
     """
     Convert a Cesium date instance into a python datetime instance.
     """
-    return parse_date(cesium_date.toString())
+    return datetime.fromisoformat(cesium_date.toString())
