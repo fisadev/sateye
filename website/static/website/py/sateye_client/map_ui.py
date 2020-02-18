@@ -151,8 +151,8 @@ class MapUI:
 
             if not satellite.path_covers(current_date, ensure_predictions_until):
                 # ensure we will know when the predictions are received
-                if self.on_new_satellite_path not in satellite.on_new_path_callbacks:
-                    satellite.on_new_path_callbacks.append(self.on_new_satellite_path)
+                if self.update_satellite_in_map not in satellite.on_new_path_callbacks:
+                    satellite.on_new_path_callbacks.append(self.update_satellite_in_map)
 
                 # ask for the predictions
                 map_seconds_arround = self.real_to_map_seconds(self.predictions_chunk_real_seconds)
@@ -164,12 +164,6 @@ class MapUI:
                     end_date,
                     self.predictions_refresh_real_seconds * 1000,  # used as timeout
                 )
-
-    def on_new_satellite_path(self, satellite):
-        """
-        Process new path prediction from a satellite.
-        """
-        self.update_satellite_in_map(satellite)
 
     def build_or_create_satellite_entity(self, satellite):
         """
