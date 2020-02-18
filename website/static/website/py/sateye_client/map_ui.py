@@ -19,7 +19,7 @@ class MapUI:
 
         # chunking configs. More info at docs/prediction_chunks.rst
         # how often do we check if we need to refresh predictions?
-        self.predictions_refresh_real_seconds = 3
+        self.predictions_refresh_real_seconds = 5
         # how many real seconds do we want to get on each prediction?
         self.predictions_chunk_real_seconds = 30 * 60
         # how many real seconds before we run out of predictions should fire a new request for
