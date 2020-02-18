@@ -47,6 +47,7 @@ class DashboardViewSet(viewsets.ModelViewSet):
         return Dashboard.objects.filter(can_see).order_by('name')
 
 
+# TODO do we need this? still using post or moved to get?
 @csrf_exempt
 def predict_path(request):
     """
