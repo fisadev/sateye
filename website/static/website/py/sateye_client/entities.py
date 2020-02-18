@@ -1,8 +1,9 @@
 from uuid import uuid4
 
 from browser import ajax, window
+from iso8601 import parse_date
 
-from sateye_client.utils import iso_to_cesium_date, parse_api_date
+from sateye_client.utils import iso_to_cesium_date
 
 
 jsjson = window.JSON
@@ -101,7 +102,7 @@ class Satellite:
         if "style" in init_params:
             init_params["style"] = Style.from_jsobj(init_params["style"])
         if "tle_date" in init_params:
-            init_params["tle_date"] = parse_api_date(init_params["tle_date"])
+            init_params["tle_date"] = parse_date(init_params["tle_date"])
 
         return cls(**init_params)
 
@@ -146,8 +147,8 @@ class Satellite:
             # store the new received path predictions
             path_data = jsjson.parse(req.text)
 
-            self.path_start_date = parse_api_date(path_data["start_date"])
-            self.path_end_date = parse_api_date(path_data["end_date"])
+            self.path_start_date = parse_date(path_data["start_date"])
+            self.path_end_date = parse_date(path_data["end_date"])
 
             # it would be nicer to have python instances instead, but this is waaay faster
             # (we store them in Cesium format, ready to be used in the map)
