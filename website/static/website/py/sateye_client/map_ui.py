@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from browser import window
 
@@ -25,6 +25,10 @@ class MapUI:
         # how many real seconds before we run out of predictions should fire a new request for
         # predictions?
         self.predictions_too_low_threshold_real_seconds = 15 * 60
+
+        # remember the last (real) date that we requested paths for each satellite, to avoid
+        # saturating the server with too many requests
+        self.last_path_requests = {}
 
         # initialize the map module
         self.configure_cesium_map()
@@ -137,33 +141,41 @@ class MapUI:
         if not self.app.dashboard:
             return
 
-        current_date = cesium_date_to_datetime(self.viewer.clock.currentTime)
+        real_now = datetime.now()
+        map_now = cesium_date_to_datetime(self.viewer.clock.currentTime)
 
         # we should ensure we have predictions enough to cover the time between the current
-        # date and current_date + self.predictions_too_low_threshold_real_seconds
+        # date and map_now + self.predictions_too_low_threshold_real_seconds
         map_seconds_until_end = self.real_to_map_seconds(
             self.predictions_too_low_threshold_real_seconds
         )
-        ensure_predictions_until = current_date + timedelta(seconds=map_seconds_until_end)
+        ensure_predictions_until = map_now + timedelta(seconds=map_seconds_until_end)
+
+        # oldest path request date we are willing to still wait for
+        wait_limit = real_now - timedelta(seconds=self.predictions_refresh_real_seconds * 5)
 
         # if we have less than X real seconds of predictions left, then ask for Y predicted
         # seconds (more info at docs/prediction_chunks.rst)
         for satellite in self.app.dashboard.satellites.values():
-            if not satellite.path_covers(current_date, ensure_predictions_until):
-                # ensure we will know when the predictions are received
-                if self.update_satellite_in_map not in satellite.on_new_path_callbacks:
-                    satellite.on_new_path_callbacks.append(self.update_satellite_in_map)
+            if not satellite.path_covers(map_now, ensure_predictions_until):
+                # only request new paths if there isn't a request waiting
+                last_request = self.last_path_requests.get(satellite.id)
+                if last_request is None or last_request < wait_limit:
+                    # ensure we will know when the predictions are received
+                    if self.update_satellite_in_map not in satellite.on_new_path_callbacks:
+                        satellite.on_new_path_callbacks.append(self.update_satellite_in_map)
 
-                # ask for the predictions
-                map_seconds_arround = self.real_to_map_seconds(self.predictions_chunk_real_seconds)
-                start_date = current_date - timedelta(seconds=map_seconds_arround)
-                end_date = current_date + timedelta(seconds=map_seconds_arround)
+                    # ask for the predictions
+                    map_seconds_arround = self.real_to_map_seconds(self.predictions_chunk_real_seconds)
+                    start_date = map_now - timedelta(seconds=map_seconds_arround)
+                    end_date = map_now + timedelta(seconds=map_seconds_arround)
 
-                satellite.get_path(
-                    start_date,
-                    end_date,
-                    self.predictions_refresh_real_seconds * 1000,  # used as timeout
-                )
+                    satellite.get_path(
+                        start_date,
+                        end_date,
+                        self.predictions_refresh_real_seconds,  # used as timeout
+                    )
+                    self.last_path_requests[satellite.id] = real_now
 
     def build_or_create_satellite_entity(self, satellite):
         """
