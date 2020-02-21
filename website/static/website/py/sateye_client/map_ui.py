@@ -26,10 +26,6 @@ class MapUI:
         # predictions?
         self.predictions_too_low_threshold_real_seconds = 15 * 60
 
-        # remember the last (real) date that we requested paths for each satellite, to avoid
-        # saturating the server with too many requests
-        self.last_path_requests = {}
-
         # initialize the map module
         self.configure_cesium_map()
 
@@ -150,7 +146,6 @@ class MapUI:
                 if not self.app.dashboard:
                     continue
 
-                real_now = datetime.now()
                 map_now = cesium_date_to_datetime(self.viewer.clock.currentTime)
 
                 # we should ensure we have predictions enough to cover the time between the current
@@ -163,24 +158,17 @@ class MapUI:
                 start_date = map_now - timedelta(seconds=map_seconds_arround)
                 end_date = map_now + timedelta(seconds=map_seconds_arround)
 
-                # oldest path request date we are willing to still wait for
-                wait_limit = real_now - timedelta(seconds=self.predictions_refresh_real_seconds * 5)
-
                 # if we have less than X real seconds of predictions left, then ask for Y predicted
                 # seconds (more info at docs/prediction_chunks.rst)
                 for satellite in self.app.dashboard.satellites.values():
                     if not satellite.path_covers(map_now, ensure_predictions_until):
-                        # only request new paths if there isn't a request waiting
-                        last_request = self.last_path_requests.get(satellite.id)
-                        if last_request is None or last_request < wait_limit:
-                            # ask for the predictions
-                            await satellite.get_path(
-                                start_date,
-                                end_date,
-                                self.predictions_refresh_real_seconds,  # used as timeout
-                                self.update_satellite_in_map,
-                            )
-                            self.last_path_requests[satellite.id] = real_now
+                        # ask for the predictions
+                        await satellite.get_path(
+                            start_date,
+                            end_date,
+                            self.predictions_refresh_real_seconds,  # used as timeout
+                            self.update_satellite_in_map,
+                        )
             except Exception as err:
                 print("Error checking satellite paths:")
                 print(err)
