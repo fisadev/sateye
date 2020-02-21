@@ -47,18 +47,14 @@ class DashboardViewSet(viewsets.ModelViewSet):
         return Dashboard.objects.filter(can_see).order_by('name')
 
 
-# TODO do we need this? still using post or moved to get?
-@csrf_exempt
 def predict_path(request):
     """
     Get predictions for a satellite.
     """
-    body = json.loads(request.body)
-
-    satellite_id = body['satellite_id']
-    tle = body['tle']
-    start_date = parse_date(body['start_date'])
-    end_date = parse_date(body['end_date'])
+    satellite_id = request.GET['satellite_id']
+    tle = request.GET['tle']
+    start_date = parse_date(request.GET['start_date'])
+    end_date = parse_date(request.GET['end_date'])
 
     duration = (end_date - start_date).total_seconds()
     steps = 100  # TODO configurable? user configurable? where?
