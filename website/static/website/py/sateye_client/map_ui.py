@@ -247,6 +247,8 @@ class MapUI:
         On input change, refresh the satellites so the paths get shown or hidden.
         """
         self.paths_visible = self.paths_visible_input.prop("checked") is True
-        if self.app.dashboard is not None:
-            for satellite in self.app.dashboard.satellites.values():
-                self.update_satellite_in_map(satellite)
+
+        # refresh existing satellites in map
+        for entity in self.viewer.entities.values:
+            if entity.id.startswith("Sateye.Satellite:"):
+                entity.path.show = self.paths_visible
