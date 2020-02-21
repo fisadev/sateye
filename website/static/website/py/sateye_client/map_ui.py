@@ -185,7 +185,7 @@ class MapUI:
                 print("Error checking satellite paths:")
                 print(err)
 
-    def build_or_create_satellite_entity(self, satellite):
+    def get_or_create_satellite_entity(self, satellite):
         """
         Build a cesium entity to display the satellite and its path in the map, or return an
         existing one if it's already there.
@@ -207,7 +207,7 @@ class MapUI:
         Update the display data for a satellite shown in the map, based on its path predictions
         this will even add the satellite for the map if it wasn't already there.
         """
-        satellite_entity = self.build_or_create_satellite_entity(satellite)
+        satellite_entity = self.get_or_create_satellite_entity(satellite)
 
         # general satellite data
         satellite_entity.name = satellite.name
