@@ -33,13 +33,17 @@ class MapUI:
         # initialize the map module
         self.configure_cesium_map()
 
+        self.paths_visible = True
+
         # references to the dom
+        self.paths_visible_input = jq("#paths-visible-input")
         self.night_shadow_input = jq("#night-shadow-input")
         self.map_date_picker = jq("#map-date-picker")
         self.go_to_date_button = jq("#go-to-date")
 
         # assign event handlers
         self.go_to_date_button.on("click", self.on_go_to_date_click)
+        self.paths_visible_input.on("change", self.on_paths_visible_change)
         self.night_shadow_input.on("change", self.on_night_shadow_change)
         self.on_night_shadow_change()
 
@@ -230,7 +234,7 @@ class MapUI:
 
         # path predicted behind and ahead the satellite
         satellite_entity.path = cesium.PathGraphics.new({
-            "show": True,
+            "show": self.paths_visible,
             "width": satellite.style.path_width,
             "material": cesium.ColorMaterialProperty.new(
                 hex_to_cesium_color(satellite.style.path_color)
@@ -245,3 +249,12 @@ class MapUI:
         On input change, decide wether to show or not the night shadow.
         """
         self.viewer.scene.globe.enableLighting = self.night_shadow_input.prop("checked") is True
+
+    def on_paths_visible_change(self, e=None):
+        """
+        On input change, refresh the satellites so the paths get shown or hidden.
+        """
+        self.paths_visible = self.paths_visible_input.prop("checked") is True
+        if self.app.dashboard is not None:
+            for satellite in self.app.dashboard.satellites.values():
+                self.update_satellite_in_map(satellite)
