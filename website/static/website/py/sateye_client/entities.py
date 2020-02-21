@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from browser import ajax, window
+from browser import aio, ajax, window
 
 from sateye_client.utils import iso_to_cesium_date, parse_iso8601_date
 
@@ -70,7 +70,6 @@ class Satellite:
         self.path_positions = None
         self.path_start_date = None
         self.path_end_date = None
-        self.on_new_path_callbacks = []
 
     def to_json(self):
         """
@@ -84,7 +83,6 @@ class Satellite:
         data.pop("path_positions")
         data.pop("path_start_date")
         data.pop("path_end_date")
-        data.pop("on_new_path_callbacks")
 
         return data
 
@@ -115,36 +113,39 @@ class Satellite:
         else:
             return False
 
-    def get_path(self, start_date, end_date, timeout):
+    async def get_path(self, start_date, end_date, timeout, callback=None):
         """
         Get path predictions, to fill X seconds starting at a given date (usually asking from the
         current map date, plus X map seconds).
         """
-        if self.tle:
-            print("Requesting path for satellite", self.name)
-            ajax.post(
-                "/api/predict_path/",
-                timeout=timeout,
-                oncomplete=self.on_path_received,
-                data=jsjson.stringify({
-                    "satellite_id": self.id,
-                    "tle": self.tle,
-                    "start_date": start_date.isoformat(),
-                    "end_date": end_date.isoformat(),
-                }),
-            )
-        else:
+        if not self.tle:
             print("Can't request path for satellite", self.name, "because it has no TLE")
+            return
 
-    def on_path_received(self, req):
+        print("Requesting path for satellite", self.name)
+
+        request = await aio.get(
+            "/api/predict_path/",
+            timeout=timeout,
+            data={
+                "satellite_id": self.id,
+                "tle": self.tle,
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat(),
+            },
+        )
+
+        self.on_path_received(request, callback)
+
+    def on_path_received(self, request, callback=None):
         """
         When we receive the response with the requested path predictions.
         """
         print("Path received for satellite", self.name)
 
-        if req.status in (0, 200):
+        if request.status in (0, 200):
             # store the new received path predictions
-            path_data = jsjson.parse(req.text)
+            path_data = jsjson.parse(request.data)
 
             self.path_start_date = parse_iso8601_date(path_data["start_date"])
             self.path_end_date = parse_iso8601_date(path_data["end_date"])
@@ -158,13 +159,12 @@ class Satellite:
                                                position_data.altitude))
                  for position_data in path_data.positions]
 
-            # let everyone know we have new predictions
-            for callback in self.on_new_path_callbacks:
+            if callback is not None:
                 callback(self)
         else:
             # the requested path predictions failed
             print("Error getting path for satellite", self.name)
-            print(req.text)
+            print(request.data)
 
 
 class Location:

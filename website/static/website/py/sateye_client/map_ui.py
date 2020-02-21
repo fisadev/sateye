@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from browser import window
+from browser import aio, window
 
 from sateye_client.utils import cesium_date_to_datetime, hex_to_cesium_color, iso_to_cesium_date
 
@@ -47,6 +47,9 @@ class MapUI:
         self.night_shadow_input.on("change", self.on_night_shadow_change)
         self.on_night_shadow_change()
 
+        # every some time, ensure we have paths for each satellite
+        aio.run(self.ensure_enough_predictions())
+
     def configure_cesium_map(self):
         """
         Configure the cesium map.
@@ -70,16 +73,11 @@ class MapUI:
         center = cesium.Cartesian3.fromDegrees(0, 0)
         self.viewer.camera.setView({"destination": center})
 
-        # every some time, ensure we have paths for each satellite
-        #self.viewer.clock.onTick.addEventListener(self.on_map_tick)
-        window.setInterval(
-            self.ensure_enough_predictions,
-            (self.predictions_refresh_real_seconds - 1) * 1000,
-        )
-
         # remove fog and ground atmosphere on 3d globe
         self.viewer.scene.fog.enabled = False
         self.viewer.scene.globe.showGroundAtmosphere = False
+
+        #self.viewer.clock.onTick.addEventListener(self.on_map_tick)
 
     def on_map_tick(self, clock):
         """
@@ -138,48 +136,54 @@ class MapUI:
 
             self.viewer.entities.add(location_entity)
 
-    def ensure_enough_predictions(self):
+    async def ensure_enough_predictions(self):
         """
         Ensure the map has enough info to display paths for shown satellites.
         """
-        if not self.app.dashboard:
-            return
+        sleep_seconds = self.predictions_refresh_real_seconds
 
-        real_now = datetime.now()
-        map_now = cesium_date_to_datetime(self.viewer.clock.currentTime)
+        while True:
+            await aio.sleep(sleep_seconds)
+            try:
+                print("Checking satellite paths for required predictions...")
 
-        # we should ensure we have predictions enough to cover the time between the current
-        # date and map_now + self.predictions_too_low_threshold_real_seconds
-        map_seconds_until_end = self.real_to_map_seconds(
-            self.predictions_too_low_threshold_real_seconds
-        )
-        ensure_predictions_until = map_now + timedelta(seconds=map_seconds_until_end)
+                if not self.app.dashboard:
+                    continue
 
-        # oldest path request date we are willing to still wait for
-        wait_limit = real_now - timedelta(seconds=self.predictions_refresh_real_seconds * 5)
+                real_now = datetime.now()
+                map_now = cesium_date_to_datetime(self.viewer.clock.currentTime)
 
-        # if we have less than X real seconds of predictions left, then ask for Y predicted
-        # seconds (more info at docs/prediction_chunks.rst)
-        for satellite in self.app.dashboard.satellites.values():
-            if not satellite.path_covers(map_now, ensure_predictions_until):
-                # only request new paths if there isn't a request waiting
-                last_request = self.last_path_requests.get(satellite.id)
-                if last_request is None or last_request < wait_limit:
-                    # ensure we will know when the predictions are received
-                    if self.update_satellite_in_map not in satellite.on_new_path_callbacks:
-                        satellite.on_new_path_callbacks.append(self.update_satellite_in_map)
+                # we should ensure we have predictions enough to cover the time between the current
+                # date and map_now + self.predictions_too_low_threshold_real_seconds
+                map_seconds_until_end = self.real_to_map_seconds(
+                    self.predictions_too_low_threshold_real_seconds
+                )
+                ensure_predictions_until = map_now + timedelta(seconds=map_seconds_until_end)
+                map_seconds_arround = self.real_to_map_seconds(self.predictions_chunk_real_seconds)
+                start_date = map_now - timedelta(seconds=map_seconds_arround)
+                end_date = map_now + timedelta(seconds=map_seconds_arround)
 
-                    # ask for the predictions
-                    map_seconds_arround = self.real_to_map_seconds(self.predictions_chunk_real_seconds)
-                    start_date = map_now - timedelta(seconds=map_seconds_arround)
-                    end_date = map_now + timedelta(seconds=map_seconds_arround)
+                # oldest path request date we are willing to still wait for
+                wait_limit = real_now - timedelta(seconds=self.predictions_refresh_real_seconds * 5)
 
-                    satellite.get_path(
-                        start_date,
-                        end_date,
-                        self.predictions_refresh_real_seconds,  # used as timeout
-                    )
-                    self.last_path_requests[satellite.id] = real_now
+                # if we have less than X real seconds of predictions left, then ask for Y predicted
+                # seconds (more info at docs/prediction_chunks.rst)
+                for satellite in self.app.dashboard.satellites.values():
+                    if not satellite.path_covers(map_now, ensure_predictions_until):
+                        # only request new paths if there isn't a request waiting
+                        last_request = self.last_path_requests.get(satellite.id)
+                        if last_request is None or last_request < wait_limit:
+                            # ask for the predictions
+                            await satellite.get_path(
+                                start_date,
+                                end_date,
+                                self.predictions_refresh_real_seconds,  # used as timeout
+                                self.update_satellite_in_map,
+                            )
+                            self.last_path_requests[satellite.id] = real_now
+            except Exception as err:
+                print("Error checking satellite paths:")
+                print(err)
 
     def build_or_create_satellite_entity(self, satellite):
         """
