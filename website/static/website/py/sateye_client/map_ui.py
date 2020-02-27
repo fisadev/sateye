@@ -140,27 +140,27 @@ class MapUI:
 
         while True:
             await aio.sleep(sleep_seconds)
-            try:
-                print("Checking satellite paths for required predictions...")
+            print("Checking satellite paths for required predictions...")
 
-                if not self.app.dashboard:
-                    continue
+            if not self.app.dashboard:
+                continue
 
-                map_now = cesium_date_to_datetime(self.viewer.clock.currentTime)
+            map_now = cesium_date_to_datetime(self.viewer.clock.currentTime)
 
-                # we should ensure we have predictions enough to cover the time between the current
-                # date and map_now + self.predictions_too_low_threshold_real_seconds
-                map_seconds_until_end = self.real_to_map_seconds(
-                    self.predictions_too_low_threshold_real_seconds
-                )
-                ensure_predictions_until = map_now + timedelta(seconds=map_seconds_until_end)
-                map_seconds_arround = self.real_to_map_seconds(self.predictions_chunk_real_seconds)
-                start_date = map_now - timedelta(seconds=map_seconds_arround)
-                end_date = map_now + timedelta(seconds=map_seconds_arround)
+            # we should ensure we have predictions enough to cover the time between the current
+            # date and map_now + self.predictions_too_low_threshold_real_seconds
+            map_seconds_until_end = self.real_to_map_seconds(
+                self.predictions_too_low_threshold_real_seconds
+            )
+            ensure_predictions_until = map_now + timedelta(seconds=map_seconds_until_end)
+            map_seconds_arround = self.real_to_map_seconds(self.predictions_chunk_real_seconds)
+            start_date = map_now - timedelta(seconds=map_seconds_arround)
+            end_date = map_now + timedelta(seconds=map_seconds_arround)
 
-                # if we have less than X real seconds of predictions left, then ask for Y predicted
-                # seconds (more info at docs/prediction_chunks.rst)
-                for satellite in self.app.dashboard.satellites.values():
+            # if we have less than X real seconds of predictions left, then ask for Y predicted
+            # seconds (more info at docs/prediction_chunks.rst)
+            for satellite in self.app.dashboard.satellites.values():
+                try:
                     if not satellite.path_covers(map_now, ensure_predictions_until):
                         # ask for the predictions
                         await satellite.get_path(
@@ -169,9 +169,9 @@ class MapUI:
                             self.predictions_refresh_real_seconds,  # used as timeout
                             self.update_satellite_in_map,
                         )
-            except Exception as err:
-                print("Error checking satellite paths:")
-                print(err)
+                except Exception as err:
+                    print("Error checking or getting path for satellite", satellite.name)
+                    print(err)
 
     def get_or_create_satellite_entity(self, satellite):
         """
