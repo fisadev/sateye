@@ -98,7 +98,7 @@ class Satellite:
 
         if "style" in init_params:
             init_params["style"] = Style.from_jsobj(init_params["style"])
-        if "tle_date" in init_params:
+        if "tle_date" in init_params and init_params["tle_date"] is not None:
             init_params["tle_date"] = parse_iso8601_date(init_params["tle_date"])
 
         return cls(**init_params)
