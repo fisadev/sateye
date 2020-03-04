@@ -1,0 +1,75 @@
+{
+    "satellites": [
+        {
+            "id": 2,
+            "from_db": true
+        },
+        {
+            "id": 3,
+            "from_db": true
+        },
+        {
+            "id": 4,
+            "from_db": true
+        },
+        {
+            "id": 5,
+            "from_db": true
+        },
+        {
+            "id": 6,
+            "from_db": true
+        },
+        {
+            "id": 7,
+            "from_db": true
+        },
+        {
+            "id": 8,
+            "from_db": true
+        }
+    ],
+    "locations": [
+        {
+            "id": 1,
+            "name": "SVA",
+            "description": "Svalbard",
+            "latitude": 78.229772,
+            "longitude": 15.407786,
+            "altitude": 501
+        },
+        {
+            "id": 2,
+            "name": "TRL",
+            "description": "Troll",
+            "latitude": -72.016667,
+            "longitude": 2.533333,
+            "altitude": 1564
+        },
+        {
+            "id": 3,
+            "name": "HBK",
+            "description": "HBK",
+            "latitude": -25.886627,
+            "longitude": 27.708695,
+            "altitude": 1564
+        },
+        {
+            "id": 4,
+            "name": "CBA",
+            "description": "Córdoba",
+            "latitude": -31.524075,
+            "longitude": -64.463522,
+            "altitude": 730
+        },
+        {
+            "id": 5,
+            "name": "Fisa",
+            "description": "Casa de Fisa",
+            "latitude": -31.270113,
+            "longitude": -61.494242,
+            "altitude": 90
+        }
+    ]
+}
+
