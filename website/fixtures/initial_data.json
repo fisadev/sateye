@@ -6,52 +6,85 @@
       "name": "ISS",
       "norad_id": 25544,
       "description": "International Space Station",
-      "tle": "1 25544U 98067A   19065.11099337  .00003087  00000-0  56425-4 0  9998\r\n2 25544  51.6415 153.7071 0003932  80.7085 347.8970 15.52784099159242",
-      "tle_date": "2019-03-05T23:39:50Z"
+      "tle": "1 25544U 98067A   20064.54104887  .00001276  00000-0  31124-4 0  9990\r\n2 25544  51.6426 146.2443 0005534 347.2629 141.4110 15.49218674215793",
+      "tle_date": null
     }
   },
   {
     "model": "website.satellite",
     "pk": 2,
     "fields": {
-      "name": "NUSAT-3",
-      "norad_id": 42760,
-      "description": "Milanesat",
-      "tle": "1 42760U 17034C   19070.46618549  .00000282  00000-0  30543-4 0  9995\r\n2 42760  43.0166  56.1509 0009676 356.3576 146.0151 15.09909885 95848",
-      "tle_date": "2019-03-11T19:26:00Z"
+      "name": "NUSAT-1",
+      "norad_id": 41557,
+      "description": "Fresco",
+      "tle": "",
+      "tle_date": null
     }
   },
   {
     "model": "website.satellite",
     "pk": 3,
     "fields": {
-      "name": "NUSAT-4",
-      "norad_id": 43204,
-      "description": "Maryam",
-      "tle": "1 43204U 18015K   19105.85507487  .00001878  00000-0  80587-4 0  9994\r\n2 43204  97.3851 234.3837 0017881 162.1300 316.4167 15.23828077 66212",
-      "tle_date": "2019-04-16T03:10:00Z"
+      "name": "NUSAT-2",
+      "norad_id": 41558,
+      "description": "Batata",
+      "tle": "1 41558U 16033C   20064.49739282  .00001267  00000-0  46533-4 0  9993\r\n2 41558  97.4091 157.3483 0014315  97.4203 262.8664 15.29731260209848",
+      "tle_date": null
     }
   },
   {
     "model": "website.satellite",
     "pk": 4,
     "fields": {
-      "name": "NUSAT-7",
-      "norad_id": 45017,
-      "description": "Sophie",
-      "tle": "1 45017U 20003B   20031.57019514  .00001463  00000-0  57371-4 0  9991\r\n2 45017  97.3341 100.1971 0012358 207.3777 303.2505 15.27288151  2502",
-      "tle_date": "2020-01-31T00:00:00Z"
+      "name": "NUSAT-3",
+      "norad_id": 42760,
+      "description": "Milanesat",
+      "tle": "1 42760U 17034C   20064.48350243  .00000230  00000-0  27168-4 0  9998\r\n2 42760  43.0156 242.8115 0008441 107.6324 283.5489 15.10224377150123",
+      "tle_date": null
     }
   },
   {
     "model": "website.satellite",
     "pk": 5,
     "fields": {
+      "name": "NUSAT-4",
+      "norad_id": 43195,
+      "description": "Ada",
+      "tle": "1 43195U 18015D   20064.57367191  .00001114  00000-0  48350-4 0  9999\r\n2 43195  97.4228 194.1185 0019347 105.5607 314.0831 15.24292821115916",
+      "tle_date": null
+    }
+  },
+  {
+    "model": "website.satellite",
+    "pk": 6,
+    "fields": {
+      "name": "NUSAT-5",
+      "norad_id": 43204,
+      "description": "Maryam",
+      "tle": "1 43204U 18015K   20064.44753964  .00001098  00000-0  47409-4 0  9998\r\n2 43204  97.4233 194.1646 0018748 107.8357 325.3976 15.24497305115500",
+      "tle_date": null
+    }
+  },
+  {
+    "model": "website.satellite",
+    "pk": 7,
+    "fields": {
+      "name": "NUSAT-7",
+      "norad_id": 45017,
+      "description": "Sophie",
+      "tle": "1 45017U 20003B   20064.43138331  .00000683  00000-0  28109-4 0  9991\r\n2 45017  97.3292 132.4968 0014895  99.1557 261.1368 15.27393790  7524",
+      "tle_date": null
+    }
+  },
+  {
+    "model": "website.satellite",
+    "pk": 8,
+    "fields": {
       "name": "NUSAT-8",
       "norad_id": 45018,
       "description": "Marie",
-      "tle": "1 45018U 20003C   20031.56313594 -.00000072  00000-0  00000+0 0  9994\r\n2 45018  97.3365 100.1881 0011693 204.8611 261.6244 15.27049454  2507",
-      "tle_date": "2020-01-31T00:00:00Z"
+      "tle": "1 45018U 20003C   20064.24153812  .00000968  00000-0  39034-4 0  9997\r\n2 45018  97.3310 132.3026 0014098  97.0546 263.2296 15.27116386  7493",
+      "tle_date": null
     }
   },
   {
@@ -66,6 +99,24 @@
   {
     "model": "website.dashboard",
     "pk": 2,
+    "fields": {
+      "name": "Satellogic dashboard",
+      "owner_id": null,
+      "config": "{}"
+    }
+  },
+  {
+    "model": "website.dashboard",
+    "pk": 3,
+    "fields": {
+      "name": "Starlink dashboard",
+      "owner_id": null,
+      "config": "{}"
+    }
+  },
+  {
+    "model": "website.dashboard",
+    "pk": 4,
     "fields": {
       "name": "Admin private dashboard",
       "owner_id": 1,
