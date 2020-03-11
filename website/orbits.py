@@ -1,6 +1,7 @@
 import pytz
 from datetime import timedelta
 
+import requests
 from orbit_predictor.locations import Location
 from orbit_predictor.sources import get_predictor_from_tle_lines
 from orbit_predictor.utils import sun_azimuth_elevation
@@ -8,7 +9,10 @@ from orbit_predictor.utils import sun_azimuth_elevation
 from django.utils.timezone import make_aware
 
 from website.entities import Pass, Position
-from website.utils import ensure_naive
+from website.utils import ensure_naive, get_logger
+
+
+logger = get_logger()
 
 
 def predict_path(satellite_id, tle, start_date, end_date, step_seconds):
@@ -72,3 +76,52 @@ def predict_passes(satellite_id, tle, target, start_date, end_date, min_tca_elev
         )
 
 
+def get_tles():
+    """
+    Get the latest TLEs from the Celestrak service.
+    """
+    logger.info("Getting TLE data from Celestrak...")
+    tles_response = requests.get("https://www.celestrak.com/NORAD/elements/active.txt")
+    logger.info("Celestrak response received")
+
+    if tles_response.status_code != 200:
+        logger.error("Error getting TLE data from Celestrak")
+
+    tles_by_id = {}
+    current_id = None
+    first_line = None
+
+    def get_norad_id(tle_line):
+        """
+        Get the norad id from a TLE line.
+        """
+        return int(tle_line[2:7])
+
+    for line_number, raw_line in enumerate(tles_response.content.decode('ascii').split('\n')):
+        logger.debug("TLE line %s: %s", line_number, raw_line)
+        try:
+            if raw_line.startswith("1 "):
+                if current_id is not None:
+                    raise ValueError("Expected a second TLE line, but found a first one again")
+
+                current_id = get_norad_id(raw_line)
+                first_line = raw_line
+            elif raw_line.startswith("2 "):
+                if current_id is None:
+                    raise ValueError("Found a second TLE line, without the first line before")
+                elif current_id != get_norad_id(raw_line):
+                    raise ValueError("Found a second TLE line with different id to the previous "
+                                     "TLE line")
+
+                tles_by_id[current_id] = '{}\n{}'.format(first_line, raw_line)
+                logger.info("Parsed full TLE of satellite %s", current_id)
+
+                current_id = None
+                first_line = None
+
+        except Exception as err:
+            logger.error("Error parsing TLE line %s from Celestrak data: %s", line_number,
+                         raw_line)
+            logger.exception("Error:")
+
+    return tles_by_id
