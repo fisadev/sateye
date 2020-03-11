@@ -137,7 +137,7 @@ LOGGING = {
     'loggers': {
         'sateye': {
             'handlers': ['console'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
+            'level': 'DEBUG',
         },
     },
 }
