@@ -137,7 +137,7 @@ LOGGING = {
     'loggers': {
         'sateye': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': os.getenv('SATEYE_LOG_LEVEL', 'DEBUG'),
         },
     },
 }
