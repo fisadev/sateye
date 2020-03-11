@@ -15,7 +15,6 @@ def get_logger():
     global logger
     if logger is None:
         logger = logging.getLogger('sateye')
-        logger.setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
         logger.info('Started logging for Sateye')
 
     return logger
