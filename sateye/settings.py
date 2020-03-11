@@ -124,3 +124,20 @@ STATIC_URL = '/static/'
 
 DEFAULT_DASHBOARD = 1
 USE_CESIUM_LIB_CDN = True
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'sateye': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+        },
+    },
+}
