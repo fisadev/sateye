@@ -16,13 +16,19 @@ from website.utils import ensure_naive, get_logger
 logger = get_logger()
 
 
+def extract_useful_lines(tle):
+    """
+    Extract the two lines with orbit data from a TLE.
+    """
+    return [line for line in tle.split('\n')
+            if line.startswith(("1 ", "2 "))]
+
+
 def predict_path(satellite_id, tle, start_date, end_date, step_seconds):
     """
     Predict the positions of a satellite during a period of time, with certain step precision.
     """
-    useful_lines = [line for line in tle.split('\n')
-                    if line.startswith(("1 ", "2 "))]
-    predictor = get_predictor_from_tle_lines(useful_lines)
+    predictor = get_predictor_from_tle_lines(extract_useful_lines(tle))
 
     assert start_date < end_date
     step = timedelta(seconds=step_seconds)
@@ -88,6 +94,24 @@ class TLEParts(Enum):
     LINE_2 = 2
 
 
+def get_norad_id(tle):
+    """
+    Get the norad id from a TLE.
+    """
+    line1, line2 = extract_useful_lines(tle)
+    id_line1 = int(line1[2:7])
+    id_line2 = int(line2[2:7])
+
+    if id_line1 != id_line2:
+        raise ValueError(
+            "Lines 1 and 2 from the TLE differ in norad id!: {} {}".format(
+                id_line1, id_line2
+            )
+        )
+
+    return id_line1
+
+
 def get_tles():
     """
     Get the latest TLEs from the Celestrak service.
@@ -103,12 +127,6 @@ def get_tles():
     expecting_part = TLEParts.TITLE
     title_line = None
     first_line = None
-
-    def get_norad_id(tle_line):
-        """
-        Get the norad id from a TLE line.
-        """
-        return int(tle_line[2:7])
 
     for line_number, raw_line in enumerate(tles_response.content.decode('ascii').split('\n')):
         logger.debug("TLEs file line %s: %s", line_number, raw_line)
@@ -135,18 +153,12 @@ def get_tles():
                 first_line = raw_line
                 expecting_part = TLEParts.LINE_2
             elif current_part is TLEParts.LINE_2:
-                id_line_1 = get_norad_id(first_line)
-                id_line_2 = get_norad_id(raw_line)
-                if id_line_1 != id_line_2:
-                    raise ValueError(
-                        "Lines 1 and 2 from the TLE differ in norad id!: {} {}".format(
-                            id_line_1, id_line_2
-                        )
-                    )
+                tle = '\n'.join((title_line, first_line, raw_line))
+                norad_id = get_norad_id(tle)
 
-                tles_by_id[id_line_1] = '\n'.join((title_line, first_line, raw_line))
+                tles_by_id[norad_id] = tle
 
-                logger.info("Parsed full TLE of satellite %s", id_line_1)
+                logger.info("Parsed full TLE of satellite %s", norad_id)
 
                 title_line = None
                 first_line = None
