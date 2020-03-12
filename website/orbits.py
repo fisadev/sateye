@@ -90,8 +90,8 @@ class TLEParts(Enum):
     The three parts of a TLE.
     """
     TITLE = 0
-    LINE_1 = 1
-    LINE_2 = 2
+    LINE1 = 1
+    LINE2 = 2
 
 
 def get_norad_id(tle):
@@ -125,8 +125,8 @@ def get_tles():
 
     tles_by_id = {}
     expecting_part = TLEParts.TITLE
-    title_line = None
-    first_line = None
+    current_title = None
+    current_line1 = None
 
     for line_number, raw_line in enumerate(tles_response.content.decode('ascii').split('\n')):
         logger.debug("TLEs file line %s: %s", line_number, raw_line)
@@ -137,9 +137,9 @@ def get_tles():
             if not raw_line.startswith(("1 ", "2 ")):
                 current_part = TLEParts.TITLE
             elif raw_line.startswith("1 "):
-                current_part = TLEParts.LINE_1
+                current_part = TLEParts.LINE1
             elif raw_line.startswith("2 "):
-                current_part = TLEParts.LINE_2
+                current_part = TLEParts.LINE2
 
             if current_part is not expecting_part:
                 raise ValueError(
@@ -147,21 +147,21 @@ def get_tles():
                 )
 
             if current_part is TLEParts.TITLE:
-                title_line = raw_line
-                expecting_part = TLEParts.LINE_1
-            elif current_part is TLEParts.LINE_1:
-                first_line = raw_line
-                expecting_part = TLEParts.LINE_2
-            elif current_part is TLEParts.LINE_2:
-                tle = '\n'.join((title_line, first_line, raw_line))
+                current_title = raw_line
+                expecting_part = TLEParts.LINE1
+            elif current_part is TLEParts.LINE1:
+                current_line1 = raw_line
+                expecting_part = TLEParts.LINE2
+            elif current_part is TLEParts.LINE2:
+                tle = '\n'.join((current_title, current_line1, raw_line))
                 norad_id = get_norad_id(tle)
 
                 tles_by_id[norad_id] = tle
 
                 logger.info("Parsed full TLE of satellite %s", norad_id)
 
-                title_line = None
-                first_line = None
+                current_title = None
+                current_line1 = None
                 expecting_part = TLEParts.TITLE
 
         except Exception as err:
