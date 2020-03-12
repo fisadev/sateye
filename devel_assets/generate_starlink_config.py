@@ -1,42 +1,20 @@
 import json
 
-import requests
+from website.orbits import get_tles, split_tle
 
 
-tles_url = "https://celestrak.com/NORAD/elements/starlink.txt"
-
-tles_response = requests.get(tles_url)
-all_tle_lines = tles_response.content.decode('utf-8').split('\r\n')
-
-raw_sates = []
-for sate_index in range(int(len(all_tle_lines) / 3)):
-    lines_start_at = sate_index * 3
-    name = all_tle_lines[lines_start_at].strip()
-    tle = '{}\r\n{}'.format(*all_tle_lines[lines_start_at + 1:lines_start_at + 3])
-
-    if 'STARLINK' in name:
-        raw_sates.append((name, tle))
-
+tles = get_tles("https://celestrak.com/NORAD/elements/starlink.txt")
 
 satellites = []
-for name, tle in raw_sates:
-    sate = {
-        "id": len(satellites),
-        "from_db": False,
-        "name": name,
-        "norad_id": tle.split()[1],
-        "description": name,
-        "tle": tle,
-        "style": {
-            "point_size": 5,
-            "point_color": "#00FF00",
-            "path_color": "#CCFF00",
-            "path_width": 1,
-            "path_seconds_ahead": 5000,
-            "path_seconds_behind": 600
+for norad_id, tle in tles.items():
+    title, _, _ = split_tle(tle)
+
+    if 'STARLINK' in title:
+        sate = {
+            "norad_id": norad_id,
+            "from_db": True,
         }
-    }
-    satellites.append(sate)
+        satellites.append(sate)
 
 full_config = {
     "satellites": satellites,
