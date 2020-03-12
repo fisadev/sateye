@@ -18,5 +18,6 @@ new_devel_db:
 	@read something
 	http patch "http://localhost:8000/api/dashboards/1/" config:=@./devel_assets/sample_dashboard_config.json
 	http patch "http://localhost:8000/api/dashboards/2/" config:=@./devel_assets/satellogic_dashboard_config.json
+	python devel_assets/generate_starlink_config.py > devel_assets/starlink_dashboard_config.json
 	http patch "http://localhost:8000/api/dashboards/3/" config:=@./devel_assets/starlink_dashboard_config.json
 	@echo "Development sample database created and populated!"
