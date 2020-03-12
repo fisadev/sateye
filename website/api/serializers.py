@@ -42,7 +42,7 @@ class DashboardConfigField(serializers.Field):
                     if key not in ('id', 'from_db', 'style'):
                         del satellite_data[key]
 
-        return json.dumps(data)
+        return json.dumps(data, indent="  ")
 
 
 class DashboardSerializer(serializers.ModelSerializer):
