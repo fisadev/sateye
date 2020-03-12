@@ -1,7 +1,7 @@
 {
     "satellites": [
         {
-            "id": 1,
+            "norad_id": 25544,
             "from_db": true,
             "style": {
                 "point_size": 25,
@@ -13,15 +13,11 @@
             }
         },
         {
-            "id": 2,
+            "norad_id": 45017,
             "from_db": true
         },
         {
-            "id": 4,
-            "from_db": true
-        },
-        {
-            "id": 5,
+            "norad_id": 45018,
             "from_db": true
         },
         {

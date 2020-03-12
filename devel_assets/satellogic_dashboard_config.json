@@ -1,31 +1,31 @@
 {
     "satellites": [
         {
-            "id": 2,
+            "norad_id": 41557,
             "from_db": true
         },
         {
-            "id": 3,
+            "norad_id": 41558,
             "from_db": true
         },
         {
-            "id": 4,
+            "norad_id": 42760,
             "from_db": true
         },
         {
-            "id": 5,
+            "norad_id": 43195,
             "from_db": true
         },
         {
-            "id": 6,
+            "norad_id": 43204,
             "from_db": true
         },
         {
-            "id": 7,
+            "norad_id": 45017,
             "from_db": true
         },
         {
-            "id": 8,
+            "norad_id": 45018,
             "from_db": true
         }
     ],
