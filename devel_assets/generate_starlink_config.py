@@ -1,17 +1,20 @@
 import json
 
-from website.orbits import get_tles, split_tle
+import requests
 
 
-tles = get_tles("https://celestrak.com/NORAD/elements/starlink.txt")
+# what about https://celestrak.com/NORAD/elements/starlink.txt ?
+# it seems to have more satellites than the ones returned by active.txt
+
+sates_response = requests.get("http://localhost:8000/api/satellites/")
+sates_data = sates_response.json()
+
 
 satellites = []
-for norad_id, tle in tles.items():
-    title, _, _ = split_tle(tle)
-
-    if 'STARLINK' in title:
+for sate in sates_data:
+    if 'STARLINK' in sate['name']:
         sate = {
-            "norad_id": norad_id,
+            "norad_id": sate['norad_id'],
             "from_db": True,
         }
         satellites.append(sate)
