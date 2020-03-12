@@ -7,7 +7,7 @@ class Satellite(models.Model):
     A publicly known satellite in orbit, that Sateye can display and track.
     """
     name = models.CharField(max_length=100)
-    norad_id = models.IntegerField(null=True, blank=True)
+    norad_id = models.IntegerField(null=True, blank=True, db_index=True, unique=True)
     description = models.TextField(null=True, blank=True)
     tle = models.CharField(max_length=200)
     tle_date = models.DateTimeField(null=True)
