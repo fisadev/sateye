@@ -119,12 +119,12 @@ def get_norad_id(tle):
     return id_line1
 
 
-def get_tles():
+def get_tles(tles_url="https://www.celestrak.com/NORAD/elements/active.txt"):
     """
     Get the latest TLEs from the Celestrak service.
     """
     logger.info("Getting TLE data from Celestrak...")
-    tles_response = requests.get("https://www.celestrak.com/NORAD/elements/active.txt")
+    tles_response = requests.get(tles_url)
     logger.info("Celestrak response received")
 
     if tles_response.status_code != 200:
