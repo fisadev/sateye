@@ -92,15 +92,6 @@ def predict_passes(satellite_id, tle, target, start_date, end_date, min_tca_elev
         )
 
 
-class TLEParts(Enum):
-    """
-    The three parts of a TLE.
-    """
-    TITLE = 0
-    LINE1 = 1
-    LINE2 = 2
-
-
 def get_norad_id(tle):
     """
     Get the norad id from a TLE.
@@ -131,49 +122,22 @@ def get_tles(tles_url="https://www.celestrak.com/NORAD/elements/active.txt"):
         logger.error("Error getting TLE data from Celestrak")
 
     tles_by_id = {}
-    expecting_part = TLEParts.TITLE
-    current_title = None
-    current_line1 = None
 
-    for line_number, raw_line in enumerate(tles_response.content.decode('ascii').split('\n')):
-        logger.debug("TLEs file line %s: %s", line_number, raw_line)
-        if not raw_line.strip():
-            continue
+    raw_tle_lines = tles_response.content.decode('ascii').split('\n')
 
+    for sate_index in range(int(len(raw_tle_lines) / 3)):
+        lines_start_at = sate_index * 3
         try:
-            if not raw_line.startswith(("1 ", "2 ")):
-                current_part = TLEParts.TITLE
-            elif raw_line.startswith("1 "):
-                current_part = TLEParts.LINE1
-            elif raw_line.startswith("2 "):
-                current_part = TLEParts.LINE2
+            tle = '\n'.join(raw_tle_lines[lines_start_at:lines_start_at + 3])
+            tle = tle.replace('\r', '')
 
-            if current_part is not expecting_part:
-                raise ValueError(
-                    "Expected {} of TLE, but found {}".format(expecting_part, current_part)
-                )
+            norad_id = get_norad_id(tle)
+            tles_by_id[norad_id] = tle
 
-            if current_part is TLEParts.TITLE:
-                current_title = raw_line
-                expecting_part = TLEParts.LINE1
-            elif current_part is TLEParts.LINE1:
-                current_line1 = raw_line
-                expecting_part = TLEParts.LINE2
-            elif current_part is TLEParts.LINE2:
-                tle = '\n'.join((current_title, current_line1, raw_line))
-                norad_id = get_norad_id(tle)
-
-                tles_by_id[norad_id] = tle
-
-                logger.info("Parsed full TLE of satellite %s", norad_id)
-
-                current_title = None
-                current_line1 = None
-                expecting_part = TLEParts.TITLE
-
+            logger.info("Parsed full TLE of satellite %s", norad_id)
         except Exception as err:
-            logger.error("Error parsing TLE line %s from Celestrak data: %s", line_number,
-                         raw_line)
+            logger.error("Error parsing TLE data from Celestrak, at line %s: %s",
+                         lines_start_at, raw_tle_lines[lines_start_at])
             logger.exception("Error:")
 
     return tles_by_id
