@@ -83,9 +83,9 @@ class TLEParts(Enum):
     """
     The three parts of a TLE.
     """
-    TITLE_LINE = 1
-    FIRST_LINE = 2
-    SECOND_LINE = 3
+    TITLE = 0
+    LINE_1 = 1
+    LINE_2 = 2
 
 
 def get_tles():
@@ -100,7 +100,7 @@ def get_tles():
         logger.error("Error getting TLE data from Celestrak")
 
     tles_by_id = {}
-    expecting_part = TLEParts.TITLE_LINE
+    expecting_part = TLEParts.TITLE
     title_line = None
     first_line = None
 
@@ -117,24 +117,24 @@ def get_tles():
 
         try:
             if not raw_line.startswith(("1 ", "2 ")):
-                current_part = TLEParts.TITLE_LINE
+                current_part = TLEParts.TITLE
             elif raw_line.startswith("1 "):
-                current_part = TLEParts.FIRST_LINE
+                current_part = TLEParts.LINE_1
             elif raw_line.startswith("2 "):
-                current_part = TLEParts.SECOND_LINE
+                current_part = TLEParts.LINE_2
 
             if current_part is not expecting_part:
                 raise ValueError(
                     "Expected {} of TLE, but found {}".format(expecting_part, current_part)
                 )
 
-            if current_part is TLEParts.TITLE_LINE:
+            if current_part is TLEParts.TITLE:
                 title_line = raw_line
-                expecting_part = TLEParts.FIRST_LINE
-            elif current_part is TLEParts.FIRST_LINE:
+                expecting_part = TLEParts.LINE_1
+            elif current_part is TLEParts.LINE_1:
                 first_line = raw_line
-                expecting_part = TLEParts.SECOND_LINE
-            elif current_part is TLEParts.SECOND_LINE:
+                expecting_part = TLEParts.LINE_2
+            elif current_part is TLEParts.LINE_2:
                 id_line_1 = get_norad_id(first_line)
                 id_line_2 = get_norad_id(raw_line)
                 if id_line_1 != id_line_2:
@@ -150,7 +150,7 @@ def get_tles():
 
                 title_line = None
                 first_line = None
-                expecting_part = TLEParts.TITLE_LINE
+                expecting_part = TLEParts.TITLE
 
         except Exception as err:
             logger.error("Error parsing TLE line %s from Celestrak data: %s", line_number,
