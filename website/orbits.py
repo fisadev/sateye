@@ -1,5 +1,6 @@
 import pytz
 from datetime import timedelta
+from enum import Enum
 
 import requests
 from orbit_predictor.locations import Location
@@ -19,7 +20,9 @@ def predict_path(satellite_id, tle, start_date, end_date, step_seconds):
     """
     Predict the positions of a satellite during a period of time, with certain step precision.
     """
-    predictor = get_predictor_from_tle_lines(tle.split('\n'))
+    useful_lines = [line for line in tle.split('\n')
+                    if line.startswith(("1 ", "2 "))]
+    predictor = get_predictor_from_tle_lines(useful_lines)
 
     assert start_date < end_date
     step = timedelta(seconds=step_seconds)
@@ -76,6 +79,15 @@ def predict_passes(satellite_id, tle, target, start_date, end_date, min_tca_elev
         )
 
 
+class TLEParts(Enum):
+    """
+    The three parts of a TLE.
+    """
+    TITLE_LINE = 1
+    FIRST_LINE = 2
+    SECOND_LINE = 3
+
+
 def get_tles():
     """
     Get the latest TLEs from the Celestrak service.
@@ -88,7 +100,8 @@ def get_tles():
         logger.error("Error getting TLE data from Celestrak")
 
     tles_by_id = {}
-    current_id = None
+    expecting_part = TLEParts.TITLE_LINE
+    title_line = None
     first_line = None
 
     def get_norad_id(tle_line):
@@ -98,26 +111,46 @@ def get_tles():
         return int(tle_line[2:7])
 
     for line_number, raw_line in enumerate(tles_response.content.decode('ascii').split('\n')):
-        logger.debug("TLE line %s: %s", line_number, raw_line)
+        logger.debug("TLEs file line %s: %s", line_number, raw_line)
+        if not raw_line.strip():
+            continue
+
         try:
-            if raw_line.startswith("1 "):
-                if current_id is not None:
-                    raise ValueError("Expected a second TLE line, but found a first one again")
-
-                current_id = get_norad_id(raw_line)
-                first_line = raw_line
+            if not raw_line.startswith(("1 ", "2 ")):
+                current_part = TLEParts.TITLE_LINE
+            elif raw_line.startswith("1 "):
+                current_part = TLEParts.FIRST_LINE
             elif raw_line.startswith("2 "):
-                if current_id is None:
-                    raise ValueError("Found a second TLE line, without the first line before")
-                elif current_id != get_norad_id(raw_line):
-                    raise ValueError("Found a second TLE line with different id to the previous "
-                                     "TLE line")
+                current_part = TLEParts.SECOND_LINE
 
-                tles_by_id[current_id] = '{}\n{}'.format(first_line, raw_line)
-                logger.info("Parsed full TLE of satellite %s", current_id)
+            if current_part is not expecting_part:
+                raise ValueError(
+                    "Expected {} of TLE, but found {}".format(expecting_part, current_part)
+                )
 
-                current_id = None
+            if current_part is TLEParts.TITLE_LINE:
+                title_line = raw_line
+                expecting_part = TLEParts.FIRST_LINE
+            elif current_part is TLEParts.FIRST_LINE:
+                first_line = raw_line
+                expecting_part = TLEParts.SECOND_LINE
+            elif current_part is TLEParts.SECOND_LINE:
+                id_line_1 = get_norad_id(first_line)
+                id_line_2 = get_norad_id(raw_line)
+                if id_line_1 != id_line_2:
+                    raise ValueError(
+                        "Lines 1 and 2 from the TLE differ in norad id!: {} {}".format(
+                            id_line_1, id_line_2
+                        )
+                    )
+
+                tles_by_id[id_line_1] = '\n'.join((title_line, first_line, raw_line))
+
+                logger.info("Parsed full TLE of satellite %s", id_line_1)
+
+                title_line = None
                 first_line = None
+                expecting_part = TLEParts.TITLE_LINE
 
         except Exception as err:
             logger.error("Error parsing TLE line %s from Celestrak data: %s", line_number,
