@@ -1,9 +1,9 @@
-django==2.1.7
+django==3.0.4
 orbit-predictor==1.9.0
 attrs==18.2.0
 pytz==2018.9
 iso8601
-djangorestframework==3.9.2
+djangorestframework==3.11.0
 django-extensions==2.1.6
 requests==2.23.0
 httpie==2.2.0
