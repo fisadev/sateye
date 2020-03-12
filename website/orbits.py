@@ -16,19 +16,26 @@ from website.utils import ensure_naive, get_logger
 logger = get_logger()
 
 
-def extract_useful_lines(tle):
+def split_tle(tle):
     """
-    Extract the two lines with orbit data from a TLE.
+    Extract the lines from a TLE, return a 3-tuple with Nones for the missing lines.
     """
-    return [line for line in tle.split('\n')
-            if line.startswith(("1 ", "2 "))]
+    lines = tle.split('\n')
+    if len(lines) == 3:
+        title, line1, line2 = lines
+    else:
+        title = None
+        line1, line2 = lines
+
+    return title, line1, line2
 
 
 def predict_path(satellite_id, tle, start_date, end_date, step_seconds):
     """
     Predict the positions of a satellite during a period of time, with certain step precision.
     """
-    predictor = get_predictor_from_tle_lines(extract_useful_lines(tle))
+    _, line1, line2 = split_tle(tle)
+    predictor = get_predictor_from_tle_lines((line1, line2))
 
     assert start_date < end_date
     step = timedelta(seconds=step_seconds)
@@ -98,7 +105,7 @@ def get_norad_id(tle):
     """
     Get the norad id from a TLE.
     """
-    line1, line2 = extract_useful_lines(tle)
+    title, line1, line2 = split_tle(tle)
     id_line1 = int(line1[2:7])
     id_line2 = int(line2[2:7])
 
