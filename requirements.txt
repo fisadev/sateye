@@ -6,3 +6,4 @@ iso8601
 djangorestframework==3.9.2
 django-extensions==2.1.6
 requests==2.23.0
+httpie==2.2.0
