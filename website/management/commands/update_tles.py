@@ -27,14 +27,15 @@ class Command(BaseCommand):
 
         tles = get_tles()
 
+        sates_to_update = []
         for sate in satellites:
-            if sate.norad_id in tles:
+            if tles.get(sate.norad_id, sate.tle) != sate.tle:
                 sate.tle = tles[sate.norad_id]
-                sate.save()
-                self.stdout.write(self.style.SUCCESS(
-                    "Updated TLE for satellite {} (norad_id={})".format(sate.name, sate.norad_id)
-                ))
-            else:
-                self.stdout.write(self.style.WARNING(
-                    "No TLE found for satellite {} (norad_id={})".format(sate.name, sate.norad_id)
-                ))
+                sates_to_update.append(sate)
+
+        self.stdout.write("Found {} new tles".format(len(sates_to_update)))
+
+        if sates_to_update:
+            self.stdout.write("Updating satellites TLEs in the database...")
+            Satellite.objects.bulk_update(sates_to_update, ['tle'])
+            self.stdout.write(self.style.SUCCESS("Satellites updated!"))
