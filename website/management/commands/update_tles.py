@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from website.models import Satellite
-from website.orbits import get_tles
+from website.orbits import get_tles, get_tle_date
 from website.utils import get_logger
 
 
@@ -29,8 +29,10 @@ class Command(BaseCommand):
 
         sates_to_update = []
         for sate in satellites:
-            if tles.get(sate.norad_id, sate.tle) != sate.tle:
-                sate.tle = tles[sate.norad_id]
+            new_tle = tles.get(sate.norad_id, sate.tle)
+            if new_tle != sate.tle:
+                sate.tle = new_tle
+                sate.tle_date = get_tle_date(new_tle)
                 sates_to_update.append(sate)
 
         self.stdout.write("Found {} new tles".format(len(sates_to_update)))

@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from website.models import Satellite
-from website.orbits import get_tles, split_tle
+from website.orbits import get_tles, split_tle, get_tle_date
 from website.utils import get_logger
 
 
@@ -28,6 +28,7 @@ class Command(BaseCommand):
                         name=title.strip() or "Unknown",
                         norad_id=norad_id,
                         tle=tle,
+                        tle_date=get_tle_date(tle),
                     )
                 )
 
