@@ -21,6 +21,10 @@
             "from_db": true
         },
         {
+            "norad_id": 37398,
+            "from_db": true
+        },
+        {
             "id": "cosmos2542",
             "from_db": false,
             "name": "COSMOS 2542",
