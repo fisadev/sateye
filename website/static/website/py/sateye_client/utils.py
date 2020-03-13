@@ -1,9 +1,14 @@
+import math
 from datetime import datetime
 
 from browser import window
 
 
 cesium = window.Cesium
+
+
+EARTH_RADIUS = 6371000  # m
+EARTH_CIRCUNFERENCE = 40075000  # m
 
 
 def hex_to_cesium_color(hex_color, opacity=1.0):
@@ -44,3 +49,17 @@ def cesium_date_to_datetime(cesium_date):
     Convert a Cesium date instance into a python datetime instance.
     """
     return parse_iso8601_date(cesium_date.toString())
+
+
+def calculate_visible_radius(altitude):
+    """
+    Calculate the radius of the visible area for a satellite at a given altitude.
+    """
+    # angle between a line going from the center of the Earth to the satellite, and another
+    # line going from the center of the earth to the horizon line of the satellite
+    visible_angle = math.degrees(
+        math.acos(EARTH_RADIUS / (EARTH_RADIUS + altitude))
+    )
+    # distance over the surface of the earth, from the satellite coordinates, to its
+    # horizon
+    return (visible_angle / 360) * EARTH_CIRCUNFERENCE
