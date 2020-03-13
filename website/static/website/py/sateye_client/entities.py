@@ -22,14 +22,26 @@ class Style:
     """
     Visual style for an object in the Dashboard.
     """
-    def __init__(self, point_size=10, point_color="FFFF00", path_width=2, path_color="00FF00",
-                 path_seconds_ahead=60 * 45, path_seconds_behind=60 * 10):
+    def __init__(self, point_size=10, point_color="#FFFF00",
+                 show_path=True, path_width=2, path_color="#00FF00",
+                 path_seconds_ahead=60 * 45, path_seconds_behind=60 * 10,
+                 show_sensor=True, sensor_line_width=1, sensor_color="#00FFFF", sensor_fill=False,
+                 sensor_fill_alpha=0.2,
+                 ):
         self.point_size = point_size
         self.point_color = point_color
+
+        self.show_path = show_path
         self.path_width = path_width
         self.path_color = path_color
         self.path_seconds_ahead = path_seconds_ahead
         self.path_seconds_behind = path_seconds_behind
+
+        self.show_sensor = show_sensor
+        self.sensor_line_width = sensor_line_width
+        self.sensor_color = sensor_color
+        self.sensor_fill = sensor_fill
+        self.sensor_fill_alpha = sensor_fill_alpha
 
     @classmethod
     def from_jsobj(cls, jsobj):
