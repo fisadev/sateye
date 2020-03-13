@@ -39,30 +39,6 @@
             "altitude": 501
         },
         {
-            "id": 2,
-            "name": "TRL",
-            "description": "Troll",
-            "latitude": -72.016667,
-            "longitude": 2.533333,
-            "altitude": 1564
-        },
-        {
-            "id": 3,
-            "name": "HBK",
-            "description": "HBK",
-            "latitude": -25.886627,
-            "longitude": 27.708695,
-            "altitude": 1564
-        },
-        {
-            "id": 4,
-            "name": "CBA",
-            "description": "Córdoba",
-            "latitude": -31.524075,
-            "longitude": -64.463522,
-            "altitude": 730
-        },
-        {
             "id": 5,
             "name": "Fisa",
             "description": "Casa de Fisa",
