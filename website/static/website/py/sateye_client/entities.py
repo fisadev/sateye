@@ -1,3 +1,4 @@
+from collections import namedtuple
 from uuid import uuid4
 
 from browser import aio, ajax, window
@@ -7,6 +8,10 @@ from sateye_client.utils import iso_to_cesium_date, parse_iso8601_date
 
 jsjson = window.JSON
 cesium = window.Cesium
+
+
+PathPosition = namedtuple('PathPosition',
+                          'at_date latitude longitude altitude cesium_date cesium_position')
 
 
 def init_params_from_jsobj(jsobj, init_fields):
@@ -165,11 +170,19 @@ class Satellite:
             # it would be nicer to have python instances instead, but this is waaay faster
             # (we store them in Cesium format, ready to be used in the map)
             self.path_positions = [
-                (iso_to_cesium_date(position_data.at_date),
-                 cesium.Cartesian3.fromDegrees(position_data.longitude,
-                                               position_data.latitude,
-                                               position_data.altitude))
-                 for position_data in path_data.positions]
+                PathPosition(
+                    # TODO parsing the date here is super slow... maybe something else?
+                    at_date=position_data.at_date,
+                    latitude=position_data.latitude,
+                    longitude=position_data.longitude,
+                    altitude=position_data.altitude,
+                    cesium_date=iso_to_cesium_date(position_data.at_date),
+                    cesium_position=cesium.Cartesian3.fromDegrees(position_data.longitude,
+                                                                  position_data.latitude,
+                                                                  position_data.altitude),
+                )
+                for position_data in path_data.positions
+            ]
 
             if callback is not None:
                 callback(self)

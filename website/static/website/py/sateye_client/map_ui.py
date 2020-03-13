@@ -2,7 +2,12 @@ from datetime import datetime, timedelta
 
 from browser import aio, window
 
-from sateye_client.utils import cesium_date_to_datetime, hex_to_cesium_color, iso_to_cesium_date
+from sateye_client.utils import (
+    cesium_date_to_datetime,
+    hex_to_cesium_color,
+    iso_to_cesium_date,
+    calculate_visible_radius,
+)
 
 
 jq = window.jQuery
@@ -30,9 +35,11 @@ class MapUI:
         self.configure_cesium_map()
 
         self.paths_visible = True
+        self.sensors_visible = True
 
         # references to the dom
         self.paths_visible_input = jq("#paths-visible-input")
+        self.sensors_visible_input = jq("#sensors-visible-input")
         self.night_shadow_input = jq("#night-shadow-input")
         self.map_date_picker = jq("#map-date-picker")
         self.go_to_date_button = jq("#go-to-date")
@@ -40,6 +47,7 @@ class MapUI:
         # assign event handlers
         self.go_to_date_button.on("click", self.on_go_to_date_click)
         self.paths_visible_input.on("change", self.on_paths_visible_change)
+        self.sensors_visible_input.on("change", self.on_sensors_visible_change)
         self.night_shadow_input.on("change", self.on_night_shadow_change)
         self.on_night_shadow_change()
 
@@ -181,7 +189,6 @@ class MapUI:
         satellite_map_id = "Sateye.Satellite:{}".format(satellite.id)
         satellite_entity = self.viewer.entities.getById(satellite_map_id)
 
-        # TODO will getById return an undefined? be a None? fail?
         if not satellite_entity:
             satellite_entity = self.viewer.entities.add({
                 "id": satellite_map_id,
@@ -190,12 +197,28 @@ class MapUI:
 
         return satellite_entity
 
+    def get_or_create_satellite_sensor_entity(self, satellite):
+        """
+        Build a cesium entity to display the satellite sensor in the map, or return an
+        existing one if it's already there.
+        """
+        sensor_map_id = "Sateye.SatelliteSensor:{}".format(satellite.id)
+        sensor_entity = self.viewer.entities.getById(sensor_map_id)
+
+        if not sensor_entity:
+            sensor_entity = self.viewer.entities.add({
+                "id": sensor_map_id,
+                "availability": cesium.TimeIntervalCollection.new(),
+            })
+        return sensor_entity
+
     def update_satellite_in_map(self, satellite):
         """
         Update the display data for a satellite shown in the map, based on its path predictions
         this will even add the satellite for the map if it wasn't already there.
         """
         satellite_entity = self.get_or_create_satellite_entity(satellite)
+        sensor_entity = self.get_or_create_satellite_sensor_entity(satellite)
 
         # general satellite data
         satellite_entity.name = satellite.name
@@ -204,11 +227,14 @@ class MapUI:
         # show satellite in this specific interval
         # (we only trust the latest predictions, stuff like new tles could invalidate previous
         # ones)
-        satellite_entity.availability.removeAll()
-        satellite_entity.availability.addInterval(cesium.TimeInterval.new({
+        availability_interval = cesium.TimeInterval.new({
             "start": iso_to_cesium_date(satellite.path_start_date.isoformat()),
             "stop": iso_to_cesium_date(satellite.path_end_date.isoformat()),
-        }))
+        })
+        satellite_entity.availability.removeAll()
+        satellite_entity.availability.addInterval(availability_interval)
+        sensor_entity.availability.removeAll()
+        sensor_entity.availability.addInterval(availability_interval)
 
         # a point in the satellite position, that moves over time
         satellite_entity.point = cesium.PointGraphics.new({
@@ -217,12 +243,36 @@ class MapUI:
             "color": hex_to_cesium_color(satellite.style.point_color),
         })
 
+        # a circle in the satellite position, but on the ground, that moves over time and changes
+        # size representing the area visible to the satellite
+        sensor_ellipse_config = {
+            "outline": True,
+            "outlineColor": hex_to_cesium_color(satellite.style.sensor_color),
+            "outlineWidth": satellite.style.sensor_line_width,
+            "fill": satellite.style.sensor_fill,
+        }
+        if satellite.style.sensor_fill:
+            sensor_ellipse_config["material"] = hex_to_cesium_color(satellite.style.sensor_color)\
+                                                    .withAlpha(satellite.style.sensor_fill_alpha)
+        sensor_entity.ellipse = cesium.EllipseGraphics.new(sensor_ellipse_config)
+
         # satellite positions over time
         position_property = cesium.SampledPositionProperty.new()
-        for date, position in satellite.path_positions:
-            position_property.addSample(date, position)
+        sensor_radius_property = cesium.SampledProperty.new(window.Number)
+        for path_position in satellite.path_positions:
+            position_property.addSample(path_position.cesium_date,
+                                        path_position.cesium_position)
 
+            sensor_radius_property.addSample(path_position.cesium_date,
+                                             calculate_visible_radius(path_position.altitude))
+
+        # set the properties that change through time
         satellite_entity.position = position_property
+        sensor_entity.position = position_property
+        sensor_entity.ellipse.semiMinorAxis = sensor_radius_property
+        sensor_entity.ellipse.semiMajorAxis = sensor_radius_property
+
+        sensor_entity.show = self.sensors_visible
 
         # path predicted behind and ahead the satellite
         satellite_entity.path = cesium.PathGraphics.new({
@@ -250,3 +300,14 @@ class MapUI:
         for entity in self.viewer.entities.values:
             if entity.id.startswith("Sateye.Satellite:"):
                 entity.path.show = self.paths_visible
+
+    def on_sensors_visible_change(self, e=None):
+        """
+        On input change, refresh the satellites so the sensors get shown or hidden.
+        """
+        self.sensors_visible = self.sensors_visible_input.prop("checked") is True
+
+        # refresh existing satellite sensors in map
+        for entity in self.viewer.entities.values:
+            if entity.id.startswith("Sateye.SatelliteSensor:"):
+                entity.show = self.sensors_visible
