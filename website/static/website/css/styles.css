@@ -20,3 +20,10 @@
     overflow-y: scroll;
     max-height: 200px;
 }
+
+.toggle.roundy, .toggle-on.roundy, .toggle-off.roundy { 
+    border-radius: 4px; 
+}
+.toggle.roundy .toggle-handle { 
+    border-radius: 4px; 
+}
