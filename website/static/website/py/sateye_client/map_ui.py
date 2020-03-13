@@ -228,9 +228,7 @@ class MapUI:
         satellite_entity.path = cesium.PathGraphics.new({
             "show": self.paths_visible,
             "width": satellite.style.path_width,
-            "material": cesium.ColorMaterialProperty.new(
-                hex_to_cesium_color(satellite.style.path_color)
-            ),
+            "material": hex_to_cesium_color(satellite.style.path_color),
             "resolution": 120,
             "leadTime": satellite.style.path_seconds_ahead,
             "trailTime": satellite.style.path_seconds_behind,
