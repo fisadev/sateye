@@ -1,5 +1,5 @@
 import pytz
-from datetime import timedelta
+from datetime import datetime, timedelta
 from enum import Enum
 
 import requests
@@ -96,7 +96,7 @@ def get_norad_id(tle):
     """
     Get the norad id from a TLE.
     """
-    title, line1, line2 = split_tle(tle)
+    _, line1, line2 = split_tle(tle)
     id_line1 = int(line1[2:7])
     id_line2 = int(line2[2:7])
 
@@ -108,6 +108,28 @@ def get_norad_id(tle):
         )
 
     return id_line1
+
+
+def get_tle_date(tle):
+    """
+    Get the date at which the TLE was measured.
+    """
+    _, line1, _ = split_tle(tle)
+
+    year = int(line1[18:20])
+    # yes, really
+    if year < 57:
+        year = 2000 + year
+    else:
+        year = 1900 + year
+
+    day = float(line1[20:32])
+    # substracting one day, day 1.0 means 1/1 at 0:0:0
+    # yes, really, again
+    days_since_jan_1st = timedelta(days=day - 1)
+
+    tle_date = datetime(year, 1, 1, 0, 0, 0) + days_since_jan_1st
+    return make_aware(tle_date, timezone=pytz.utc)
 
 
 def get_tles(tles_url="https://www.celestrak.com/NORAD/elements/active.txt"):
