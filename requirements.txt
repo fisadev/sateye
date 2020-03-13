@@ -6,6 +6,6 @@ iso8601
 djangorestframework==3.11.0
 django-extensions==2.1.6
 requests==2.23.0
-httpie==2.2.0
+httpie==2.0.0
 django-heroku==0.3.1
 gunicorn==20.0.4
