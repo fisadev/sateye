@@ -219,8 +219,8 @@ class MapUI:
 
         # satellite positions over time
         position_property = cesium.SampledPositionProperty.new()
-        for position in satellite.path_positions:
-            position_property.addSample(position[0], position[1])
+        for date, position in satellite.path_positions:
+            position_property.addSample(date, position)
 
         satellite_entity.position = position_property
 
