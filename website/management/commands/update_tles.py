@@ -39,5 +39,5 @@ class Command(BaseCommand):
 
         if sates_to_update:
             self.stdout.write("Updating satellites TLEs in the database...")
-            Satellite.objects.bulk_update(sates_to_update, ['tle'])
+            Satellite.objects.bulk_update(sates_to_update, ['tle', 'tle_date'])
             self.stdout.write(self.style.SUCCESS("Satellites updated!"))
