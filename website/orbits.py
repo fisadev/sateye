@@ -56,7 +56,8 @@ def predict_passes(satellite_id, tle, target, start_date, end_date, min_tca_elev
     """
     Predict the passes of a satellite over a location on TCA between two dates.
     """
-    predictor = get_predictor_from_tle_lines(tle.split('\n'))
+    _, line1, line2 = split_tle(tle)
+    predictor = get_predictor_from_tle_lines((line1, line2))
     location = target.as_op_location()
 
     start_date = ensure_naive(start_date)
