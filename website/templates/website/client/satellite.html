@@ -1,13 +1,13 @@
 {% verbatim %}
-<script id="satellite-template" type="text/x-handlebars-template">
+<script id="satellite-template" type="x-tmpl-mustache">
     <div class="row p-3 mb-2 bg-secondary text-white rounded">
         <div>
             <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-satellite"></i> {{name}}</button>
         </div>
         <div class="ml-auto mr-2">
-            {{#unless public}}
+            {{^from_db}}
                 <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-pencil-alt"></i> Edit</button>
-            {{/unless}}
+            {{/from_db}}
             <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-circle" style="color:{{pointColor}};"></i> Dot style</button>
             <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-minus" style="color:{{pathColor}};"></i> Line style</button>
             <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-times"></i></button>

@@ -3,6 +3,7 @@ from browser import ajax, window
 
 jq = window.jQuery
 jsjson = window.JSON
+mustache = window.Mustache
 
 
 class SatellitesUI:
@@ -13,7 +14,7 @@ class SatellitesUI:
         self.app = app
 
         # client side templates
-        self.satellite_template = jq("#satellite-template")
+        self.satellite_template = jq("#satellite-template").html()
 
         # references to the dom
         self.satellites_list = jq("#satellites-list")
@@ -117,7 +118,13 @@ class SatellitesUI:
 
         if self.app.dashboard is not None:
             # add satellites to list
-            for satellite_id, satellite in self.app.dashboard.satellites.items():
-                # TODO "render" template using satellite
-                element = self.satellite_template.html().replace("", "")
-                self.satellites_list.append(element)
+            for satellite in self.app.dashboard.satellites.values():
+                self.satellites_list.append(
+                    mustache.render(
+                        self.satellite_template,
+                        {
+                            "name": satellite.name,
+                            "from_db": satellite.from_db,
+                        },
+                    )
+                )
