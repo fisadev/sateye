@@ -18,9 +18,15 @@ def init_params_from_jsobj(jsobj, init_fields):
     """
     Try to extract init params from a javascript object, usually the result of a JSON.parse.
     """
-    return {field: jsobj[field]
-            for field in init_fields
-            if field in jsobj}
+    params = {field: jsobj[field]
+              for field in init_fields
+              if field in jsobj}
+
+    if 'id' in params:
+        params['id_'] = params['id']
+        del params['id']
+
+    return params
 
 
 class Style:
@@ -63,18 +69,18 @@ class Satellite:
     """
     A satellite that's part of a Dashboard.
     """
-    def __init__(self, id=None, from_db=False, name="New satellite", description="New satellite",
+    def __init__(self, id_=None, from_db=False, name="New satellite", description="New satellite",
                  norad_id=None, tle=None, tle_date=None, style=None):
         if from_db:
             assert id is not None
 
-        if id is None:
-            id = str(uuid4())
+        if id_ is None:
+            id_ = str(uuid4())
         if style is None:
             style = Style()
 
         # satellite data and configuration
-        self.id = id
+        self.id = id_
         self.from_db = from_db
         self.name = name
         self.description = description
@@ -196,14 +202,14 @@ class Location:
     """
     A location that's part of a Dashboard.
     """
-    def __init__(self, id=None, name="New location", description="New location", latitude=None,
+    def __init__(self, id_=None, name="New location", description="New location", latitude=None,
                  longitude=None, altitude=None, style=None):
-        if id is None:
-            id = str(uuid4())
+        if id_ is None:
+            id_ = str(uuid4())
         if style is None:
             style = Style()
 
-        self.id = id
+        self.id = id_
         self.name = name
         self.description = description
         self.latitude = latitude
@@ -242,15 +248,15 @@ class Dashboard:
     """
     A dashboard defining what is currently being presented (satellites, locations, etc).
     """
-    def __init__(self, id=None, name="New dashboard", satellites=None, locations=None):
-        if id is None:
-            id = str(uuid4())
+    def __init__(self, id_=None, name="New dashboard", satellites=None, locations=None):
+        if id_ is None:
+            id_ = str(uuid4())
         if satellites is None:
             satellites = []
         if locations is None:
             locations = []
 
-        self.id = id
+        self.id = id_
         self.name = name
         self.satellites = satellites
         self.locations = locations
