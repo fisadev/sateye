@@ -125,6 +125,8 @@ class SatellitesUI:
                         {
                             "name": satellite.name,
                             "from_db": satellite.from_db,
+                            "point_color": satellite.style.point_color,
+                            "path_color": satellite.style.path_color,
                         },
                     )
                 )
