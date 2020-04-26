@@ -1,5 +1,5 @@
 {% verbatim %}
-<script id="passes-list-template" type="text/x-handlebars-template">
+<script id="passes-list-template" type="x-tmpl-mustache">
     <table class="table table-dark table-striped table-hover table-sm">
         <thead>
             <tr>
@@ -11,21 +11,21 @@
             </tr>
         </thead>
         <tbody>
-            {{#each passes}}
+            {{#passes}}
             <tr>
                 <td class="text-center"><i class="fas fa-eye-slash"></i></td>
-                <td class="text-center">{{ satelliteName this.satellite_id }}</td>
-                <td class="text-center">{{ locationName this.target_id }}</td>
-                <td class="text-center" title="AOS: {{ dateAsHuman this.aos }}
-LOS: {{ dateAsHuman this.los }}">
-                    {{ dateAsHuman this.tca }}
-                    <a href="#" class="pass-tca-link" data-pass-id="{{ this.id }}"><i class="fas fa-clock"></i></a>
+                <td class="text-center">{{satellite_name}}</td>
+                <td class="text-center">{{location_name}}</td>
+                <td class="text-center" title="AOS: {{aos}}
+LOS: {{los}}">
+                    {{ tca }}
+                    <a href="#" class="pass-tca-link" data-pass-id="{{id}}"><i class="fas fa-clock"></i></a>
                 </td>
-                <td class="text-center" title="Sun elevation: {{ numberAsHuman this.sun_elevation }}">
-                    {{ numberAsHuman this.tca_elevation }} deg
+                <td class="text-center" title="Sun elevation: {{sun_elevation}}">
+                    {{tca_elevation}} deg
                 </td>
             </tr>
-            {{/each}}
+            {{/passes}}
         </tbody>
     </table>
 </script>
