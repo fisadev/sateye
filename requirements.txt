@@ -1,4 +1,4 @@
-django==3.0.4
+django==3.0.7
 orbit-predictor==1.9.0
 attrs==18.2.0
 pytz==2018.9
