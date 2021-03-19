@@ -3,7 +3,7 @@ orbit-predictor==1.9.0
 attrs==18.2.0
 pytz==2018.9
 iso8601
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 django-extensions==2.1.6
 requests==2.23.0
 httpie==2.0.0
